@@ -1,0 +1,6 @@
+{
+  "name": "Turni Corvetto Live — Gestione Turni, Ferie e Notifiche Push",
+  "description": "Applicazione completa per la pianificazione intelligente dei turni, gestione ferie e permessi, impegni di filiale, sincronizzazione in tempo reale e notifiche push.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

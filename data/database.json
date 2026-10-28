@@ -1,0 +1,4998 @@
+{
+  "events": [
+    {
+      "allDay": false,
+      "date": "2026-10-07",
+      "from": "08:30",
+      "fromTime": "08:30",
+      "id": "ev_1791303701423",
+      "location": "Filiale di Corvetto",
+      "notes": "",
+      "participantIds": [
+        "w_8",
+        "w_9"
+      ],
+      "reminderMinutes": 60,
+      "title": "Corso Sicurezza (Fad)",
+      "to": "12:30",
+      "toTime": "12:30",
+      "type": "Corso",
+      "updatedAt": "2026-10-06T16:52:42.165Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-22",
+      "from": "13:45",
+      "fromTime": "13:45",
+      "id": "ev_1791468533491",
+      "location": "Viale Edoardo Jenner,  4 - Milano",
+      "notes": "",
+      "participantIds": [
+        "w_3"
+      ],
+      "reminderMinutes": 60,
+      "title": "Corso Mapei",
+      "to": "17:30",
+      "toTime": "17:30",
+      "type": "Corso",
+      "updatedAt": "2026-10-09T13:39:05.412Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-26",
+      "from": "08:30",
+      "fromTime": "08:30",
+      "id": "ev_1791469633587",
+      "location": "Filiale di Lambrate",
+      "notes": "",
+      "participantIds": [
+        "w_4",
+        "w_7"
+      ],
+      "reminderMinutes": 60,
+      "title": "Corso Kerakoll",
+      "to": "12:00",
+      "toTime": "12:00",
+      "type": "Corso",
+      "updatedAt": "2026-10-08T14:32:59.609Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-28",
+      "from": "08:30",
+      "fromTime": "08:30",
+      "id": "ev_1791470179486",
+      "location": "Filiale di Monza",
+      "notes": "",
+      "participantIds": [
+        "w_1"
+      ],
+      "reminderMinutes": 60,
+      "title": "Corso Ruspa",
+      "to": "12:30",
+      "toTime": "12:30",
+      "type": "Corso",
+      "updatedAt": "2026-10-08T14:38:11.717Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-28",
+      "from": "13:30",
+      "fromTime": "13:30",
+      "id": "ev_1791470267971",
+      "location": "Filiale di Monza",
+      "notes": "",
+      "participantIds": [
+        "w_10"
+      ],
+      "reminderMinutes": 60,
+      "title": "Corso agg. Ruspa",
+      "to": "17:30",
+      "toTime": "17:30",
+      "type": "Corso",
+      "updatedAt": "2026-10-08T14:37:47.971Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-28",
+      "from": "14:00",
+      "fromTime": "14:00",
+      "id": "ev_1791470419786",
+      "location": "Filiale di Via Arquà",
+      "notes": "",
+      "participantIds": [
+        "w_4"
+      ],
+      "reminderMinutes": 60,
+      "title": "Trasferta Arquà",
+      "to": "17:00",
+      "toTime": "17:00",
+      "type": "Trasferta",
+      "updatedAt": "2026-10-08T14:40:19.786Z"
+    },
+    {
+      "allDay": false,
+      "date": "2026-10-20",
+      "from": "18:00",
+      "fromTime": "18:00",
+      "id": "ev_1791552941143",
+      "location": "",
+      "notes": "",
+      "participantIds": [
+        "w_1",
+        "w_5"
+      ],
+      "reminderMinutes": 60,
+      "title": "Riunione Commerciale",
+      "to": "19:30",
+      "toTime": "19:30",
+      "type": "Riunione",
+      "updatedAt": "2026-10-09T13:35:41.143Z"
+    }
+  ],
+  "leaveRequests": [
+    {
+      "createdAt": "2026-10-03T23:55:36.606Z",
+      "day": "2026-10-06",
+      "fromTime": "06:30",
+      "hours": 7,
+      "id": "lr_1791071713412",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-03",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ferie",
+      "toTime": "14:30",
+      "workerId": "w_2"
+    },
+    {
+      "createdAt": "2026-10-04T17:09:58.585Z",
+      "fromDay": "2026-11-17",
+      "id": "lr_1791131142685",
+      "mode": "range",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-04",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ferie",
+      "toDay": "2026-11-28",
+      "workerId": "w_9"
+    },
+    {
+      "createdAt": "2026-10-07T05:17:46.653Z",
+      "fromDay": "2026-10-06",
+      "id": "mal_1791350266653",
+      "isMalattia": true,
+      "mode": "range",
+      "note": "numero di protocollo 456868502",
+      "openEnded": false,
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Malattia",
+      "toDay": "2026-10-06",
+      "workerId": "w_8"
+    },
+    {
+      "createdAt": "2026-10-16T15:03:50.164Z",
+      "fromDay": "2026-09-05",
+      "fullDay": true,
+      "hours": 8,
+      "id": "mal_1791352118743",
+      "mode": "range",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ricovero",
+      "toDay": "2026-10-16",
+      "workerId": "w_10"
+    },
+    {
+      "createdAt": "2026-10-07T17:20:36.735Z",
+      "fromDay": "2026-10-07",
+      "id": "mal_1791352169670",
+      "isMalattia": true,
+      "mode": "range",
+      "note": "",
+      "openEnded": false,
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Malattia",
+      "toDay": "2026-10-08",
+      "workerId": "w_8"
+    },
+    {
+      "autoImpact": {
+        "2026-10-13": {
+          "w_2": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "14:30"
+            }
+          },
+          "w_3": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "movedByEngine": true,
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_4": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:30",
+              "pIn": "13:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_5": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_6": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_7": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "14:30"
+            }
+          },
+          "w_8": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_9": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "14:30"
+            }
+          }
+        }
+      },
+      "createdAt": "2026-10-07T05:58:47.479Z",
+      "day": "2026-10-13",
+      "fullDay": true,
+      "hours": 8,
+      "id": "lr_1791352641746",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Donazione Sangue",
+      "workerId": "w_1"
+    },
+    {
+      "createdAt": "2026-10-27T17:40:28.229Z",
+      "fromDay": "2026-10-26",
+      "fullDay": true,
+      "hours": 8,
+      "id": "mal_1791364174187",
+      "mode": "range",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ricovero",
+      "toDay": "2026-10-26",
+      "workerId": "w_7"
+    },
+    {
+      "autoImpact": {
+        "2026-10-12": {
+          "w_1": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_2": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "14:30"
+            }
+          },
+          "w_3": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "15:30"
+            }
+          },
+          "w_4": {
+            "after": {
+              "generated": true,
+              "mIn": "07:30",
+              "mOut": "12:30",
+              "pIn": "13:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_5": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_6": {
+            "after": {
+              "generated": true,
+              "mIn": "08:30",
+              "mOut": "13:00",
+              "pIn": "14:00",
+              "pOut": "17:30"
+            }
+          },
+          "w_8": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "movedByEngine": true,
+              "pIn": "13:00",
+              "pOut": "15:30"
+            }
+          },
+          "w_9": {
+            "after": {
+              "generated": true,
+              "mIn": "06:30",
+              "mOut": "12:00",
+              "pIn": "13:00",
+              "pOut": "14:30"
+            }
+          }
+        }
+      },
+      "createdAt": "2026-10-08T09:39:15.530Z",
+      "day": "2026-10-12",
+      "fullDay": true,
+      "hours": 7,
+      "id": "lr_1791452200862",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-07",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ferie",
+      "workerId": "w_7"
+    },
+    {
+      "createdAt": "2026-10-08T15:00:05.821Z",
+      "day": "2026-10-27",
+      "fromTime": "",
+      "fullDay": true,
+      "hours": 7,
+      "id": "lr_1791470690835",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-08",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ferie",
+      "toTime": "",
+      "workerId": "w_2"
+    },
+    {
+      "createdAt": "2026-10-16T13:13:06.587Z",
+      "day": "2026-10-20",
+      "fullDay": true,
+      "hours": 7,
+      "id": "lr_1792156334201",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-16",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Ferie",
+      "workerId": "w_6"
+    },
+    {
+      "createdAt": "2026-10-16T13:14:09.454Z",
+      "day": "2026-10-19",
+      "fromTime": "15:00",
+      "fullDay": false,
+      "hours": 2.5,
+      "id": "lr_1792156449454",
+      "mode": "single",
+      "note": "",
+      "place": "Milano",
+      "requestDate": "2026-10-16",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Permesso Non retribuito",
+      "toTime": "17:30",
+      "workerId": "w_7"
+    },
+    {
+      "createdAt": "2026-10-16T15:05:07.172Z",
+      "fromDay": "2026-10-19",
+      "id": "mal_1792163107172",
+      "isMalattia": true,
+      "mode": "range",
+      "note": "",
+      "openEnded": false,
+      "place": "Milano",
+      "requestDate": "2026-10-16",
+      "status": "approvata",
+      "syncTurns": true,
+      "tipo": "Malattia",
+      "toDay": "2026-10-23",
+      "workerId": "w_10"
+    }
+  ],
+  "notePresets": [
+    {
+      "color": "#94a3b8",
+      "text": "ROL"
+    },
+    {
+      "color": "#ef4444",
+      "text": "Visita Medica"
+    },
+    {
+      "color": "#94a3b8",
+      "text": "Permesso"
+    },
+    {
+      "color": "#94a3b8",
+      "text": "Uscita Anticipata"
+    },
+    {
+      "color": "#94a3b8",
+      "text": "Filiale Agrate"
+    },
+    {
+      "color": "#ff0000",
+      "text": "Corso Scrigno"
+    },
+    {
+      "color": "#ff0000",
+      "text": "Trasferta in Via Arquà"
+    }
+  ],
+  "notes": {
+    "2026-W40": "SEVERIN e POPPA: Corso Scrigno dalle 9.00 alle 12.00 del 29/09 in Corvetto \n\nSEVERIN: Trasferta in Via Arquà dalle 7.00 alle 17.00 del 30/09 al 01/10",
+    "2026-W41": ""
+  },
+  "notesTitle": "Note / Comunicazioni:",
+  "presets": [
+    {
+      "label": "06:30 - 12:00 / 13:00 - 14:30 (1° turno)",
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "14:30"
+    },
+    {
+      "label": "08:30 - 13:00 / 14:00 - 17:30 (2° turno)",
+      "mIn": "08:30",
+      "mOut": "13:00",
+      "pIn": "14:00",
+      "pOut": "17:30"
+    },
+    {
+      "label": "06:30 - 12:00 / 13:00 - 15:30 (1° senza sabato)",
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "15:30"
+    },
+    {
+      "label": "06:30 - 13:00 / 13:30 - 17:30 (Severin)",
+      "mIn": "06:30",
+      "mOut": "13:00",
+      "pIn": "13:30",
+      "pOut": "17:30"
+    },
+    {
+      "label": "07:00 - 12:00 (Sabato)",
+      "mIn": "07:00",
+      "mOut": "12:00",
+      "pIn": "",
+      "pOut": ""
+    }
+  ],
+  "rules": {
+    "branchHours": {
+      "monFri": {
+        "close": "17:30",
+        "open": "06:30"
+      },
+      "sat": {
+        "close": "12:00",
+        "open": "07:00"
+      }
+    },
+    "branchMonFriClose": "17:30",
+    "branchMonFriOpen": "06:30",
+    "closingBreakFrom": "13:00",
+    "closingBreakTo": "14:00",
+    "generalCoverageRules": {
+      "askWhenAmbiguous": true,
+      "coordinatedMoves": true,
+      "doNothingIfCovered": true
+    },
+    "giulianoId": "w_5",
+    "giulianoMercoledi": {
+      "mIn": "08:30",
+      "mOut": "12:30",
+      "pIn": "",
+      "pOut": ""
+    },
+    "giulianoNormale": {
+      "mIn": "08:30",
+      "mOut": "13:00",
+      "pIn": "14:00",
+      "pOut": "17:30"
+    },
+    "giulianoSabato": {
+      "mIn": "08:00",
+      "mOut": "12:00",
+      "pIn": "",
+      "pOut": ""
+    },
+    "intelligentRulesVersion": "M1-M45",
+    "lastSaturdayUfficioId": "w_3",
+    "mag7h": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "14:30"
+    },
+    "mag8h": {
+      "mIn": "08:30",
+      "mOut": "13:00",
+      "pIn": "14:00",
+      "pOut": "17:30"
+    },
+    "magPairA": [
+      "w_6",
+      "w_8"
+    ],
+    "magPairB": [
+      "w_7",
+      "w_9"
+    ],
+    "magazzinoSabato": {
+      "mIn": "07:00",
+      "mOut": "12:00",
+      "pIn": "",
+      "pOut": ""
+    },
+    "marioId": "w_10",
+    "marioInRotation": false,
+    "marioOre": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "15:30"
+    },
+    "maxConsecutiveHours": 6.5,
+    "maxWeeklyHours": 40,
+    "minAperturaImp": 2,
+    "minAperturaMag": 2,
+    "minSabatoImp": 1,
+    "minSabatoMag": 1,
+    "officeCoverage": {
+      "lunchApertura8": {
+        "movable": true
+      },
+      "lunchChiusura": {
+        "fixed": true,
+        "from": "13:00",
+        "to": "14:00"
+      },
+      "lunchSabatista": {
+        "fixed": true,
+        "from": "12:00",
+        "to": "13:00"
+      },
+      "lunchSeverin": {
+        "durationMin": 30,
+        "options": [
+          "12:30-13:00",
+          "13:00-13:30"
+        ]
+      },
+      "maxClose": 2,
+      "minClose": 2,
+      "minOpen": 2
+    },
+    "onlyFillEmpty": true,
+    "openingBreakFrom": "12:00",
+    "openingBreakTo": "13:00",
+    "partialEventStatuses": [
+      "ROL",
+      "PERMESSO",
+      "CORSO",
+      "RIUNIONE",
+      "TRASFERTA",
+      "IMPEGNO AZIENDALE"
+    ],
+    "preferPinoMassimo": true,
+    "rulePriorities": [
+      "copertura_minima",
+      "assenze_e_impegni",
+      "nastro_settimanale",
+      "pause_pranzo",
+      "preferenze_ruolo",
+      "equita_carichi"
+    ],
+    "rulesVersion": 2,
+    "sabatoUfficioIds": [
+      "w_1",
+      "w_3",
+      "w_2"
+    ],
+    "severinBreakMinutes": 30,
+    "severinExemptLimits": true,
+    "severinGio": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "12:30",
+      "pOut": "16:30"
+    },
+    "severinId": "w_4",
+    "severinLun": {
+      "mIn": "07:30",
+      "mOut": "12:00",
+      "pIn": "12:30",
+      "pOut": "17:30"
+    },
+    "severinMar": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "12:30",
+      "pOut": "17:30"
+    },
+    "severinMer": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "12:30",
+      "pOut": "17:30"
+    },
+    "turnoSabato": {
+      "mIn": "07:00",
+      "mOut": "12:00",
+      "pIn": "",
+      "pOut": ""
+    },
+    "ufficio2t": {
+      "mIn": "08:30",
+      "mOut": "13:00",
+      "pIn": "14:00",
+      "pOut": "17:30"
+    },
+    "ufficio7h": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "14:30"
+    },
+    "ufficio8h": {
+      "mIn": "08:30",
+      "mOut": "13:00",
+      "pIn": "14:00",
+      "pOut": "17:30"
+    },
+    "ufficioSabato": {
+      "mIn": "06:30",
+      "mOut": "12:00",
+      "pIn": "13:00",
+      "pOut": "14:30"
+    },
+    "useHistory": true,
+    "warehouseRules": {
+      "closingMin": 1,
+      "individualSaturdayRecovery": false,
+      "mario": "w_10",
+      "neverCreateNewGap": true,
+      "openingMin": 2,
+      "pairRecoveryRequiresUserChoice": true,
+      "pairs": [
+        [
+          "w_6",
+          "w_8"
+        ],
+        [
+          "w_7",
+          "w_9"
+        ]
+      ],
+      "preferJollyForRealGap": true,
+      "preserveNastro": true,
+      "saturdayShift": [
+        "07:00",
+        "12:00"
+      ]
+    },
+    "warnCoverage": true
+  },
+  "statuses": [
+    {
+      "color": "#10b981",
+      "name": "LAVORO"
+    },
+    {
+      "color": "#ef4444",
+      "name": "MALATTIA"
+    },
+    {
+      "color": "#10b981",
+      "hours": 8,
+      "name": "FERIE"
+    },
+    {
+      "color": "#3b82f6",
+      "name": "RIPOSO"
+    },
+    {
+      "color": "#dc2626",
+      "name": "CHIUSO"
+    },
+    {
+      "color": "#eab308",
+      "name": "ASSENTE"
+    },
+    {
+      "color": "#8b5cf6",
+      "hours": 8,
+      "name": "ROL"
+    },
+    {
+      "color": "#6366f1",
+      "hours": 0,
+      "name": "PERMESSO"
+    },
+    {
+      "color": "#0ea5e9",
+      "hours": 8,
+      "name": "CORSO"
+    },
+    {
+      "color": "#14b8a6",
+      "hours": 0,
+      "name": "RIUNIONE"
+    },
+    {
+      "color": "#f97316",
+      "hours": 0,
+      "name": "TRASFERTA"
+    },
+    {
+      "color": "#a855f7",
+      "hours": 0,
+      "name": "IMPEGNO AZIENDALE"
+    },
+    {
+      "color": "#ee4444",
+      "hours": 8,
+      "name": "DONAZIONE SANGUE"
+    }
+  ],
+  "title": "CORVETTO",
+  "weeks": {
+    "2026-W36": {
+      "w_10": {
+        "5": {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      }
+    },
+    "2026-W37": {
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      ]
+    },
+    "2026-W38": {
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      ]
+    },
+    "2026-W39": {
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      ]
+    },
+    "2026-W40": {
+      "w_1": [
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "noteColor": "#94a3b8",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "noteColor": "#94a3b8",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "noteColor": "#94a3b8",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "noteColor": "#94a3b8",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "noteColor": "#94a3b8",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      ],
+      "w_2": [
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        }
+      ],
+      "w_3": [
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "Corso Scrigno",
+          "noteColor": "#ff0000",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        }
+      ],
+      "w_4": [
+        {
+          "mIn": "07:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "13:30",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "13:00",
+          "note": "Corso Scrigno",
+          "noteColor": "#ff0000",
+          "pIn": "13:30",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "Trasferta in Via Arquà",
+          "noteColor": "#ff0000",
+          "pIn": "13:00",
+          "pOut": "17:00"
+        },
+        {
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "Trasferta in Via Arquà",
+          "noteColor": "#ff0000",
+          "pIn": "13:00",
+          "pOut": "17:00"
+        },
+        {
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_5": [
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "note": "+ RIPOSO",
+          "pIn": "",
+          "pOut": ""
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:00",
+          "mOut": "12:00",
+          "note": "Filiale Agrate",
+          "noteColor": "#94a3b8",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_6": [
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        }
+      ],
+      "w_7": [
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_8": [
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        }
+      ],
+      "w_9": [
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "",
+          "pOut": ""
+        }
+      ]
+    },
+    "2026-W41": {
+      "w_1": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "breakAdjusted": true,
+          "eventLabel": "",
+          "eventMinutes": 0,
+          "generated": false,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": false,
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "breakAdjusted": true,
+          "eventLabel": "",
+          "eventMinutes": 0,
+          "generated": false,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": false,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        }
+      ],
+      "w_2": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "lr_1791071713412",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_3": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_4": [
+        {
+          "generated": true,
+          "mIn": "07:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "16:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_5": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "note": "",
+          "pIn": "",
+          "pOut": ""
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:00",
+          "mOut": "12:00",
+          "note": "Filiale Agrate",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_6": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_7": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_8": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "mal_1791350266653",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia – numero di protocollo 456868502",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "mal_1791352169670",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "mal_1791352169670",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_9": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": false,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": false,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "eventIds": [
+            "ev_1791303701423",
+            "ev_1791303701423"
+          ],
+          "eventLabel": "Corso Sicurezza (Fad)",
+          "eventMinutes": 480,
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ]
+    },
+    "2026-W42": {
+      "w_1": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "status": "ROL",
+          "leaveType": "Donazione Sangue",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791352641746",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Donazione Sangue",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791352118743",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_2": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_3": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_4": [
+        {
+          "generated": true,
+          "mIn": "07:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "16:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_5": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "note": "riposo",
+          "pIn": "",
+          "pOut": ""
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:00",
+          "mOut": "12:00",
+          "note": "Filiale Agrate",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_6": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_7": [
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "lr_1791452200862",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_8": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_9": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ]
+    },
+    "2026-W43": {
+      "w_1": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_10": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1792163107172",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1792163107172",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1792163107172",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1792163107172",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "status": "MALATTIA",
+          "leaveType": "Malattia",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1792163107172",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Malattia",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_2": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": false,
+          "leaveFullDay": false,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": false,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_3": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "breakAdjusted": true,
+          "breakSlotNote": "Pausa 12:30–13:30 (senza straordinario se possibile)",
+          "coverageBlockedIntervals": [
+            [
+              825,
+              1050
+            ]
+          ],
+          "eventIds": [
+            "ev_1791468533491"
+          ],
+          "eventLabel": "Corso Mapei",
+          "eventMinutes": 0,
+          "generated": false,
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "movedByEngine": false,
+          "note": "",
+          "overtimeMinutes": 0,
+          "pIn": "13:30",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_4": [
+        {
+          "generated": true,
+          "mIn": "07:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "pIn": "13:00",
+          "pOut": "16:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_5": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "note": "riposo",
+          "pIn": "",
+          "pOut": ""
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:00",
+          "mOut": "12:00",
+          "note": "Filiale Agrate",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_6": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "lr_1792156334201",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_7": [
+        {
+          "status": "LAVORO",
+          "leaveType": "Permesso Non retribuito",
+          "leaveFullDay": false,
+          "leaveHours": 2.5,
+          "leaveFromTime": "15:00",
+          "leaveToTime": "17:30",
+          "leaveRequestId": "lr_1792156449454",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "15:00",
+          "note": "",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_8": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "14:30"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "pIn": "",
+          "pOut": ""
+        }
+      ],
+      "w_9": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ]
+    },
+    "2026-W44": {
+      "w_1": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "coverageBlockedIntervals": [
+            [
+              510,
+              750
+            ]
+          ],
+          "eventIds": [
+            "ev_1791470179486"
+          ],
+          "eventLabel": "Corso Ruspa",
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "movedByEngine": true,
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_2": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 7,
+          "leaveRequestId": "lr_1791470690835",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_3": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "LAVORO"
+        }
+      ],
+      "w_4": [
+        {
+          "coverageBlockedIntervals": [
+            [
+              510,
+              720
+            ]
+          ],
+          "eventIds": [
+            "ev_1791469633587"
+          ],
+          "eventLabel": "Corso Kerakoll",
+          "generated": true,
+          "mIn": "07:30",
+          "mOut": "12:30",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "coverageBlockedIntervals": [
+            [
+              840,
+              1020
+            ]
+          ],
+          "eventIds": [
+            "ev_1791470419786"
+          ],
+          "eventLabel": "Trasferta Arquà",
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:30",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "16:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_5": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "12:30",
+          "note": "riposo pom.",
+          "pIn": "",
+          "pOut": "",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:00",
+          "mOut": "12:00",
+          "note": "Filiale Agrate",
+          "pIn": "",
+          "pOut": "",
+          "status": "LAVORO"
+        }
+      ],
+      "w_6": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "movedByEngine": true,
+          "pIn": "13:00",
+          "pOut": "15:30"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_7": [
+        {
+          "status": "MALATTIA",
+          "leaveType": "Ricovero",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "mal_1791364174187",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ricovero",
+          "generated": false
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "RIPOSO",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_8": [
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "note": "",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "",
+          "mOut": "",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "RIPOSO"
+        }
+      ],
+      "w_9": [
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "13:00",
+          "pOut": "14:30",
+          "status": "LAVORO"
+        },
+        {
+          "generated": true,
+          "mIn": "07:00",
+          "mOut": "12:00",
+          "note": "",
+          "pIn": "",
+          "pOut": "",
+          "status": "LAVORO"
+        }
+      ]
+    },
+    "2026-W45": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_7": [
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W46": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_7": [
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W47": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_7": [
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "08:30",
+          "mOut": "13:00",
+          "pIn": "14:00",
+          "pOut": "17:30",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_9": [
+        null,
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 5,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        }
+      ]
+    },
+    "2026-W48": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ],
+      "w_9": [
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 8,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        },
+        {
+          "status": "FERIE",
+          "leaveType": "Ferie",
+          "leaveFullDay": true,
+          "leaveHours": 5,
+          "leaveRequestId": "lr_1791131142685",
+          "mIn": "",
+          "mOut": "",
+          "pIn": "",
+          "pOut": "",
+          "note": "Ferie",
+          "generated": false
+        }
+      ]
+    },
+    "2026-W49": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W50": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W51": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W52": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2026-W53": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    },
+    "2027-W1": {
+      "w_10": [
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        },
+        {
+          "status": "LAVORO",
+          "mIn": "06:30",
+          "mOut": "12:00",
+          "pIn": "13:00",
+          "pOut": "15:30",
+          "note": "",
+          "generated": true
+        }
+      ]
+    }
+  },
+  "workers": [
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": true,
+        "officeProfile": "standard",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": false
+      },
+      "dob": "1982-05-05",
+      "endDate": "",
+      "group": "MANAGER",
+      "id": "w_1",
+      "name": "ALPEGIANI DAVIDE",
+      "notes": "",
+      "order": 1,
+      "phone": "+39 346 855 6596",
+      "profile": {
+        "competencies": "Coordinamento generale filiale, gestione casse, ordini e sicurezza",
+        "experience": "Store Manager con piena padronanza operativa e direzionale",
+        "openingExperience": "mentor",
+        "otherQualifications": "Responsabile Filiale e Preposto alla Sicurezza D.Lgs 81/08",
+        "qualifications": {
+          "fireSafety": {
+            "expiry": "2027-10-15",
+            "status": "valid"
+          },
+          "firstAid": {
+            "expiry": "2027-11-30",
+            "status": "valid"
+          },
+          "forklift": {
+            "status": "none"
+          },
+          "loader": {
+            "status": "none"
+          }
+        }
+      },
+      "role": "Store Manager",
+      "rotationGroup": "UFF_SABATO",
+      "rotationOrder": 1,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": true,
+        "officeProfile": "standard",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": false
+      },
+      "dob": "1969-01-26",
+      "endDate": "",
+      "group": "EDILE",
+      "id": "w_2",
+      "name": "CAREGNATO MARCO",
+      "notes": "",
+      "order": 2,
+      "phone": "+39 338 586 9766",
+      "profile": {
+        "competencies": "Vendita banco, preventivazione, tintometro, ordini clienti",
+        "experience": "Autonomia completa in apertura banco edile e gestione incassi",
+        "openingExperience": "autonomous",
+        "qualifications": {
+          "fireSafety": {
+            "status": "none"
+          },
+          "firstAid": {
+            "expiry": "2027-05-20",
+            "status": "valid"
+          },
+          "forklift": {
+            "status": "none"
+          },
+          "loader": {
+            "status": "none"
+          }
+        }
+      },
+      "role": "Add. Vendite Banco Edile",
+      "rotationGroup": "UFF_SABATO",
+      "rotationOrder": 2,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": true,
+        "officeProfile": "standard",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": false
+      },
+      "dob": "1997-10-31",
+      "endDate": "",
+      "group": "EDILE",
+      "id": "w_3",
+      "name": "POPPA ANDREA",
+      "notes": "",
+      "order": 3,
+      "phone": "+39 389 959 0120",
+      "profile": {
+        "competencies": "Consulenza tecnica banco edile, emissione bolle/fatture, apertura e chiusura",
+        "experience": "Pluriennale esperienza di vendita e gestione clientela professionale",
+        "openingExperience": "autonomous",
+        "qualifications": {
+          "fireSafety": {
+            "expiry": "2027-04-10",
+            "status": "valid"
+          },
+          "firstAid": {
+            "status": "none"
+          },
+          "forklift": {
+            "status": "none"
+          },
+          "loader": {
+            "status": "none"
+          }
+        }
+      },
+      "role": "Add. Vendite Banco Edile",
+      "rotationGroup": "UFF_SABATO",
+      "rotationOrder": 3,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": true,
+        "officeProfile": "severin",
+        "sabatista": false,
+        "saturdayEligible": false,
+        "warehouse": false
+      },
+      "dob": "1976-01-08",
+      "endDate": "",
+      "group": "EDILE",
+      "id": "w_4",
+      "name": "SEVERIN MARCO",
+      "notes": "",
+      "order": 4,
+      "phone": "+39 366 573 1048",
+      "profile": {
+        "competencies": "Specialista banco, apertura speciale, cassa e controllo bolle",
+        "experience": "Esperto di riferimento per apertura e chiusura continuativa banco",
+        "openingExperience": "mentor",
+        "qualifications": {
+          "fireSafety": {
+            "expiry": "2027-06-15",
+            "status": "valid"
+          },
+          "firstAid": {
+            "expiry": "2027-08-30",
+            "status": "valid"
+          },
+          "forklift": {
+            "status": "none"
+          },
+          "loader": {
+            "status": "none"
+          }
+        }
+      },
+      "role": "Add. Vendite Banco Edile",
+      "rotationGroup": "",
+      "rotationOrder": "",
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": true,
+        "jolly": false,
+        "office": true,
+        "officeProfile": "finiture",
+        "sabatista": false,
+        "saturdayEligible": false,
+        "warehouse": false
+      },
+      "dob": "1971-09-26",
+      "endDate": "",
+      "group": "FINITURE",
+      "id": "w_5",
+      "name": "SANDRINI GIULIANO",
+      "notes": "",
+      "order": 5,
+      "phone": "+39 335 648 9725",
+      "profile": {
+        "competencies": "Showroom finiture d'interni, pavimenti, rivestimenti e arredobagno",
+        "experience": "Consulente finiture con orario fisso e coordinamento con Agrate",
+        "openingExperience": "unknown",
+        "qualifications": {
+          "fireSafety": {
+            "status": "none"
+          },
+          "firstAid": {
+            "status": "none"
+          },
+          "forklift": {
+            "status": "none"
+          },
+          "loader": {
+            "status": "none"
+          }
+        }
+      },
+      "role": "Add. Vendite Finiture (Idalia)",
+      "rotationGroup": "",
+      "rotationOrder": "",
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": false,
+        "officeProfile": "",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": true
+      },
+      "dob": "1963-12-10",
+      "endDate": "",
+      "group": "MAGAZZINO",
+      "id": "w_6",
+      "name": "VARTUCA PINO",
+      "notes": "",
+      "order": 6,
+      "phone": "+39 393 938 5908",
+      "profile": {
+        "competencies": "Preparazione ordini pesanti, scarico bilici, gestione piazzale, sabbia sfusa",
+        "experience": "Tutor e referente piazzale magazzino; piena autonomia in apertura",
+        "loaderExperience": "mentor",
+        "loadingExperience": "mentor",
+        "openingExperience": "mentor",
+        "qualifications": {
+          "fireSafety": {
+            "status": "none"
+          },
+          "firstAid": {
+            "expiry": "2027-03-12",
+            "status": "valid"
+          },
+          "forklift": {
+            "expiry": "2027-06-15",
+            "status": "valid"
+          },
+          "loader": {
+            "expiry": "2027-06-15",
+            "status": "valid"
+          }
+        },
+        "sandExperience": "mentor"
+      },
+      "role": "Magazziniere",
+      "rotationGroup": "MAG_A",
+      "rotationOrder": 1,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": false,
+        "officeProfile": "",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": true
+      },
+      "dob": "1975-07-27",
+      "endDate": "",
+      "group": "MAGAZZINO",
+      "id": "w_7",
+      "name": "RALLO VINCENZO",
+      "notes": "",
+      "order": 8,
+      "phone": "+39 329 293 0302",
+      "profile": {
+        "competencies": "Carico/scarico mezzi, movimentazione merci pesanti, preparazione ordini",
+        "experience": "Autonomia completa in magazzino e carico autocarri",
+        "loaderExperience": "autonomous",
+        "loadingExperience": "autonomous",
+        "openingExperience": "autonomous",
+        "qualifications": {
+          "fireSafety": {
+            "expiry": "2027-08-14",
+            "status": "valid"
+          },
+          "firstAid": {
+            "status": "none"
+          },
+          "forklift": {
+            "expiry": "2027-09-20",
+            "status": "valid"
+          },
+          "loader": {
+            "status": "none"
+          }
+        },
+        "sandExperience": "autonomous"
+      },
+      "role": "Magazziniere",
+      "rotationGroup": "MAG_B",
+      "rotationOrder": 1,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": false,
+        "officeProfile": "",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": true
+      },
+      "dob": "1974-08-10",
+      "endDate": "",
+      "group": "MAGAZZINO",
+      "id": "w_8",
+      "name": "CARUSO MASSIMO",
+      "notes": "",
+      "order": 7,
+      "phone": "+39 351 576 2534",
+      "profile": {
+        "competencies": "Pala caricatrice per sabbia sfusa e inerti, muletto, ordini pesanti",
+        "experience": "Massima esperienza nell'uso dei mezzi pesanti di cantiere e magazzino",
+        "loaderExperience": "mentor",
+        "loadingExperience": "mentor",
+        "openingExperience": "mentor",
+        "qualifications": {
+          "fireSafety": {
+            "status": "none"
+          },
+          "firstAid": {
+            "status": "none"
+          },
+          "forklift": {
+            "expiry": "2027-04-30",
+            "status": "valid"
+          },
+          "loader": {
+            "expiry": "2027-04-30",
+            "status": "valid"
+          }
+        },
+        "sandExperience": "mentor"
+      },
+      "role": "Magazziniere",
+      "rotationGroup": "MAG_A",
+      "rotationOrder": 2,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": false,
+        "office": false,
+        "officeProfile": "",
+        "sabatista": true,
+        "saturdayEligible": true,
+        "warehouse": true
+      },
+      "dob": "2000-08-30",
+      "endDate": "2026-12-01",
+      "group": "MAGAZZINO",
+      "id": "w_9",
+      "name": "DRIGO MATTIA",
+      "notes": "",
+      "order": 9,
+      "phone": "+39 351 335 7295",
+      "profile": {
+        "competencies": "Carrello elevatore, preparazione commesse clienti, stoccaggio",
+        "experience": "Autonomo su carrello elevatore e carico camion; pala in affiancamento",
+        "loaderExperience": "assisted",
+        "loadingExperience": "autonomous",
+        "openingExperience": "autonomous",
+        "qualifications": {
+          "fireSafety": {
+            "status": "none"
+          },
+          "firstAid": {
+            "expiry": "2027-09-18",
+            "status": "valid"
+          },
+          "forklift": {
+            "expiry": "2027-12-10",
+            "status": "valid"
+          },
+          "loader": {
+            "status": "none"
+          }
+        },
+        "sandExperience": "autonomous"
+      },
+      "role": "Magazziniere",
+      "rotationGroup": "MAG_B",
+      "rotationOrder": 2,
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    },
+    {
+      "brain": {
+        "canClose": true,
+        "canOpen": true,
+        "fixed": false,
+        "jolly": true,
+        "office": false,
+        "officeProfile": "",
+        "sabatista": false,
+        "saturdayEligible": true,
+        "warehouse": true
+      },
+      "dob": "1965-01-22",
+      "endDate": "",
+      "group": "MAGAZZINO",
+      "id": "w_10",
+      "name": "RAGONE MARIO",
+      "notes": "",
+      "order": 10,
+      "phone": "+39 347 366 6053",
+      "profile": {
+        "competencies": "Jolly polivalente: muletto, pala, carico camion, flessibilità aperture/chiusure",
+        "experience": "Grande affidabilità e versatilità su tutti i mezzi e mansioni piazzale",
+        "loaderExperience": "autonomous",
+        "loadingExperience": "mentor",
+        "openingExperience": "mentor",
+        "qualifications": {
+          "fireSafety": {
+            "expiry": "2027-07-22",
+            "status": "valid"
+          },
+          "firstAid": {
+            "status": "none"
+          },
+          "forklift": {
+            "expiry": "2027-08-05",
+            "status": "valid"
+          },
+          "loader": {
+            "expiry": "2027-08-05",
+            "status": "valid"
+          }
+        },
+        "sandExperience": "autonomous"
+      },
+      "role": "Magazziniere",
+      "rotationGroup": "",
+      "rotationOrder": "",
+      "saturdayEnabled": true,
+      "selected": true,
+      "site": "Corvetto",
+      "specialSchedule": false,
+      "startDate": "",
+      "status": "ATTIVO",
+      "weeklyHours": 40
+    }
+  ],
+  "leaveBalances": {},
+  "updatedAt": 1793122828514,
+  "updatedBy": "usr_2oexg4k_mvqyt4ax",
+  "updatedRevision": 52,
+  "appVersion": "9.4.0",
+  "auditLog": [
+    {
+      "action": "conflitto",
+      "by": "c_yiiycf87mvb04qgg",
+      "detail": "mantenuta versione cloud",
+      "ts": "2026-10-16T13:38:49.854Z"
+    }
+  ]
+}

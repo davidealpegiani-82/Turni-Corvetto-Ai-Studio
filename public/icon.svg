@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <g filter="url(#shadow)">
+    <!-- Calendar Body -->
+    <rect x="88" y="112" width="336" height="304" rx="36" fill="#ffffff" />
+    <!-- Calendar Header -->
+    <path d="M 88 148 C 88 128 104 112 124 112 L 388 112 C 408 112 424 128 424 148 L 424 196 L 88 196 Z" fill="#dc2626" />
+    <!-- Rings -->
+    <rect x="160" y="80" width="24" height="60" rx="12" fill="#334155" />
+    <rect x="328" y="80" width="24" height="60" rx="12" fill="#334155" />
+    <!-- Grid items -->
+    <rect x="132" y="232" width="56" height="40" rx="8" fill="#3b82f6" />
+    <rect x="228" y="232" width="56" height="40" rx="8" fill="#10b981" />
+    <rect x="324" y="232" width="56" height="40" rx="8" fill="#f59e0b" />
+    
+    <rect x="132" y="304" width="56" height="40" rx="8" fill="#e2e8f0" />
+    <rect x="228" y="304" width="56" height="40" rx="8" fill="#3b82f6" />
+    <rect x="324" y="304" width="56" height="40" rx="8" fill="#8b5cf6" />
+    <!-- Clock badge -->
+    <circle cx="390" cy="380" r="50" fill="#2563eb" stroke="#ffffff" stroke-width="8" />
+    <polyline points="390,352 390,380 412,392" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </g>
+</svg>
