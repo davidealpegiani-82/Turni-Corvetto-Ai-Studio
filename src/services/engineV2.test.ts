@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { AppData, WeekShifts } from '../types/turni';
 import { mergeProposalSafely, policyFromAppData, validateWeekV2 } from './engineV2';
+import { corvettoW44App, corvettoW44Week } from './fixtures/corvettoW44';
 
 const app = {
   workers: [
@@ -83,6 +84,8 @@ test('policy is derived from the branch rules stored in AppData', () => {
   assert.equal(policy.warehouse.openingMinimum, 2);
   assert.equal(policy.office.closingMinimum, 2);
   assert.equal(policy.saturdayOpen, '07:00');
+  assert.equal(policy.saturdayWarehouseMinimum, 1);
+  assert.equal(policy.saturdayOfficeMinimum, 1);
 });
 
 test('separate FINITURE showroom is not counted as branch office coverage', () => {
@@ -94,4 +97,11 @@ test('separate FINITURE showroom is not counted as branch office coverage', () =
   const week: WeekShifts = { showroom: { 5: { mIn: '07:00', mOut: '12:00' } } };
   const result = validateWeekV2(showroomOnly, week);
   assert.ok(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'office' && f.day === 5));
+});
+
+test('real sanitized Corvetto week W44 is checked across the full timetable', () => {
+  const policy = policyFromAppData(corvettoW44App);
+  const result = validateWeekV2(corvettoW44App, corvettoW44Week, policy);
+  assert.equal(result.checkedSlots, 240);
+  assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.day === 5), false);
 });
