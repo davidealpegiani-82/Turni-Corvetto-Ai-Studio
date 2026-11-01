@@ -152,9 +152,9 @@ class RealtimeSocketManager {
     changeType: string,
     description: string,
     _pushNotification?: { title: string; body: string; url?: string }
-  ) {
-    // Serializza le scritture e usa il token ETag più recente.
-    this.writeQueue = this.writeQueue.then(async () => {
+  ): Promise<boolean> {
+    // Serializza le scritture e restituisce al chiamante l'esito effettivo del PUT.
+    const write = this.writeQueue.then(async (): Promise<boolean> => {
       try {
         if (!this.etag) await this.readCloud(false);
         const response = await fetch(FIREBASE_URL, {
@@ -174,7 +174,7 @@ class RealtimeSocketManager {
             description: 'Un altro dispositivo ha salvato prima di questa modifica. I dati cloud sono stati protetti.'
           });
           this.emitNotification('⚠️ Conflitto di modifica', 'Ho recuperato la versione cloud più recente. Controlla i turni prima di ripetere la modifica.');
-          return;
+          return false;
         }
         if (!response.ok) throw new Error(`Firebase HTTP ${response.status}`);
 
@@ -183,13 +183,18 @@ class RealtimeSocketManager {
         this.lastRemoteSignature = JSON.stringify([data.updatedRevision, data.updatedAt, data.updatedBy]);
         this.setStatus('connected');
         console.info('[Firebase] Salvataggio confermato:', changeType, description);
+        return true;
       } catch (error) {
         console.error('[Firebase] Salvataggio non riuscito:', error);
         this.cache(data);
         this.setStatus('error');
         this.emitNotification('⚠️ Salvataggio non confermato', 'La modifica è conservata nella cache di questo dispositivo, ma non risulta sincronizzata. Verifica la connessione e riprova.');
+        return false;
       }
-    }).catch(error => console.error('[Firebase] Coda salvataggi:', error));
+    });
+
+    this.writeQueue = write.then(() => undefined);
+    return write;
   }
 
   public onStatusChange(callback: (status: SocketStatus, clientCount: number) => void) {
