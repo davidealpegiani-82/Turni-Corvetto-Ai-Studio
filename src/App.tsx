@@ -378,7 +378,11 @@ export default function App() {
   };
 
   const handleApplyProposal = (emergencyWarehouseOverride = false) => {
+    let phase = 'inizializzazione';
+    try {
+    showToast('Applicazione proposta', 'Controllo le modifiche e le coperture prima del salvataggio…', 'info');
     if (!proposal) return;
+    phase = 'preparazione unione turni';
     const weekKey = proposal.weekKey;
     const weekInfo = getWeekInfo(currentDate);
     const currentWeek = appData.weeks[weekKey] || {};
@@ -399,6 +403,7 @@ export default function App() {
       return;
     }
 
+    phase = 'verifica regole e coperture';
     const monday = new Date(currentDate);
     monday.setHours(12, 0, 0, 0);
     monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
@@ -426,6 +431,7 @@ export default function App() {
       return;
     }
 
+    phase = 'preparazione salvataggio e sincronizzazione';
     updateAppDataAuthoritative(
       (prev) => {
         // Re-check the merge against the latest in-memory week immediately before applying.
@@ -456,6 +462,7 @@ export default function App() {
       }
     );
 
+    phase = 'completamento';
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
@@ -463,6 +470,11 @@ export default function App() {
       `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi.`,
       emergencyWarehouseOverride ? 'warn' : 'success'
     );
+    } catch (error) {
+      console.error('[Turni Corvetto] Errore applicazione proposta:', phase, error);
+      const detail = error instanceof Error ? error.message : String(error);
+      showToast('Errore durante l’applicazione', `Operazione interrotta nella fase: ${phase}. Dettaglio: ${detail || 'errore non specificato'}`, 'warn');
+    }
   };
 
   const handleSelectChoice = (choiceId: string, optionId: string) => {
