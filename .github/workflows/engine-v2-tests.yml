@@ -1,0 +1,20 @@
+name: Parallel scheduling engine tests
+
+on:
+  push:
+    branches:
+      - feat/turni-engine-v2-parallel
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  engine-v2-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm test
