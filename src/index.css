@@ -571,9 +571,37 @@ body:not(.light-theme) .bg-slate-100 {
 body.light-theme .text-white[class*="bg-"],
 body.light-theme .text-slate-100[class*="bg-"],
 body.light-theme .text-slate-200[class*="bg-"],
-body.light-theme [class*="bg-"] .text-white,
-body.light-theme [class*="bg-"] .text-slate-100,
-body.light-theme [class*="bg-"] .text-slate-200 {
+body.light-theme [class*="bg-red-"] .text-white,
+body.light-theme [class*="bg-blue-"] .text-white,
+body.light-theme [class*="bg-emerald-"] .text-white,
+body.light-theme [class*="bg-green-"] .text-white,
+body.light-theme [class*="bg-purple-"] .text-white,
+body.light-theme [class*="bg-indigo-"] .text-white,
+body.light-theme [class*="bg-rose-"] .text-white,
+body.light-theme [class*="bg-orange-"] .text-white,
+body.light-theme [class*="bg-teal-"] .text-white,
+body.light-theme [class*="bg-sky-"] .text-white,
+body.light-theme [class*="bg-pink-"] .text-white,
+body.light-theme [class*="bg-red-"] .text-slate-100,
+body.light-theme [class*="bg-blue-"] .text-slate-100,
+body.light-theme [class*="bg-emerald-"] .text-slate-100,
+body.light-theme [class*="bg-purple-"] .text-slate-100,
+body.light-theme [class*="bg-indigo-"] .text-slate-100,
+body.light-theme [class*="bg-rose-"] .text-slate-100,
+body.light-theme [class*="bg-orange-"] .text-slate-100,
+body.light-theme [class*="bg-teal-"] .text-slate-100,
+body.light-theme [class*="bg-sky-"] .text-slate-100,
+body.light-theme [class*="bg-pink-"] .text-slate-100,
+body.light-theme [class*="bg-red-"] .text-slate-200,
+body.light-theme [class*="bg-blue-"] .text-slate-200,
+body.light-theme [class*="bg-emerald-"] .text-slate-200,
+body.light-theme [class*="bg-purple-"] .text-slate-200,
+body.light-theme [class*="bg-indigo-"] .text-slate-200,
+body.light-theme [class*="bg-rose-"] .text-slate-200,
+body.light-theme [class*="bg-orange-"] .text-slate-200,
+body.light-theme [class*="bg-teal-"] .text-slate-200,
+body.light-theme [class*="bg-sky-"] .text-slate-200,
+body.light-theme [class*="bg-pink-"] .text-slate-200 {
   color: #ffffff !important;
 }
 
@@ -581,10 +609,7 @@ body.light-theme [class*="bg-"] .text-slate-200 {
    anche nel tema dark. */
 body:not(.light-theme) .text-black[class*="bg-"],
 body:not(.light-theme) .text-slate-950[class*="bg-"],
-body:not(.light-theme) .text-slate-900[class*="bg-"],
-body:not(.light-theme) [class*="bg-"] .text-black,
-body:not(.light-theme) [class*="bg-"] .text-slate-950,
-body:not(.light-theme) [class*="bg-"] .text-slate-900 {
+body:not(.light-theme) .text-slate-900[class*="bg-"] {
   color: #0f172a !important;
 }
 
