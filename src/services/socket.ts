@@ -29,6 +29,8 @@ class RealtimeSocketManager {
   private clientCount = 1;
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;
   private writeQueue: Promise<void> = Promise.resolve();
+  private writeSequence = 0;
+  private blockedThroughSequence = 0;
   private lastRemoteSignature = '';
 
   private getOrCreateClientId(): string {
@@ -154,8 +156,12 @@ class RealtimeSocketManager {
     _pushNotification?: { title: string; body: string; url?: string }
   ): Promise<boolean> {
     // Serializza le scritture e restituisce al chiamante l'esito effettivo del PUT.
+    const sequence = ++this.writeSequence;
     const write = this.writeQueue.then(async (): Promise<boolean> => {
       try {
+        // Dopo un conflitto, non inviare snapshot già accodati e ormai obsoleti.
+        // Una nuova modifica dell’utente potrà ripartire dalla versione cloud appena ricevuta.
+        if (sequence <= this.blockedThroughSequence) return false;
         if (!this.etag) await this.readCloud(false);
         const response = await fetch(FIREBASE_URL, {
           method: 'PUT',
@@ -168,6 +174,7 @@ class RealtimeSocketManager {
 
         if (response.status === 412) {
           const current = await this.readCloud(false);
+          this.blockedThroughSequence = this.writeSequence;
           this.emitData(current, {
             sourceClientId: 'server-conflict',
             changeType: 'revision_conflict',
