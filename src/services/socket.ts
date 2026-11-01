@@ -81,6 +81,8 @@ class RealtimeSocketManager {
               this.clientCount = msg.connectedClients;
             }
             this.emitData(msg.data, { changeType: 'initial_sync' });
+          } else if (msg.type === 'revision_conflict' && msg.data) {
+            this.emitData(msg.data, { sourceClientId: 'server-conflict', changeType: 'revision_conflict', description: 'Un altro dispositivo ha salvato prima di questa modifica. Dati riallineati dal server.' });
           } else if (msg.type === 'data_updated' && msg.data) {
             this.emitData(msg.data, {
               sourceClientId: msg.sourceClientId,
@@ -181,6 +183,7 @@ class RealtimeSocketManager {
         type: 'update_data',
         clientId: this.clientId,
         data,
+        expectedRevision: Math.max(0, (Number(data.updatedRevision) || 1) - 1),
         changeType,
         description,
         pushNotification
@@ -192,11 +195,23 @@ class RealtimeSocketManager {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           data,
+          expectedRevision: Math.max(0, (Number(data.updatedRevision) || 1) - 1),
           clientId: this.clientId,
           changeType,
           description,
           pushNotification
         })
+      }).then(async (response) => {
+        if (response.status === 409) {
+          const conflict = await response.json();
+          if (conflict.data) this.emitData(conflict.data, {
+            sourceClientId: 'server-conflict',
+            changeType: 'revision_conflict',
+            description: 'Un altro dispositivo ha salvato prima di questa modifica. Dati riallineati dal server.'
+          });
+        } else if (!response.ok) {
+          console.warn('Salvataggio API rifiutato:', response.status);
+        }
       }).catch((e) => console.warn('Fallback HTTP POST fallito:', e));
     }
   }
