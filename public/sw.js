@@ -44,26 +44,3 @@ self.addEventListener('fetch', event => {
     }))
   );
 });
-
-// Supporto notifiche push predisposto, ma il mittente server-side non è attivo su hosting statico gratuito.
-self.addEventListener('push', event => {
-  let data = { title: 'Turni Corvetto', body: 'Nuovo aggiornamento sui turni.', icon: `${APP_BASE}icon.svg`, data: { url: APP_BASE } };
-  try { if (event.data) data = Object.assign(data, event.data.json()); } catch {}
-  event.waitUntil(self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: data.icon || `${APP_BASE}icon.svg`,
-    badge: `${APP_BASE}icon.svg`,
-    data: data.data || { url: APP_BASE }
-  }));
-});
-
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  const target = (event.notification.data && event.notification.data.url) || APP_BASE;
-  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
-    for (const client of windows) {
-      if (client.url.includes(self.location.origin) && 'focus' in client) return client.focus();
-    }
-    return self.clients.openWindow ? self.clients.openWindow(target) : undefined;
-  }));
-});
