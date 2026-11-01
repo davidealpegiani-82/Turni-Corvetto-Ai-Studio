@@ -58,7 +58,7 @@ export const DEFAULT_CORVETTO_POLICY: CoveragePolicy = {
 };
 
 function toMinutes(value?: string): number | null {
-  if (!value || !/^([01]\\d|2[0-3]):[0-5]\\d$/.test(value)) return null;
+  if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return null;
   const [hours, minutes] = value.split(':').map(Number);
   return hours * 60 + minutes;
 }
@@ -129,7 +129,9 @@ export function validateWeekV2(
         const present = eligible.filter(w => covers(week[w.id]?.[day], start, end));
         const openingUntil = toMinutes(areaPolicy.openingUntil || (isSaturday ? '07:00' : '08:30')) ?? open;
         let required = areaPolicy.minimum;
-        if (start < openingUntil) required = Math.max(required, areaPolicy.openingMinimum ?? areaPolicy.minimum);
+        // Il sabato è previsto un solo addetto ufficio; il minimo feriale non va trascinato al sabato.
+        if (isSaturday && area === 'office') required = 1;
+        else if (start < openingUntil) required = Math.max(required, areaPolicy.openingMinimum ?? areaPolicy.minimum);
         if (end >= close) required = areaPolicy.closingMinimum ?? areaPolicy.minimum;
         if (present.length < required) {
           coverageGaps++;
