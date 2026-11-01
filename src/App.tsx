@@ -756,7 +756,7 @@ export default function App() {
     showToast('Calendario iCal Scaricato', 'File .ics con turni ed impegni della settimana generato con successo.', 'success');
   };
 
-  const handleShareWhatsAppWeek = () => {
+  const handleShareWhatsAppWeek = async () => {
     const weekInfo = getWeekInfo(currentDate);
     const weekKey = getWeekKey(currentDate);
     const eventsThisWeek = (appData.events || []).filter(e => {
@@ -785,18 +785,31 @@ export default function App() {
     lines.push('_Turni Corvetto Live_');
     const text = lines.join('\n');
 
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text);
-      }
-    } catch (e) {}
-
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    let copied = false;
+    let opened = false;
     try {
-      window.open(url, '_blank');
-    } catch (e) {}
-
-    showToast('WhatsApp & Appunti', 'Riepilogo copiato negli appunti e link WhatsApp preparato.', 'success');
+      const popup = window.open(url, '_blank');
+      opened = !!popup;
+    } catch (error) {
+      console.warn('[Condivisione] Apertura WhatsApp non riuscita:', error);
+    }
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      }
+    } catch (error) {
+      console.warn('[Condivisione] Copia appunti non riuscita:', error);
+    }
+    if (!opened) window.location.href = url;
+    showToast(
+      copied ? 'Riepilogo copiato' : 'WhatsApp preparato',
+      copied
+        ? 'Il testo è stato copiato negli appunti e WhatsApp è stato aperto.'
+        : 'Il riepilogo è stato inserito nel collegamento WhatsApp. La copia negli appunti non è disponibile su questo browser.',
+      copied ? 'success' : 'info'
+    );
   };
 
   // 7. Configurazione Team e Collaboratori
@@ -1329,10 +1342,7 @@ export default function App() {
         onPreviewPDF={handlePreviewWeeklyPDF}
         onExportEmail={() => {
           handleExportWeeklyPDF();
-          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`In allegato la programmazione turni per la settimana ${weekInfo.label}.\n\nSaluti,\nFiliale Corvetto`)}`;
-        }}
-        onExportJPG={() => {
-          handleExportWeeklyPDF();
+          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`Ho scaricato la programmazione turni per la settimana ${weekInfo.label}. Allego il PDF scaricato separatamente prima di inviare questa email.\n\nSaluti,\nFiliale Corvetto`)}`;
         }}
         onExportICS={handleExportWeekICS}
         onShareWhatsApp={handleShareWhatsAppWeek}
