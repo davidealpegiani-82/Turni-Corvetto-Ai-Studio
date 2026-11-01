@@ -123,11 +123,6 @@ export const Header: React.FC<HeaderProps> = ({
             title="Avvisi e stato sincronizzazione"
           >
             <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-[10px] font-bold flex items-center justify-center text-white shadow-sm shadow-red-600/50">
-                {unreadCount}
-              </span>
-            )}
           </button>
 
           <button
@@ -199,14 +194,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Pulsanti Azione Principali */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* AI Copilot Button */}
+          {/* Assistente controlli locali */}
           <button
             type="button"
             onClick={onOpenAICopilot}
             className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/25 border border-white/20 flex items-center gap-1.5 transition active:scale-95 cursor-pointer backdrop-blur-md"
             title="Apri l'assistente locale per controlli su turni, coperture e monte ore"
           >
-            <span className="text-sm">🤖</span>
+            <span className="text-sm">🧭</span>
             <span>Assistente controlli</span>
             
           </button>
