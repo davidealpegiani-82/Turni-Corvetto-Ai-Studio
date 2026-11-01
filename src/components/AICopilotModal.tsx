@@ -24,7 +24,8 @@ import {
   AIProposedAction,
   AppData
 } from '../types/turni';
-import { getWeekInfo, weekKeyToMonday } from '../services/engine';
+import { getWeekInfo, weekKeyToMonday, localDateKey, countableDayHours } from '../services/engine';
+import { policyFromAppData, validateWeekV2 } from '../services/engineV2';
 
 interface AICopilotModalProps {
   open: boolean;
@@ -48,7 +49,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
     {
       id: 'welcome_1',
       sender: 'assistant',
-      text: `👋 **Ciao! Sono il tuo Assistente AI Copilot per la gestione turni e conformità della Filiale Corvetto.**\n\nPuoi dirmi in linguaggio naturale cosa desideri fare, ad esempio:\n• *"Metti Gianluca alle 06:30 giovedì per coprire l'apertura"* \n• *"Inserisci ferie per Simone dal 10 al 14 Novembre"* \n• *"Aggiungi riunione di filiale lunedì alle 14:30"* \n• *"Verifica se ci sono errori, violazioni o scoperture questa settimana"* \n• *"Mario ha la febbre mercoledì: come mi consigli di risolvere?"*\n\nVerificherò tutte le regole contrattuali, di sicurezza carrellisti (06:30) e di riposo 11h in tempo reale!`,
+      text: `👋 **Ciao! Sono l'assistente operativo locale di Turni Corvetto.**\n\nPosso controllare senza costi e senza inviare i dati a servizi esterni:\n• coperture e scoperture durante la giornata\n• qualifiche e competenze in apertura\n• riposo minimo tra i turni\n• turni del sabato\n• monte ore settimanale\n\nLa generazione conversazionale di modifiche tramite AI esterna non è attiva nella versione gratuita statica. Per modificare i turni usa le celle e il generatore di proposte: le modifiche vengono comunque validate.`,
       timestamp: Date.now(),
       quickFollowUps: [
         'Verifica conformità settimana',
@@ -96,39 +97,73 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
     setLoading(true);
 
     try {
-      const res = await fetch('/api/ai/copilot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: text,
-          weekKey,
-          currentDate: currentDate.toISOString()
-        })
-      });
+      // Copilot locale: verifiche deterministiche senza API key, server o costi.
+      const normalized = text.toLocaleLowerCase('it-IT');
+      let reply = '';
+      let audit: AIChatMessage['audit'] = null;
+      let quickFollowUps = ['Verifica conformità settimana', 'Controlla sicurezza carrellisti 06:30', 'Chi è di turno questo sabato?', 'Verifica monte ore e riposi'];
 
-      if (!res.ok) {
-        throw new Error(`Errore server (${res.status})`);
+      if (/verifica|controll|conform|copertur|sicurezza|carrell|riposo|violazion/.test(normalized)) {
+        const monday = weekKeyToMonday(weekKey);
+        const validation = validateWeekV2(
+          appData,
+          appData.weeks?.[weekKey] || {},
+          policyFromAppData(appData, localDateKey(monday))
+        );
+        const findings = validation.findings.map(item => item.message);
+        const status = validation.findings.some(item => item.severity === 'error')
+          ? 'error'
+          : findings.length ? 'warning' : 'compliant';
+        const summary = status === 'compliant'
+          ? 'Nessuna criticità rilevata dai controlli automatici locali.'
+          : status === 'error'
+            ? 'Sono presenti criticità che richiedono una verifica.'
+            : `Rilevati ${findings.length} punti da controllare.`;
+        audit = { status, summary, findings };
+        reply = `Ho eseguito il controllo deterministico della settimana ${weekInfo.weekNo} (${weekInfo.label}). Ho verificato le coperture a intervalli, il riposo minimo e le qualifiche configurate.\n\n${summary}`;
+        if (!findings.length) reply += '\n\nRicorda: il controllo automatico non sostituisce la verifica finale del responsabile.';
+      } else if (/sabato/.test(normalized)) {
+        const week = appData.weeks?.[weekKey] || {};
+        const rows = appData.workers.filter(worker => worker.selected !== false).map(worker => {
+          const cell = week[worker.id]?.[5];
+          if (!cell) return null;
+          if (cell.status && cell.status !== 'LAVORO') return `• ${worker.name}: ${cell.status}`;
+          const morning = cell.mIn && cell.mOut ? `${cell.mIn}–${cell.mOut}` : '';
+          const afternoon = cell.pIn && cell.pOut ? `${cell.pIn}–${cell.pOut}` : '';
+          const hours = [morning, afternoon].filter(Boolean).join(' · ');
+          return hours ? `• ${worker.name}: ${hours}` : null;
+        }).filter(Boolean);
+        reply = rows.length
+          ? `Ecco il sabato della settimana ${weekInfo.weekNo}:\n\n${rows.join('\n')}`
+          : `Non risultano turni inseriti per sabato nella settimana ${weekInfo.weekNo}.`;
+      } else if (/ore|monte|straordin|40h|40 h/.test(normalized)) {
+        const week = appData.weeks?.[weekKey] || {};
+        const rows = appData.workers.filter(worker => worker.selected !== false).map(worker => {
+          const total = [0,1,2,3,4,5].reduce((sum, day) =>
+            sum + countableDayHours(worker.id, day, week[worker.id]?.[day], weekKey, appData), 0);
+          return `• ${worker.name}: ${total.toFixed(1)} ore`;
+        });
+        reply = `Monte ore conteggiato sui turni e sulle causali registrate per la settimana ${weekInfo.weekNo}:\n\n${rows.join('\n')}\n\nPer interpretare scostamenti e causali, considera le regole contrattuali configurate nella filiale.`;
+      } else {
+        reply = 'Questa versione è progettata per funzionare senza abbonamenti né server a pagamento. Il Copilot AI generativo in linguaggio naturale richiede un servizio esterno e una chiave API personale, quindi non invia dati aziendali a servizi terzi.\n\nPosso però eseguire qui controlli locali su coperture, qualifiche, riposi, turni del sabato e monte ore. Per modificare un turno usa la cella o il generatore di proposte: le modifiche restano soggette alla validazione.';
       }
-
-      const data = await res.json();
 
       const botMsg: AIChatMessage = {
         id: `bot_${Date.now()}`,
         sender: 'assistant',
-        text: data.message || 'Elaborazione completata.',
+        text: reply,
         timestamp: Date.now(),
-        audit: data.audit || null,
-        actions: data.actions || [],
-        quickFollowUps: data.quickFollowUps || []
+        audit,
+        actions: [],
+        quickFollowUps
       };
-
       setMessages(prev => [...prev, botMsg]);
     } catch (err: any) {
-      console.error('[AICopilot] Errore invio messaggio:', err);
+      console.error('[Copilot locale] Errore:', err);
       const errMsg: AIChatMessage = {
         id: `bot_err_${Date.now()}`,
         sender: 'assistant',
-        text: `⚠️ Si è verificato un problema nella connessione con il motore AI (${err.message || 'Errore di rete'}). Puoi riprovare o usare uno dei prompt rapidi sottostanti.`,
+        text: `Non sono riuscito a completare il controllo locale: ${err.message || 'errore imprevisto'}. Puoi riprovare.`,
         timestamp: Date.now(),
         quickFollowUps: ['Verifica conformità settimana', 'Controlla sicurezza carrellisti 06:30']
       };
