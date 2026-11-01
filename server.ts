@@ -171,11 +171,16 @@ if (fs.existsSync(SUBS_FILE)) {
 
 function saveDatabase() {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(appData, null, 2));
-    // Sincronizza anche con Firebase RTDB cloud in background
-    syncToFirebase(appData);
+    const temporaryFile = `${DB_FILE}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify(appData, null, 2));
+    fs.renameSync(temporaryFile, DB_FILE);
+    // Sincronizza anche con Firebase RTDB cloud in background.
+    void syncToFirebase(appData);
+    return true;
   } catch (e) {
     console.error('Errore scrittura DB:', e);
+    try { if (fs.existsSync(`${DB_FILE}.tmp`)) fs.unlinkSync(`${DB_FILE}.tmp`); } catch {}
+    return false;
   }
 }
 
@@ -283,6 +288,11 @@ async function startServer() {
 
         if (msg.type === 'update_data') {
           if (msg.data && typeof msg.data === 'object') {
+            const expectedRevision = Number(msg.expectedRevision);
+            if (Number.isFinite(expectedRevision) && expectedRevision !== (Number(appData.updatedRevision) || 0)) {
+              ws.send(JSON.stringify({ type: 'revision_conflict', data: appData, revision: appData.updatedRevision || 0 }));
+              return;
+            }
             appData = msg.data;
             appData.updatedAt = Date.now();
             appData.updatedBy = msg.clientId || 'remote_client';
@@ -358,6 +368,11 @@ async function startServer() {
         res.status(400).json({ error: 'Payload non valido' });
         return;
       }
+      const expectedRevision = Number(req.body.expectedRevision);
+      if (Number.isFinite(expectedRevision) && expectedRevision !== (Number(appData.updatedRevision) || 0)) {
+        res.status(409).json({ error: 'REVISION_CONFLICT', data: appData, revision: appData.updatedRevision || 0 });
+        return;
+      }
       appData = incoming;
       appData.updatedAt = Date.now();
       appData.updatedBy = req.body.clientId || 'api';
@@ -365,7 +380,10 @@ async function startServer() {
       appData.weeks = appData.weeks || {};
       appData.leaveRequests = appData.leaveRequests || [];
       reconcileAllLeavesWithWeeks(appData.weeks, appData.leaveRequests, appData);
-      saveDatabase();
+      if (!saveDatabase()) {
+        res.status(500).json({ error: 'DATABASE_WRITE_FAILED' });
+        return;
+      }
 
       broadcast({
         type: 'data_updated',
