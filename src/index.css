@@ -895,3 +895,26 @@ body.light-theme .glass-card .text-slate-400 {
     border: none !important;
   }
 }
+
+
+/* =========================================================
+   CONTRASTO MIRATO V3 — casi non coperti dalla palette globale
+   ========================================================= */
+
+/* Colori semantici aggiuntivi usati in badge e dettagli. */
+body:not(.light-theme) :is(.text-cyan-600,.text-cyan-700,.text-cyan-800,.text-cyan-900,.text-lime-600,.text-lime-700,.text-lime-800,.text-lime-900) { color:#a5f3fc !important; }
+body:not(.light-theme) :is(.text-sky-600,.text-sky-700,.text-sky-800,.text-sky-900) { color:#bae6fd !important; }
+body:not(.light-theme) :is(.text-teal-600,.text-teal-700,.text-teal-800,.text-teal-900) { color:#99f6e4 !important; }
+body:not(.light-theme) :is(.text-fuchsia-600,.text-fuchsia-700,.text-fuchsia-800,.text-fuchsia-900,.text-rose-600,.text-rose-700,.text-rose-800,.text-rose-900) { color:#fbcfe8 !important; }
+body.light-theme :is(.text-cyan-200,.text-cyan-300,.text-cyan-400,.text-sky-200,.text-sky-300,.text-sky-400,.text-teal-200,.text-teal-300,.text-teal-400,.text-lime-200,.text-lime-300,.text-lime-400,.text-yellow-200,.text-yellow-300,.text-yellow-400,.text-orange-200,.text-orange-300,.text-orange-400,.text-fuchsia-200,.text-fuchsia-300,.text-fuchsia-400,.text-rose-200,.text-rose-300,.text-rose-400) { color:#334155 !important; }
+
+/* In tema chiaro testo scuro su badge pastello: il bianco è riservato
+   a pulsanti/sfondi saturi, non a chip traslucidi. */
+body.light-theme :is([class*="bg-blue-50"],[class*="bg-blue-100"],[class*="bg-blue-200"],[class*="bg-emerald-50"],[class*="bg-emerald-100"],[class*="bg-emerald-200"],[class*="bg-red-50"],[class*="bg-red-100"],[class*="bg-red-200"],[class*="bg-amber-50"],[class*="bg-amber-100"],[class*="bg-amber-200"],[class*="bg-purple-50"],[class*="bg-purple-100"],[class*="bg-purple-200"],[class*="bg-indigo-50"],[class*="bg-indigo-100"],[class*="bg-indigo-200"]) .text-white,
+body.light-theme :is([class*="bg-blue-50"],[class*="bg-blue-100"],[class*="bg-blue-200"],[class*="bg-emerald-50"],[class*="bg-emerald-100"],[class*="bg-emerald-200"],[class*="bg-red-50"],[class*="bg-red-100"],[class*="bg-red-200"],[class*="bg-amber-50"],[class*="bg-amber-100"],[class*="bg-amber-200"],[class*="bg-purple-50"],[class*="bg-purple-100"],[class*="bg-purple-200"],[class*="bg-indigo-50"],[class*="bg-indigo-100"],[class*="bg-indigo-200"]).text-white {
+ color:#172554 !important;
+}
+
+/* Campi disabilitati: niente opacità automatica che sbiadisce le scritte. */
+body.light-theme :is(input,select,textarea):disabled { color:#475569 !important; -webkit-text-fill-color:#475569 !important; opacity:1 !important; }
+body:not(.light-theme) :is(input,select,textarea):disabled { color:#cbd5e1 !important; -webkit-text-fill-color:#cbd5e1 !important; opacity:1 !important; }
