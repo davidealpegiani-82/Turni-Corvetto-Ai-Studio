@@ -66,7 +66,7 @@ test('Saturday office coverage correctly requires one person, not the weekday op
   assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'office' && f.day === 5), false);
 });
 
-test('policy is derived from the branch rules stored in AppData', () => {
+test('policy uses one-person weekday office closing minimum even with a stale hidden minClose value', () => {
   const configured = {
     ...app,
     rules: {
@@ -82,7 +82,7 @@ test('policy is derived from the branch rules stored in AppData', () => {
   assert.equal(policy.open, '06:30');
   assert.equal(policy.close, '17:30');
   assert.equal(policy.warehouse.openingMinimum, 2);
-  assert.equal(policy.office.closingMinimum, 2);
+  assert.equal(policy.office.closingMinimum, 1);
   assert.equal(policy.saturdayOpen, '07:00');
   assert.equal(policy.saturdayWarehouseMinimum, 1);
   assert.equal(policy.saturdayOfficeMinimum, 1);
@@ -105,8 +105,7 @@ test('real sanitized Corvetto week W44 is checked across the full timetable', ()
   assert.equal(result.checkedSlots, 240);
   assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.day === 5), false);
   const fridayClosing = result.findings.find(f => f.code === 'COVERAGE_GAP' && f.day === 4 && f.area === 'office' && f.time === '17:00');
-  assert.equal(fridayClosing?.expected, 2);
-  assert.equal(fridayClosing?.actual, 1);
+  assert.equal(fridayClosing, undefined, 'un solo addetto presente in chiusura deve soddisfare il minimo feriale');
   const saturdayLoaderAlert = result.findings.find(f => f.code === 'SKILL_COVERAGE_WARNING' && f.day === 5 && f.message.includes('ruspa/pala'));
   assert.equal(saturdayLoaderAlert?.severity, 'warning');
 });
