@@ -360,7 +360,7 @@ export default function App() {
 
   // 2. Generazione Proposta Automatica
   const handleOpenProposal = () => {
-    const prop = generateAutoProposal(appData, currentDate);
+    const prop = generateAutoProposal(appDataRef.current, currentDate);
     setProposal(prop);
   };
 
@@ -372,7 +372,8 @@ export default function App() {
     phase = 'preparazione unione turni';
     const weekKey = proposal.weekKey;
     const weekInfo = getWeekInfo(currentDate);
-    const currentWeek = appData.weeks[weekKey] || {};
+    const latestAppData = appDataRef.current;
+    const currentWeek = latestAppData.weeks[weekKey] || {};
     const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week);
 
     // Applica le celle ancora compatibili anche se nel frattempo alcune sono cambiate:
@@ -394,8 +395,8 @@ export default function App() {
     const monday = new Date(currentDate);
     monday.setHours(12, 0, 0, 0);
     monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
-    const policy = policyFromAppData(appData, localDateKey(monday));
-    const validation = validateWeekV2(appData, merge.week, policy);
+    const policy = policyFromAppData(latestAppData, localDateKey(monday));
+    const validation = validateWeekV2(latestAppData, merge.week, policy);
     const errors = validation.findings.filter(f => f.severity === 'error');
     const emergencyOnlyWarehouse = errors.length > 0 && errors.every(f =>
       f.code === 'COVERAGE_GAP' && f.area === 'warehouse' && f.expected === 2
@@ -482,7 +483,7 @@ export default function App() {
     (proposal.choices || []).forEach(c => {
       if (c.selected) choicesMap[c.id] = c.selected;
     });
-    const nextProp = generateAutoProposal(appData, currentDate, choicesMap);
+    const nextProp = generateAutoProposal(appDataRef.current, currentDate, choicesMap);
     setProposal(nextProp);
     showToast('Ricalcolo Effettuato', 'Scelte applicate al motore di generazione.', 'info');
   };
@@ -494,7 +495,7 @@ export default function App() {
     const prevKey = getWeekKey(prevDate);
     const curKey = getWeekKey(currentDate);
 
-    if (appData.weeks[prevKey]) {
+    if (appDataRef.current.weeks[prevKey]) {
       updateAppDataAuthoritative(
         (prev) => {
           prev.weeks[curKey] = deepClone(prev.weeks[prevKey]);
