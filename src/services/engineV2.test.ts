@@ -104,4 +104,7 @@ test('real sanitized Corvetto week W44 is checked across the full timetable', ()
   const result = validateWeekV2(corvettoW44App, corvettoW44Week, policy);
   assert.equal(result.checkedSlots, 240);
   assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.day === 5), false);
+  const fridayClosing = result.findings.find(f => f.code === 'COVERAGE_GAP' && f.day === 4 && f.area === 'office' && f.time === '17:00');
+  assert.equal(fridayClosing?.expected, 2);
+  assert.equal(fridayClosing?.actual, 1);
 });
