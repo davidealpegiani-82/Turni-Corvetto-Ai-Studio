@@ -36,7 +36,6 @@ import {
   Worker,
   WorkerQualificationsMap,
   WorkerSkillsProfile,
-  AIProposedAction
 } from './types/turni';
 import {
   getWeekInfo,
@@ -56,9 +55,6 @@ import {
 } from './services/socket';
 import {
   registerServiceWorker,
-  getPushSubscription,
-  requestPushSubscription,
-  triggerPushNotification,
   playNotificationChime
 } from './services/push';
 import {
@@ -80,6 +76,8 @@ import {
 
 export default function App() {
   const [appData, setAppData] = useState<AppData>(createDefaultAppData());
+  // Snapshot sincrono autorevole: evita side-effect dentro gli updater React (che possono essere rieseguiti).
+  const appDataRef = useRef<AppData>(appData);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [activeView, setActiveView] = useState<'turni' | 'oggi' | 'ferie' | 'eventi'>('turni');
   const [quickSwapModal, setQuickSwapModal] = useState<{ open: boolean; dayIdx: number }>({ open: false, dayIdx: 0 });
@@ -154,7 +152,6 @@ export default function App() {
   // Stato sincronizzazione e push
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
   const [connectedClients, setConnectedClients] = useState<number>(1);
-  const [pushSubscribed, setPushSubscribed] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
@@ -237,10 +234,7 @@ export default function App() {
 
     // Hosting statico: i dati vengono caricati direttamente da Firebase RTDB.
     // Il Service Worker gestisce installazione PWA e cache offline; il push server-side non è richiesto.
-    registerServiceWorker().then(async () => {
-      const sub = await getPushSubscription();
-      setPushSubscribed(!!sub);
-    });
+    void registerServiceWorker();
 
     // Connessione cloud Firebase REST + streaming SSE (senza server Node/WebSocket).
     void socketManager.connect();
@@ -260,6 +254,7 @@ export default function App() {
           incomingData.workers = enrichWorkerProfiles(incomingData.workers);
         }
         reconcileAllLeavesWithWeeks(incomingData.weeks, incomingData.leaveRequests, incomingData);
+        appDataRef.current = incomingData;
         setAppData(incomingData);
       }
     });
@@ -286,31 +281,6 @@ export default function App() {
     } catch (e) {}
   };
 
-  // Richiesta attivazione notifiche push
-  const handleRequestPush = async () => {
-    const res = await requestPushSubscription();
-    if (res.success) {
-      setPushSubscribed(true);
-      showToast('🔔 Notifiche Push Attivate', 'Riceverai avvisi in tempo reale su questo dispositivo!', 'success');
-      triggerPushNotification({
-        title: 'Turni Corvetto Live',
-        body: 'Dispositivo registrato con successo alle Notifiche Push!'
-      });
-    } else {
-      showToast('Notifiche Push', res.error || 'Verifica i permessi delle notifiche del browser.', 'warn');
-    }
-  };
-
-  const handleSendTestPush = async () => {
-    const success = await triggerPushNotification({
-      title: 'Notifica di Prova — Corvetto Live',
-      body: 'Test di sincronizzazione e notifica push riuscito!'
-    });
-    if (success) {
-      showToast('🔔 Notifica Push Inviata', 'Inviata a tutti i dispositivi registrati.', 'success');
-    }
-  };
-
   // Funzione di aggiornamento centralizzata con broadcast realtime
   const updateAppDataAuthoritative = useCallback((
     updater: (prev: AppData) => AppData,
@@ -318,18 +288,27 @@ export default function App() {
     description: string,
     pushNotif?: { title: string; body: string; url?: string }
   ) => {
-    setAppData((prev) => {
-      const next = updater(deepClone(prev));
-      next.updatedAt = Date.now();
-      next.updatedBy = socketManager.getClientId();
-      next.updatedRevision = (next.updatedRevision || 0) + 1;
+    // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
+    // un updater React, che in StrictMode può essere invocato più di una volta.
+    const next = updater(deepClone(appDataRef.current));
+    next.updatedAt = Date.now();
+    next.updatedBy = socketManager.getClientId();
+    next.updatedRevision = (next.updatedRevision || 0) + 1;
+    appDataRef.current = next;
+    setAppData(next);
 
-      // Broadcast su WebSocket
-      socketManager.sendDataUpdate(next, changeType, description, pushNotif);
-
-      return next;
+    // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
+    // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
+    void socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
+      if (!saved) {
+        showToast(
+          'Sincronizzazione non confermata',
+          'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
+          'warn'
+        );
+      }
     });
-  }, []);
+  }, [showToast]);
 
   // 1. Modifica Cella Turno Singola
   const handleSaveDay = (workerId: string, dayIdx: number, data: DayShift) => {
@@ -466,9 +445,9 @@ export default function App() {
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
-      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : '✨ Proposta applicata e verificata',
-      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi.`,
-      emergencyWarehouseOverride ? 'warn' : 'success'
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata sul dispositivo',
+      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Sincronizzazione cloud in corso.`,
+      emergencyWarehouseOverride ? 'warn' : 'info'
     );
     } catch (error) {
       console.error('[Turni Corvetto] Errore applicazione proposta:', phase, error);
@@ -733,94 +712,6 @@ export default function App() {
   };
 
   // 6. Applicazione Azioni Consigliate dall'AI Copilot
-  const handleApplyAIAction = (action: AIProposedAction) => {
-    if (action.type === 'update_shift' && action.shiftData) {
-      const s = action.shiftData;
-      const targetWeekKey = getWeekKey(currentDate);
-      const workerName = appData.workers.find(w => w.id === s.workerId)?.name || s.workerName || 'collaboratore';
-
-      updateAppDataAuthoritative(
-        (prev) => {
-          if (!prev.weeks[targetWeekKey]) prev.weeks[targetWeekKey] = {};
-          if (!prev.weeks[targetWeekKey][s.workerId]) prev.weeks[targetWeekKey][s.workerId] = {};
-          prev.weeks[targetWeekKey][s.workerId][s.dayIdx] = {
-            mIn: s.mIn || '',
-            mOut: s.mOut || '',
-            pIn: s.pIn || '',
-            pOut: s.pOut || '',
-            status: s.status || 'LAVORO',
-            note: s.note || '',
-            generated: false
-          };
-          return prev;
-        },
-        'ai_update_shift',
-        `Modificato turno per ${workerName} (${s.dayName}) via AI Copilot`,
-        {
-          title: `🤖 Turno Aggiornato da AI`,
-          body: `${workerName}: turno ${s.dayName} aggiornato.`
-        }
-      );
-      showToast('Turno Applicato', `Turno di ${workerName} salvato e sincronizzato in tempo reale.`, 'success');
-    } else if (action.type === 'create_leave' && action.leaveData) {
-      const l = action.leaveData;
-      handleSaveLeave({
-        workerId: l.workerId,
-        tipo: l.tipo,
-        mode: l.mode,
-        day: l.day,
-        fromDay: l.fromDay,
-        toDay: l.toDay,
-        hours: l.hours,
-        fullDay: l.fullDay ?? true,
-        fromTime: l.fromTime,
-        toTime: l.toTime,
-        note: l.note || 'Richiesta creata da AI Copilot',
-        status: 'approvata',
-        syncTurns: true
-      });
-      showToast('Assenza Registrata', `Richiesta ${l.tipo} salvata e applicata ai turni.`, 'success');
-    } else if (action.type === 'create_event' && action.eventData) {
-      const ev = action.eventData;
-      handleSaveEvent({
-        title: ev.title,
-        type: ev.tipo === 'corso' ? 'Corso' : ev.tipo === 'visita' ? 'Visita medica' : ev.tipo === 'chiusura' ? 'Chiusura' : 'Riunione',
-        date: ev.day,
-        allDay: false,
-        fromTime: ev.fromTime,
-        toTime: ev.toTime,
-        location: ev.luogo || 'Filiale Corvetto',
-        notes: ev.note || 'Inserito da AI Copilot',
-        participantIds: ev.partecipanti || [],
-        reminderMinutes: 30
-      });
-      showToast('Impegno Creato', `${ev.title} registrato nel calendario di filiale.`, 'success');
-    } else if (action.type === 'batch_update_shifts' && action.batchShifts) {
-      const targetWeekKey = getWeekKey(currentDate);
-      updateAppDataAuthoritative(
-        (prev) => {
-          if (!prev.weeks[targetWeekKey]) prev.weeks[targetWeekKey] = {};
-          for (const s of action.batchShifts || []) {
-            if (!prev.weeks[targetWeekKey][s.workerId]) prev.weeks[targetWeekKey][s.workerId] = {};
-            prev.weeks[targetWeekKey][s.workerId][s.dayIdx] = {
-              mIn: s.mIn || '',
-              mOut: s.mOut || '',
-              pIn: s.pIn || '',
-              pOut: s.pOut || '',
-              status: s.status || 'LAVORO',
-              note: s.note || '',
-              generated: false
-            };
-          }
-          return prev;
-        },
-        'ai_batch_update',
-        action.description || 'Turni multipli aggiornati da AI Copilot'
-      );
-      showToast('Modifiche Multiple Applicate', 'Tutti i turni proposti sono stati salvati.', 'success');
-    }
-  };
-
   // 6. Esportazioni PDF e ICS
   const handleExportWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
@@ -1515,10 +1406,7 @@ export default function App() {
       <NotificationCenterModal
         isOpen={notificationsModalOpen}
         onClose={() => setNotificationsModalOpen(false)}
-        pushSubscribed={pushSubscribed}
-        onRequestPush={handleRequestPush}
-        onSendTestPush={handleSendTestPush}
-        connectedClients={connectedClients}
+        socketStatus={socketStatus}
       />
 
       {/* Modale Anteprima Facsimile Ufficiale (Zero blocchi di Chrome) */}
@@ -1637,7 +1525,6 @@ export default function App() {
         appData={appData}
         weekKey={getWeekKey(currentDate)}
         currentDate={currentDate}
-        onApplyAction={handleApplyAIAction}
       />
 
       {/* Modale Rinomina Filiale / Titolo App (Zero blocchi di Chrome) */}
