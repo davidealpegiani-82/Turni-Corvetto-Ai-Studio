@@ -14,6 +14,8 @@ export interface CoveragePolicy {
   office: { minimum: number; openingMinimum?: number; openingUntil?: string; closingMinimum?: number };
   slotMinutes?: number;
   minimumRestMinutes?: number;
+  weekStartDate?: string;
+  checkSkillsAtOpening?: boolean;
 }
 
 export interface ValidationFinding {
@@ -61,7 +63,7 @@ export const DEFAULT_CORVETTO_POLICY: CoveragePolicy = {
 
 
 /** Builds the validator policy from the live app configuration, with safe Corvetto defaults. */
-export function policyFromAppData(appData: AppData): CoveragePolicy {
+export function policyFromAppData(appData: AppData, weekStartDate?: string): CoveragePolicy {
   const rules = appData.rules as unknown as Record<string, any>;
   const branchHours = rules?.branchHours || {};
   const weekday = branchHours.monFri || {};
@@ -91,7 +93,9 @@ export function policyFromAppData(appData: AppData): CoveragePolicy {
       closingMinimum: positive(officeCoverage.minClose, 1)
     },
     slotMinutes: 30,
-    minimumRestMinutes: positive(rules?.minimumRestMinutes, 660)
+    minimumRestMinutes: positive(rules?.minimumRestMinutes, 660),
+    weekStartDate,
+    checkSkillsAtOpening: true
   };
 }
 
@@ -143,6 +147,20 @@ function workerInArea(worker: Worker, area: CoverageArea): boolean {
   return worker.brain?.office === true || worker.group === 'EDILE' || worker.group === 'MANAGER';
 }
 
+
+function isoDatePlusDays(start: string, days: number): string {
+  const date = new Date(`${start}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return start;
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function hasValidQualification(worker: Worker, key: 'forklift' | 'loader' | 'firstAid' | 'fireSafety', date?: string): boolean {
+  const qualification = worker.profile?.qualifications?.[key];
+  if (qualification?.status !== 'valid') return false;
+  return !qualification.expiry || !date || qualification.expiry >= date;
+}
+
 /** Independent validator: checks every configured time slice, not just opening/closing snapshots. */
 export function validateWeekV2(
   appData: AppData,
@@ -159,6 +177,52 @@ export function validateWeekV2(
     const open = toMinutes(isSaturday ? policy.saturdayOpen || '07:00' : policy.open) ?? 390;
     const close = toMinutes(isSaturday ? policy.saturdayClose || '12:00' : policy.close) ?? 1050;
     if (close <= open) continue;
+
+
+    if (policy.checkSkillsAtOpening) {
+      const openingEnd = Math.min(open + slot, close);
+      const warehouseAtOpen = appData.workers.filter(w =>
+        w.selected !== false && workerInArea(w, 'warehouse') && covers(week[w.id]?.[day], open, openingEnd)
+      );
+      const branchAtOpen = appData.workers.filter(w =>
+        w.selected !== false &&
+        (workerInArea(w, 'warehouse') || workerInArea(w, 'office')) &&
+        covers(week[w.id]?.[day], open, openingEnd)
+      );
+      const checkSkill = (key: 'forklift' | 'loader', label: string) => {
+        const qualified = warehouseAtOpen.filter(w => hasValidQualification(w, key, policy.weekStartDate ? isoDatePlusDays(policy.weekStartDate, day) : undefined));
+        if (qualified.length === 0) {
+          findings.push({
+            id: `skill-${day}-${key}`,
+            severity: 'warning',
+            code: 'SKILL_COVERAGE_WARNING',
+            day,
+            area: 'warehouse',
+            time: isSaturday ? (policy.saturdayOpen || '07:00') : policy.open,
+            expected: 1,
+            actual: 0,
+            message: `${DAY_NAMES[day]}: nessun addetto magazzino presente in apertura con abilitazione ${label} valida.`
+          });
+        }
+      };
+      checkSkill('forklift', 'muletto');
+      checkSkill('loader', 'ruspa/pala');
+      for (const key of ['firstAid', 'fireSafety'] as const) {
+        const qualified = branchAtOpen.some(w => hasValidQualification(w, key, policy.weekStartDate ? isoDatePlusDays(policy.weekStartDate, day) : undefined));
+        if (!qualified) {
+          findings.push({
+            id: `safety-${day}-${key}`,
+            severity: 'warning',
+            code: 'SAFETY_COVERAGE_WARNING',
+            day,
+            time: isSaturday ? (policy.saturdayOpen || '07:00') : policy.open,
+            expected: 1,
+            actual: 0,
+            message: `${DAY_NAMES[day]}: nessun addetto presente in apertura con abilitazione ${key === 'firstAid' ? 'primo soccorso' : 'antincendio'} valida.`
+          });
+        }
+      }
+    }
 
     for (const area of ['warehouse', 'office'] as const) {
       const areaPolicy = policy[area];
