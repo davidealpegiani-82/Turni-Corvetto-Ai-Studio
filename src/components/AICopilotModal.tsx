@@ -8,16 +8,10 @@ import {
   ShieldCheck,
   AlertTriangle,
   AlertOctagon,
-  Check,
-  Clock,
-  Calendar,
-  Umbrella,
-  Briefcase,
   ChevronRight,
   RotateCcw,
   Maximize2,
   Minimize2,
-  HelpCircle
 } from 'lucide-react';
 import {
   AIChatMessage,
@@ -141,7 +135,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
         });
         reply = `Monte ore conteggiato sui turni e sulle causali registrate per la settimana ${weekInfo.weekNo}:\n\n${rows.join('\n')}\n\nPer interpretare scostamenti e causali, considera le regole contrattuali configurate nella filiale.`;
       } else {
-        reply = 'Questa versione è progettata per funzionare senza abbonamenti né server a pagamento. Il Copilot AI generativo in linguaggio naturale richiede un servizio esterno e una chiave API personale, quindi non invia dati aziendali a servizi terzi.\n\nPosso però eseguire qui controlli locali su coperture, qualifiche, riposi, turni del sabato e monte ore. Per modificare un turno usa la cella o il generatore di proposte: le modifiche restano soggette alla validazione.';
+        reply = 'Non sono un modello generativo: eseguo controlli deterministici sui dati presenti nell’app, senza inviare informazioni aziendali a servizi esterni.\n\nPosso però eseguire qui controlli locali su coperture, qualifiche, riposi, turni del sabato e monte ore. Per modificare un turno usa la cella o il generatore di proposte: le modifiche restano soggette alla validazione.';
       }
 
       const botMsg: AIChatMessage = {
@@ -174,7 +168,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
       {
         id: `welcome_${Date.now()}`,
         sender: 'assistant',
-        text: `Conversazione reimpostata. Sono pronto ad aiutarti per la **Settimana ${weekInfo.weekNo}** (${weekInfo.label}). Di cosa hai bisogno?`,
+        text: `Conversazione reimpostata. Sono pronto per i controlli locali della **Settimana ${weekInfo.weekNo}** (${weekInfo.label}). Di cosa hai bisogno?`,
         timestamp: Date.now(),
         quickFollowUps: [
           'Verifica conformità settimana',
@@ -196,7 +190,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
         <div className="p-4 bg-gradient-to-r from-purple-700 via-indigo-700 to-blue-700 text-white flex items-center justify-between shadow-md shrink-0">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-xl shadow-inner shrink-0">
-              🤖
+              🧭
             </div>
             <div>
               <div className="flex items-center gap-2">
