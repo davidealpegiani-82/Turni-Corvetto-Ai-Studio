@@ -11,8 +11,8 @@ import { AppData, PushSubscriptionRecord } from './src/types/turni';
 import { handleAICopilot } from './src/services/aiCopilotServer';
 import { reconcileAllLeavesWithWeeks } from './src/services/engine';
 
-const PORT = 3000;
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const PORT = Number(process.env.PORT) || 3000;
+const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(process.cwd(), 'data'));
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 const VAPID_FILE = path.join(DATA_DIR, 'vapid.json');
 const SUBS_FILE = path.join(DATA_DIR, 'push_subscriptions.json');
@@ -243,6 +243,11 @@ async function startServer() {
   const server = http.createServer(app);
 
   app.use(express.json({ limit: '20mb' }));
+
+  // Health check usato dal provider per verificare che API e server siano attivi.
+  app.get('/api/health', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', service: 'turni-corvetto', revision: appData.updatedRevision || 0, timestamp: Date.now() });
+  });
 
   // WebSocket Server per Sincronizzazione in Tempo Reale
   const wss = new WebSocketServer({ server, path: '/ws' });
