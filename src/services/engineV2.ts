@@ -170,9 +170,12 @@ export function validateWeekV2(
         const openingUntil = toMinutes(areaPolicy.openingUntil || (isSaturday ? '07:00' : '08:30')) ?? open;
         let required = areaPolicy.minimum;
         // Il sabato è previsto un solo addetto ufficio; il minimo feriale non va trascinato al sabato.
-        if (isSaturday) required = area === 'office' ? (policy.saturdayOfficeMinimum ?? 1) : (policy.saturdayWarehouseMinimum ?? areaPolicy.minimum);
-        else if (start < openingUntil) required = Math.max(required, areaPolicy.openingMinimum ?? areaPolicy.minimum);
-        if (end >= close) required = areaPolicy.closingMinimum ?? areaPolicy.minimum;
+        if (isSaturday) {
+          required = area === 'office' ? (policy.saturdayOfficeMinimum ?? 1) : (policy.saturdayWarehouseMinimum ?? areaPolicy.minimum);
+        } else {
+          if (start < openingUntil) required = Math.max(required, areaPolicy.openingMinimum ?? areaPolicy.minimum);
+          if (end >= close) required = areaPolicy.closingMinimum ?? areaPolicy.minimum;
+        }
         if (present.length < required) {
           coverageGaps++;
           const time = `${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`;
