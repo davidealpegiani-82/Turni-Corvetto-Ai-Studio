@@ -114,6 +114,8 @@ async function syncToFirebase(data: AppData) {
     });
     if (res.ok) {
       console.log('[Firebase RTDB] Cloud sincronizzato con successo.');
+    } else {
+      console.warn(`[Firebase RTDB] Scrittura rifiutata: HTTP ${res.status}`);
     }
   } catch (err) {
     console.warn('[Firebase RTDB] Errore sync cloud:', err);
@@ -293,6 +295,7 @@ async function startServer() {
               ws.send(JSON.stringify({ type: 'revision_conflict', data: appData, revision: appData.updatedRevision || 0 }));
               return;
             }
+            const previousAppData = appData;
             appData = msg.data;
             appData.updatedAt = Date.now();
             appData.updatedBy = msg.clientId || 'remote_client';
@@ -301,7 +304,11 @@ async function startServer() {
             appData.leaveRequests = appData.leaveRequests || [];
             reconcileAllLeavesWithWeeks(appData.weeks, appData.leaveRequests, appData);
 
-            saveDatabase();
+            if (!saveDatabase()) {
+              appData = previousAppData;
+              ws.send(JSON.stringify({ type: 'revision_conflict', data: appData, revision: appData.updatedRevision || 0 }));
+              return;
+            }
 
             // Broadcast istantaneo a tutti gli altri client
             broadcast({
@@ -373,6 +380,7 @@ async function startServer() {
         res.status(409).json({ error: 'REVISION_CONFLICT', data: appData, revision: appData.updatedRevision || 0 });
         return;
       }
+      const previousAppData = appData;
       appData = incoming;
       appData.updatedAt = Date.now();
       appData.updatedBy = req.body.clientId || 'api';
@@ -381,6 +389,7 @@ async function startServer() {
       appData.leaveRequests = appData.leaveRequests || [];
       reconcileAllLeavesWithWeeks(appData.weeks, appData.leaveRequests, appData);
       if (!saveDatabase()) {
+        appData = previousAppData;
         res.status(500).json({ error: 'DATABASE_WRITE_FAILED' });
         return;
       }
