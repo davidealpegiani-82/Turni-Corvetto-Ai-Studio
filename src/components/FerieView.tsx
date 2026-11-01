@@ -7,10 +7,12 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Thermometer
+  Thermometer,
+  ChevronDown
 } from 'lucide-react';
 import { AppData, LeaveRequest } from '../types/turni';
 import { localDateKey, calculateAbsenceWorkingHours, getWorkerNastroForDate } from '../services/engine';
+import { getItalianHoliday } from '../services/holidays';
 
 interface FerieViewProps {
   appData: AppData;
@@ -40,6 +42,7 @@ export const FerieView: React.FC<FerieViewProps> = ({
   const [calMode, setCalMode] = useState<'year' | 'month'>('month');
   const [workerFilter, setWorkerFilter] = useState<string>('');
   const [showArchive, setShowArchive] = useState<boolean>(false);
+  const [showLeaveBalances, setShowLeaveBalances] = useState<boolean>(false);
 
   const months = [
     'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
@@ -76,7 +79,7 @@ export const FerieView: React.FC<FerieViewProps> = ({
 
   // Mappa delle assenze per il calendario
   function getLeaveMapForCalendar(year: number) {
-    const map: Record<string, Array<{ reqId: string; workerName: string; tipo: string; status: string }>> = {};
+    const map: Record<string, Array<{ reqId: string; workerName: string; tipo: string; status: string; isEvent?: boolean }>> = {};
 
     (appData.leaveRequests || []).forEach((req) => {
       if (req.status === 'rifiutata') return;
@@ -100,6 +103,21 @@ export const FerieView: React.FC<FerieViewProps> = ({
           cur.setDate(cur.getDate() + 1);
         }
       }
+    });
+
+    // Impegni aziendali e corsi: visibili nel calendario insieme alle assenze.
+    (appData.events || []).forEach((event) => {
+      if (!event.date || new Date(event.date + 'T12:00:00').getFullYear() !== year) return;
+      if (workerFilter && event.participantIds?.length && !event.participantIds.includes(workerFilter) && event.participantIds.length !== appData.workers.length) return;
+      const key = event.date;
+      if (!map[key]) map[key] = [];
+      map[key].push({
+        reqId: event.id,
+        workerName: event.title,
+        tipo: event.type || 'Impegno',
+        status: 'evento',
+        isEvent: true
+      });
     });
 
     return map;
@@ -226,41 +244,57 @@ export const FerieView: React.FC<FerieViewProps> = ({
         </div>
       </div>
 
-      {/* Schede Residui Ferie */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
-        {filteredWorkers.map((w) => {
-          const used = countWorkerLeaveDays(w.id, selectedYear);
-          const spettanti = appData.leaveBalances?.[w.id]?.[selectedYear]?.spettanti ?? 26;
-          const residuo = spettanti - used;
-
-          return (
-            <div
-              key={w.id}
-              className="p-3.5 rounded-3xl glass-card border border-white/10 shadow-lg flex flex-col justify-between backdrop-blur-md transition-all hover:border-blue-400/30"
-            >
-              <div>
-                <div className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{w.name}</div>
-                <div className="flex items-baseline gap-1.5 mt-1.5">
-                  <span className={`text-2xl font-black tabular-nums ${residuo < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                    {residuo}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-bold">giorni residui</span>
-                </div>
-                <div className="text-[10px] text-slate-400 font-semibold mt-1 tabular-nums">
-                  Spettanti: {spettanti} · Usati: {used}
-                </div>
-              </div>
-
-              <button
-                onClick={() => onEditSpettanti(w.id, selectedYear)}
-                className="mt-3 text-[10px] text-blue-400 hover:text-blue-300 font-bold text-left cursor-pointer transition"
-              >
-                Modifica spettanti
-              </button>
-            </div>
-          );
-        })}
+      {/* Residui ferie: nascosti per non appesantire la vista iniziale */}
+      <div className="flex items-center justify-between gap-3 p-3 rounded-2xl glass-panel">
+        <div>
+          <div className="text-xs font-extrabold text-slate-800 dark:text-slate-100">Residui ferie</div>
+          <div className="text-[10px] text-slate-500 dark:text-slate-400">Riepilogo giorni spettanti e già utilizzati per {selectedYear}</div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowLeaveBalances(value => !value)}
+          aria-expanded={showLeaveBalances}
+          className="px-3 py-2 rounded-xl glass-btn-ghost text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+        >
+          {showLeaveBalances ? 'Nascondi giorni residui' : 'Mostra giorni residui'}
+          <ChevronDown className={`w-4 h-4 transition-transform ${showLeaveBalances ? 'rotate-180' : ''}`} />
+        </button>
       </div>
+      {showLeaveBalances && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+          {filteredWorkers.map((w) => {
+            const used = countWorkerLeaveDays(w.id, selectedYear);
+            const spettanti = appData.leaveBalances?.[w.id]?.[selectedYear]?.spettanti ?? 26;
+            const residuo = spettanti - used;
+
+            return (
+              <div
+                key={w.id}
+                className="p-3.5 rounded-3xl glass-card border border-white/10 shadow-lg flex flex-col justify-between backdrop-blur-md transition-all hover:border-blue-400/30"
+              >
+                <div>
+                  <div className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{w.name}</div>
+                  <div className="flex items-baseline gap-1.5 mt-1.5">
+                    <span className={`text-2xl font-black tabular-nums ${residuo < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {residuo}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-bold">giorni residui</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-semibold mt-1 tabular-nums">
+                    Spettanti: {spettanti} · Usati: {used}
+                  </div>
+                </div>
+                <button
+                  onClick={() => onEditSpettanti(w.id, selectedYear)}
+                  className="mt-3 text-[10px] text-blue-400 hover:text-blue-300 font-bold text-left cursor-pointer transition"
+                >
+                  Modifica spettanti
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Calendario Visivo Ferie */}
       <div className={`grid gap-4 ${calMode === 'month' ? 'grid-cols-1 max-w-xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
@@ -301,14 +335,17 @@ export const FerieView: React.FC<FerieViewProps> = ({
                   const curDate = new Date(selectedYear, mIdx, dayNum);
                   const dateStr = localDateKey(curDate);
                   const entries = leaveMap[dateStr] || [];
+                  const holiday = getItalianHoliday(curDate);
                   const isToday = dateStr === todayStr;
 
                   return (
                     <div
                       key={dayNum}
-                      className={`h-9 rounded-xl p-0.5 flex flex-col items-center justify-start transition ${
+                      className={`h-12 rounded-xl p-0.5 flex flex-col items-center justify-start transition ${
                         isToday
                           ? 'glass-tile ring-2 ring-blue-500 bg-blue-500/20 font-bold'
+                          : holiday
+                          ? 'glass-tile bg-amber-500/15 border border-amber-500/30'
                           : entries.length > 0
                           ? 'glass-tile bg-blue-500/10'
                           : 'glass-tile opacity-85 hover:opacity-100'
@@ -318,34 +355,29 @@ export const FerieView: React.FC<FerieViewProps> = ({
                         {dayNum}
                       </span>
 
-                      {/* Chips delle assenze */}
+                      {/* Festività, assenze e impegni */}
                       <div className="flex flex-col gap-0.5 w-full mt-0.5 overflow-hidden">
-                        {entries.slice(0, 2).map((en, idx) => (
+                        {holiday && (
+                          <span className="text-[7px] leading-tight font-black px-1 rounded truncate bg-amber-500/90 text-slate-950" title={holiday.name}>
+                            {holiday.name}
+                          </span>
+                        )}
+                        {entries.slice(0, holiday ? 1 : 2).map((en, idx) => (
                           <div
                             key={idx}
                             onClick={() => {
-                              if (en.tipo === 'Malattia' || en.tipo === 'Ricovero') {
-                                onOpenMalattiaModal(en.reqId);
-                              } else {
-                                onOpenLeaveModal(en.reqId);
-                              }
+                              if (en.isEvent) return;
+                              if (en.tipo === 'Malattia' || en.tipo === 'Ricovero') onOpenMalattiaModal(en.reqId);
+                              else onOpenLeaveModal(en.reqId);
                             }}
-                            className={`text-[8px] font-black px-1 rounded truncate text-white cursor-pointer shadow-sm ${
-                              en.tipo === 'Ferie'
-                                ? 'bg-emerald-500/90 hover:bg-emerald-500'
-                                : en.tipo === 'Malattia' || en.tipo === 'Ricovero'
-                                ? 'bg-red-500/90 hover:bg-red-500'
-                                : en.status === 'richiesta'
-                                ? 'bg-amber-500/90 hover:bg-amber-500'
-                                : 'bg-purple-500/90 hover:bg-purple-500'
-                            }`}
-                            title={`${en.workerName} — ${en.tipo} (${en.status})`}
+                            className={`text-[7px] leading-tight font-black px-1 rounded truncate text-white shadow-sm ${en.isEvent ? 'bg-indigo-500/90' : en.tipo === 'Ferie' ? 'bg-emerald-500/90 cursor-pointer' : en.tipo === 'Malattia' || en.tipo === 'Ricovero' ? 'bg-red-500/90 cursor-pointer' : en.status === 'richiesta' ? 'bg-amber-500/90 cursor-pointer' : 'bg-purple-500/90 cursor-pointer'}`}
+                            title={en.isEvent ? `Impegno: ${en.workerName}` : `${en.workerName} — ${en.tipo} (${en.status})`}
                           >
-                            {en.workerName}
+                            {en.isEvent ? en.workerName : `${en.workerName} · ${en.tipo}`}
                           </div>
                         ))}
-                        {entries.length > 2 && (
-                          <span className="text-[7px] text-slate-500 dark:text-slate-400 font-bold">+{entries.length - 2}</span>
+                        {entries.length > (holiday ? 1 : 2) && (
+                          <span className="text-[7px] text-slate-500 dark:text-slate-400 font-bold">+{entries.length - (holiday ? 1 : 2)}</span>
                         )}
                       </div>
                     </div>
