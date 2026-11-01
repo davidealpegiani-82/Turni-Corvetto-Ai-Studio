@@ -810,7 +810,7 @@ export function getCellDisplayDetails(
 
   // CASO A: Permesso Parziale (con orari lavorati e/o intervallo permesso esplicito)
   if (hasPartialSignals && (hasDirectWorkedHours || isExplicitPartial || hasCellLeaveTimes)) {
-    const leaveLabel = lt || (['ROL', 'PERMESSO'].includes(st) ? st : '') || leaveReq?.tipo || 'Permesso';
+    const leaveLabel = leaveReq?.tipo || lt || (['ROL', 'PERMESSO'].includes(st) ? st : '') || 'Permesso';
 
     let leaveFrom = cell.leaveFromTime || (isExplicitPartial ? leaveReq?.fromTime : '') || '';
     let leaveTo = cell.leaveToTime || (isExplicitPartial ? leaveReq?.toTime : '') || '';
@@ -865,7 +865,7 @@ export function getCellDisplayDetails(
       workedTimes: '',
       workedHours: 0,
       totalCountableHours,
-      leaveLabel: lt || cell.leaveType || cell.status || 'Ferie',
+      leaveLabel: leaveReq?.tipo || lt || cell.leaveType || cell.status || 'Ferie',
       leaveHours: totalCountableHours,
       leaveTimeRange: ''
     };
