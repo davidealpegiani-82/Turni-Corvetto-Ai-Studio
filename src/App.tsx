@@ -153,7 +153,6 @@ export default function App() {
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
   const [connectedClients, setConnectedClients] = useState<number>(1);
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
-  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   // Modali
   const [proposal, setProposal] = useState<GeneratedProposal | null>(null);
@@ -261,7 +260,6 @@ export default function App() {
 
     const unsubNotif = socketManager.onRemoteNotification((title, body) => {
       showToast(title, body, 'info');
-      setUnreadCount(c => c + 1);
     });
 
     return () => {
@@ -1107,10 +1105,6 @@ export default function App() {
         activeView={activeView}
         setActiveView={setActiveView}
         socketStatus={socketStatus}
-        connectedClients={connectedClients}
-        pushSubscribed={pushSubscribed}
-        onRequestPush={handleRequestPush}
-        onSendTestPush={handleSendTestPush}
         theme={theme}
         onToggleTheme={handleToggleTheme}
         onGenerateProposal={handleOpenProposal}
@@ -1121,7 +1115,6 @@ export default function App() {
         onOpenHelpGuide={() => setHelpGuideOpen(true)}
         onOpenNotifications={() => { setNotificationsModalOpen(true); setUnreadCount(0); }}
         onOpenAtmosphere={() => setAtmosphereModalOpen(true)}
-        unreadCount={unreadCount}
         weekNumber={weekInfo.weekNo}
       />
 
@@ -1386,7 +1379,6 @@ export default function App() {
         onClose={() => setDiagnosticsModalOpen(false)}
         appData={appData}
         socketStatus={socketStatus}
-        connectedClients={connectedClients}
       />
 
       <HelpGuideModal
@@ -1501,16 +1493,16 @@ export default function App() {
         </div>
       )}
 
-      {/* Floating Action Button AI Copilot per accesso immediato su tutti i dispositivi */}
+      {/* Accesso rapido ai controlli locali */}
       <button
         type="button"
         onClick={() => setAiCopilotOpen(true)}
         className="fixed bottom-6 right-6 z-40 p-3 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-xl shadow-purple-600/35 flex items-center gap-2.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-white dark:ring-slate-900 group"
-        title="Apri l'Assistente AI Copilot per modificare turni, ferie e verificare conformità"
+        title="Apri l'assistente locale per controlli su turni e coperture"
       >
         <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🤖</span>
         <div className="text-left hidden sm:block">
-          <div className="font-extrabold text-xs leading-tight tracking-wide">AI Copilot</div>
+          <div className="font-extrabold text-xs leading-tight tracking-wide">Assistente</div>
           <div className="text-[10px] text-purple-200">Turni & Verifiche</div>
         </div>
         <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider">
@@ -1518,7 +1510,7 @@ export default function App() {
         </span>
       </button>
 
-      {/* Modale AI Copilot Interattivo */}
+      {/* Assistente locale per controlli operativi */}
       <AICopilotModal
         open={aiCopilotOpen}
         onClose={() => setAiCopilotOpen(false)}
