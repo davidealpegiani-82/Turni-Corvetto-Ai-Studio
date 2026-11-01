@@ -156,6 +156,7 @@ export default function App() {
 
   // Modali
   const [proposal, setProposal] = useState<GeneratedProposal | null>(null);
+  const [proposalApplyFeedback, setProposalApplyFeedback] = useState<{ status: 'applying' | 'blocked' | 'sync-error'; message: string } | null>(null);
   const [dayModal, setDayModal] = useState<{ open: boolean; workerId: string | null; dayIdx: number | null; dateObj: Date | null }>({
     open: false, workerId: null, dayIdx: null, dateObj: null
   });
@@ -361,14 +362,19 @@ export default function App() {
   // 2. Generazione Proposta Automatica
   const handleOpenProposal = () => {
     const prop = generateAutoProposal(appDataRef.current, currentDate);
+    setProposalApplyFeedback(null);
     setProposal(prop);
   };
 
-  const handleApplyProposal = (emergencyWarehouseOverride = false) => {
+  const handleApplyProposal = async (emergencyWarehouseOverride = false) => {
     let phase = 'inizializzazione';
     try {
+    if (!proposal) {
+      setProposalApplyFeedback({ status: 'blocked', message: 'Non trovo più la proposta da applicare. Chiudi il report e generane una nuova.' });
+      return;
+    }
+    setProposalApplyFeedback({ status: 'applying', message: 'Sto verificando le coperture e applicando i turni. Attendi la conferma del salvataggio.' });
     showToast('Applicazione proposta', 'Controllo le modifiche e le coperture prima del salvataggio…', 'info');
-    if (!proposal) return;
     phase = 'preparazione unione turni';
     const weekKey = proposal.weekKey;
     const weekInfo = getWeekInfo(currentDate);
@@ -381,11 +387,13 @@ export default function App() {
     // Evitiamo di scartare l'intera proposta per un conflitto limitato a poche celle.
     if (merge.appliedCells === 0) {
       const preserved = merge.preservedCells.length;
+      const noChangesMessage = preserved
+        ? `La proposta non contiene nuove celle applicabili. Ho preservato ${preserved} celle modificate manualmente o da un altro dispositivo. Rigenera la proposta per riallinearla.`
+        : 'La proposta coincide già con i turni presenti. Non ci sono modifiche da salvare.';
+      setProposalApplyFeedback({ status: 'blocked', message: noChangesMessage });
       showToast(
         'Nessuna modifica applicabile',
-        preserved
-          ? `La proposta non contiene nuove celle applicabili. Ho preservato ${preserved} celle modificate manualmente o da un altro dispositivo. Rigenera la proposta per riallinearla.`
-          : 'La proposta coincide già con i turni presenti. Non ci sono modifiche da salvare.',
+        noChangesMessage,
         'warn'
       );
       return;
@@ -404,17 +412,20 @@ export default function App() {
 
     if (errors.length && !(emergencyWarehouseOverride && emergencyOnlyWarehouse)) {
       if (emergencyOnlyWarehouse) {
+        const detail = `La proposta presenta ${errors.length} fascia/e con meno di 2 magazzinieri. Puoi applicarla solo come deroga di emergenza; la carenza resterà evidenziata e dovrà essere gestita operativamente. Vuoi procedere?`;
+        setProposalApplyFeedback({ status: 'blocked', message: detail });
         setConfirmModal({
           open: true,
           title: 'Copertura magazzino sotto il minimo',
-          message: `La proposta presenta ${errors.length} fascia/e con meno di 2 magazzinieri. Puoi applicarla solo come deroga di emergenza; la carenza resterà evidenziata e dovrà essere gestita operativamente. Vuoi procedere?`,
+          message: detail,
           confirmText: 'Applica in emergenza',
           isDanger: true,
           onConfirm: () => handleApplyProposal(true)
         });
       } else {
-        const detail = errors.slice(0, 5).map(f => f.message).join('\n');
-        showToast('Proposta non applicabile', detail || `Rilevate ${errors.length} violazioni bloccanti.`, 'warn');
+        const detail = errors.slice(0, 5).map(f => f.message).join('\n') || `Rilevate ${errors.length} violazioni bloccanti.`;
+        setProposalApplyFeedback({ status: 'blocked', message: `La proposta è stata bloccata dai controlli: ${detail}` });
+        showToast('Proposta non applicabile', detail, 'warn');
       }
       return;
     }
@@ -449,20 +460,34 @@ export default function App() {
         body: `È stata pubblicata la nuova programmazione dei turni per ${weekInfo.label}.`
       }
     );
-    if (!savePromise) return;
+    if (!savePromise) {
+      setProposalApplyFeedback({ status: 'blocked', message: 'Non è stato possibile preparare il salvataggio locale. La proposta è rimasta aperta e non è stata confermata.' });
+      return;
+    }
+
+    phase = 'conferma salvataggio cloud';
+    const cloudSaved = await savePromise;
+    if (!cloudSaved) {
+      setProposalApplyFeedback({ status: 'sync-error', message: 'I turni sono stati aggiornati su questo dispositivo, ma Firebase non ha confermato il salvataggio: gli altri dispositivi potrebbero non vedere le modifiche. Non posso dichiarare completata la sincronizzazione. Controlla la connessione e aggiorna i dati.' });
+      showToast('Salvataggio cloud non confermato', 'La proposta non ha ricevuto conferma da Firebase. Verifica la connessione e aggiorna i dati.', 'warn');
+      return;
+    }
 
     phase = 'completamento';
+    setProposalApplyFeedback(null);
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
-      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata sul dispositivo',
-      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Sincronizzazione cloud in corso.`,
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata e sincronizzata',
+      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Turni salvati e sincronizzati su Firebase.`,
       emergencyWarehouseOverride ? 'warn' : 'info'
     );
     } catch (error) {
       console.error('[Turni Corvetto] Errore applicazione proposta:', phase, error);
       const detail = error instanceof Error ? error.message : String(error);
-      showToast('Errore durante l’applicazione', `Operazione interrotta nella fase: ${phase}. Dettaglio: ${detail || 'errore non specificato'}`, 'warn');
+      const message = `Operazione interrotta nella fase: ${phase}. Dettaglio: ${detail || 'errore non specificato'}`;
+      setProposalApplyFeedback({ status: 'blocked', message });
+      showToast('Errore durante l’applicazione', message, 'warn');
     }
   };
 
@@ -1258,7 +1283,9 @@ export default function App() {
       {/* Modali e Dialoghi */}
       <ProposalModal
         proposal={proposal}
-        onClose={() => setProposal(null)}
+        isApplying={proposalApplyFeedback?.status === 'applying'}
+        applyFeedback={proposalApplyFeedback}
+        onClose={() => { setProposal(null); setProposalApplyFeedback(null); }}
         onApply={handleApplyProposal}
         onSelectChoice={handleSelectChoice}
         onRecalculate={handleRecalculateProposal}

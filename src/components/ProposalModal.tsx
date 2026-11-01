@@ -6,6 +6,8 @@ interface ProposalModalProps {
   proposal: GeneratedProposal | null;
   onClose: () => void;
   onApply: () => void;
+  isApplying?: boolean;
+  applyFeedback?: { status: 'applying' | 'blocked' | 'sync-error'; message: string } | null;
   onSelectChoice: (choiceId: string, optionId: string) => void;
   onRecalculate: () => void;
 }
@@ -14,6 +16,8 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({
   proposal,
   onClose,
   onApply,
+  isApplying = false,
+  applyFeedback = null,
   onSelectChoice,
   onRecalculate
 }) => {
@@ -300,6 +304,20 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({
           )}
         </div>
 
+        {/* Feedback esplicito: il click non deve mai sembrare ignorato */}
+        {applyFeedback && (
+          <div role="status" aria-live="polite" className={`mt-3 rounded-xl border p-3 text-xs leading-relaxed ${
+            applyFeedback.status === 'applying'
+              ? 'border-blue-500/40 bg-blue-500/10 text-blue-200'
+              : applyFeedback.status === 'sync-error'
+              ? 'border-amber-500/50 bg-amber-500/10 text-amber-200'
+              : 'border-red-500/40 bg-red-500/10 text-red-200'
+          }`}>
+            <strong className="block mb-1">{applyFeedback.status === 'applying' ? 'Applicazione in corso' : applyFeedback.status === 'sync-error' ? 'Sincronizzazione non confermata' : 'Operazione non completata'}</strong>
+            {applyFeedback.message}
+          </div>
+        )}
+
         {/* Azioni Modale */}
         <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
           <button
@@ -313,10 +331,11 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({
           <button
             type="button"
             onClick={onApply}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition active:scale-95"
+            disabled={isApplying || applyFeedback?.status === 'sync-error'}
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition active:scale-95"
           >
-            <Check className="w-4 h-4" />
-            <span>Conferma & Applica Proposta</span>
+            {isApplying ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            <span>{isApplying ? 'Applicazione in corso…' : applyFeedback?.status === 'sync-error' ? 'Salvataggio da verificare' : 'Conferma & Applica Proposta'}</span>
           </button>
         </div>
       </div>
