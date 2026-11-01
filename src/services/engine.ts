@@ -1688,6 +1688,52 @@ export function generateAutoProposal(
     }
   }
 
+  // 5b. COPERTURA PAUSA PRANZO UFFICIO (12:30-13:00)
+  // Se la rotazione e le assenze lasciano il banco senza nessuno in questa fascia,
+  // sposta la pausa di un turno generato dalle 12:00-13:00 alle 13:00-14:00.
+  // La durata lavorata resta identica e le celle manuali/eventi fuori sede sono protette.
+  const officeMiddayIds = [...rules.sabatoUfficioIds, rules.severinId];
+  for (let day = 0; day <= 4; day++) {
+    if (holidaysInWeek.some(h => h.dayIdx === day)) continue;
+    const lunchCoverageTime = timeToMin('12:30');
+    if (countCovered(proposalWeek, officeMiddayIds, day, lunchCoverageTime) >= 1) continue;
+
+    const candidates = officeMiddayIds
+      .map(id => ({ id, cell: proposalWeek[id]?.[day] }))
+      .filter(({ cell }) => {
+        if (!cell || !cell.generated || (cell as any).manualEdit || isHardUnavailableCell(cell)) return false;
+        if (!cell.mIn || cell.mOut !== '12:00' || cell.pIn !== '13:00' || !cell.pOut) return false;
+        const hasOffsiteBlock = (cell.coverageBlockedIntervals || []).some(([start, end]) =>
+          start < timeToMin('13:00') && end > lunchCoverageTime
+        );
+        return !hasOffsiteBlock;
+      })
+      .sort((a, b) => {
+        // Preferisci il turno da 8h, poi quello del sabatista: le ore totali non cambiano.
+        if (a.id === week2WorkerId) return -1;
+        if (b.id === week2WorkerId) return 1;
+        if (a.id === week1WorkerId) return -1;
+        if (b.id === week1WorkerId) return 1;
+        return timeToMin(b.cell!.pOut) - timeToMin(a.cell!.pOut);
+      });
+
+    const candidate = candidates[0];
+    if (candidate?.cell) {
+      candidate.cell.mOut = '13:00';
+      candidate.cell.pIn = '14:00';
+      candidate.cell.movedByEngine = true;
+      if (countCovered(proposalWeek, officeMiddayIds, day, lunchCoverageTime) >= 1) {
+        const name = getWorkerName(candidate.id);
+        notes.push(`Ufficio ${dayNames[day]}: pausa pranzo di ${name} spostata alle 13:00-14:00 per mantenere il presidio del banco tra le 12:30 e le 13:00, senza modificare le ore lavorate.`);
+      } else {
+        // Salvaguardia: se un blocco imprevisto impedisce la copertura, ripristina l'orario.
+        candidate.cell.mOut = '12:00';
+        candidate.cell.pIn = '13:00';
+        candidate.cell.movedByEngine = false;
+      }
+    }
+  }
+
   // 6. Sabato Mattina (07:00 - 12:00)
   const satDay = 5;
   if (!isSaturdayHoliday) {
