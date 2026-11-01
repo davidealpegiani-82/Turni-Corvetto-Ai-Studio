@@ -65,6 +65,8 @@ export interface DayShift {
   note?: string;
   noteColor?: string;
   generated?: boolean;
+  /** True when a human explicitly locked/edited this cell; auto-generation must not overwrite it. */
+  manualEdit?: boolean;
   movedByEngine?: boolean;
   leaveType?: string;
   leaveFullDay?: boolean;
