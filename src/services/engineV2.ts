@@ -91,7 +91,7 @@ export function policyFromAppData(appData: AppData, weekStartDate?: string): Cov
       minimum: 1,
       openingMinimum: positive(rules?.minAperturaImp, 2),
       openingUntil: rules?.officeOpeningCoverageUntil || '08:30',
-      closingMinimum: positive(officeCoverage.minClose, 1)
+      closingMinimum: 1 // Regola operativa Corvetto: alla chiusura feriale è sufficiente 1 addetto.
     },
     slotMinutes: 30,
     minimumRestMinutes: positive(rules?.minimumRestMinutes, 660),
