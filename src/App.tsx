@@ -152,6 +152,7 @@ export default function App() {
   // Stato sincronizzazione e push
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Modali
   const [proposal, setProposal] = useState<GeneratedProposal | null>(null);
@@ -204,9 +205,16 @@ export default function App() {
     } else {
       playNotificationChime();
     }
-    setTimeout(() => {
+    // Un solo timer: un avviso precedente non deve cancellare quello più recente.
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
+      toastTimerRef.current = null;
     }, 4500);
+  }, []);
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
 
   // Inizializzazione WebSocket e Service Worker
@@ -283,27 +291,35 @@ export default function App() {
     changeType: string,
     description: string,
     pushNotif?: { title: string; body: string; url?: string }
-  ) => {
-    // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
-    // un updater React, che in StrictMode può essere invocato più di una volta.
-    const next = updater(deepClone(appDataRef.current));
-    next.updatedAt = Date.now();
-    next.updatedBy = socketManager.getClientId();
-    next.updatedRevision = (next.updatedRevision || 0) + 1;
-    appDataRef.current = next;
-    setAppData(next);
+  ): Promise<boolean> => {
+    try {
+      // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
+      // un updater React, che in StrictMode può essere invocato più di una volta.
+      const next = updater(deepClone(appDataRef.current));
+      next.updatedAt = Date.now();
+      next.updatedBy = socketManager.getClientId();
+      next.updatedRevision = (next.updatedRevision || 0) + 1;
+      appDataRef.current = next;
+      setAppData(next);
 
-    // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
-    // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
-    void socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
-      if (!saved) {
-        showToast(
-          'Sincronizzazione non confermata',
-          'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
-          'warn'
-        );
-      }
-    });
+      // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
+      // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
+      return socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
+        if (!saved) {
+          showToast(
+            'Sincronizzazione non confermata',
+            'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
+            'warn'
+          );
+        }
+        return saved;
+      });
+    } catch (error) {
+      console.error('[Turni Corvetto] Modifica locale non applicata:', changeType, error);
+      const detail = error instanceof Error ? error.message : String(error);
+      showToast('Modifica non applicata', detail || 'Errore durante l’aggiornamento dei dati.', 'warn');
+      return Promise.resolve(false);
+    }
   }, [showToast]);
 
   // 1. Modifica Cella Turno Singola
