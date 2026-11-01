@@ -120,13 +120,15 @@ test('missing equipment qualification is a warning, not an automatic block', () 
       { id: 'office2', name: 'Office 2', group: 'EDILE', selected: true, brain: { office: true }, profile: { qualifications: { firstAid: { status: 'valid' }, fireSafety: { status: 'valid' } } } }
     ]
   } as unknown as AppData;
+  const weekday = () => ({ mIn: '06:30', mOut: '17:30' });
+  const saturday = () => ({ mIn: '07:00', mOut: '12:00' });
   const week: WeekShifts = {
-    mag1: { 0: { mIn: '06:30', mOut: '17:30' } },
-    mag2: { 0: { mIn: '06:30', mOut: '17:30' } },
-    office1: { 0: { mIn: '06:30', mOut: '17:30' } },
-    office2: { 0: { mIn: '06:30', mOut: '17:30' } }
+    mag1: { 0: weekday(), 1: weekday(), 2: weekday(), 3: weekday(), 4: weekday(), 5: saturday() },
+    mag2: { 0: weekday(), 1: weekday(), 2: weekday(), 3: weekday(), 4: weekday(), 5: saturday() },
+    office1: { 0: weekday(), 1: weekday(), 2: weekday(), 3: weekday(), 4: weekday(), 5: saturday() },
+    office2: { 0: weekday(), 1: weekday(), 2: weekday(), 3: weekday(), 4: weekday() }
   };
   const result = validateWeekV2(skillApp, week);
-  assert.equal(result.valid, true);
+  assert.equal(result.valid, true, JSON.stringify(result.findings.filter(f => f.severity === 'error')));
   assert.ok(result.findings.some(f => f.code === 'SKILL_COVERAGE_WARNING' && f.area === 'warehouse'));
 });
