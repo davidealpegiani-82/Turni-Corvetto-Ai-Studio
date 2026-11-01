@@ -131,4 +131,5 @@ test('missing equipment qualification is a warning, not an automatic block', () 
   const result = validateWeekV2(skillApp, week);
   assert.equal(result.valid, true, JSON.stringify(result.findings.filter(f => f.severity === 'error')));
   assert.ok(result.findings.some(f => f.code === 'SKILL_COVERAGE_WARNING' && f.area === 'warehouse'));
+  assert.ok(result.findings.some(f => f.code === 'OPENING_EXPERIENCE_WARNING' && f.area === 'warehouse'));
 });
