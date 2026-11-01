@@ -49,6 +49,7 @@ import {
   reconcileAllLeavesWithWeeks,
   getWorkerNastroForDate
 } from './services/engine';
+import { mergeProposalSafely, policyFromAppData, validateWeekV2 } from './services/engineV2';
 import {
   socketManager,
   SocketStatus
@@ -392,17 +393,62 @@ export default function App() {
     setProposal(prop);
   };
 
-  const handleApplyProposal = () => {
+  const handleApplyProposal = (emergencyWarehouseOverride = false) => {
     if (!proposal) return;
     const weekKey = proposal.weekKey;
     const weekInfo = getWeekInfo(currentDate);
+    const currentWeek = appData.weeks[weekKey] || {};
+    const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week);
+
+    if (merge.stale) {
+      showToast('Proposta da aggiornare', 'Nel frattempo sono state modificate alcune celle. Ho evitato di sovrascriverle: rigenera la proposta e verifica nuovamente.', 'warn');
+      return;
+    }
+
+    const monday = new Date(currentDate);
+    monday.setHours(12, 0, 0, 0);
+    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    const policy = policyFromAppData(appData, localDateKey(monday));
+    const validation = validateWeekV2(appData, merge.week, policy);
+    const errors = validation.findings.filter(f => f.severity === 'error');
+    const emergencyOnlyWarehouse = errors.length > 0 && errors.every(f =>
+      f.code === 'COVERAGE_GAP' && f.area === 'warehouse' && f.expected === 2
+    );
+
+    if (errors.length && !(emergencyWarehouseOverride && emergencyOnlyWarehouse)) {
+      if (emergencyOnlyWarehouse) {
+        setConfirmModal({
+          open: true,
+          title: 'Copertura magazzino sotto il minimo',
+          message: `La proposta presenta ${errors.length} fascia/e con meno di 2 magazzinieri. Puoi applicarla solo come deroga di emergenza; la carenza resterà evidenziata e dovrà essere gestita operativamente. Vuoi procedere?`,
+          confirmText: 'Applica in emergenza',
+          isDanger: true,
+          onConfirm: () => handleApplyProposal(true)
+        });
+      } else {
+        const detail = errors.slice(0, 5).map(f => f.message).join('\n');
+        showToast('Proposta non applicabile', detail || `Rilevate ${errors.length} violazioni bloccanti.`, 'warn');
+      }
+      return;
+    }
 
     updateAppDataAuthoritative(
       (prev) => {
-        prev.weeks[weekKey] = proposal.week;
+        // Re-check the merge against the latest in-memory week immediately before applying.
+        const latestWeek = prev.weeks[weekKey] || {};
+        const latestMerge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, latestWeek, proposal.week);
+        if (latestMerge.stale) return prev;
+        prev.weeks[weekKey] = latestMerge.week;
         const officeSatWorker = proposal.meta?.actualOfficeSatId || proposal.meta?.nextUfficioId;
-        if (officeSatWorker) {
-          prev.rules.lastSaturdayUfficioId = officeSatWorker;
+        if (officeSatWorker) prev.rules.lastSaturdayUfficioId = officeSatWorker;
+        if (emergencyWarehouseOverride) {
+          prev.auditLog = prev.auditLog || [];
+          prev.auditLog.push({
+            ts: new Date().toISOString(),
+            action: 'emergency_warehouse_coverage_override',
+            detail: `Deroga emergenza copertura magazzino settimana ${weekInfo.weekNo}: ${errors.map(f => f.message).join('; ')}`,
+            by: socketManager.getClientId()
+          });
         }
         return prev;
       },
@@ -415,7 +461,12 @@ export default function App() {
     );
 
     setProposal(null);
-    showToast('✨ Proposta Applicata', `Turni della settimana ${weekInfo.weekNo} pubblicati e sincronizzati!`, 'success');
+    const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
+    showToast(
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : '✨ Proposta applicata e verificata',
+      `Settimana ${weekInfo.weekNo}: ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze rilevate, ${warningCount} avvisi.`,
+      emergencyWarehouseOverride ? 'warn' : 'success'
+    );
   };
 
   const handleSelectChoice = (choiceId: string, optionId: string) => {
