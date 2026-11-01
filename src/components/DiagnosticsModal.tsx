@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Activity, CheckCircle, AlertTriangle, Play, ShieldCheck } from 'lucide-react';
+import { X, Activity, CheckCircle, AlertTriangle, Play } from 'lucide-react';
 import { AppData } from '../types/turni';
 import { SocketStatus } from '../services/socket';
 
@@ -31,8 +31,13 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
       detail: socketStatus === 'connected' ? 'Firebase raggiungibile e streaming attivo' : `Stato: ${socketStatus}`
     });
 
+    // Normalizza i contenitori prima di leggerli: la diagnostica deve poter segnalare
+    // dati incompleti senza andare in errore a sua volta.
+    const workers = Array.isArray(appData?.workers) ? appData.workers : [];
+    const rules = appData?.rules || {};
+
     // 2. Integrità Team Collaboratori
-    const activeWorkers = appData.workers.filter(w => w.selected !== false);
+    const activeWorkers = workers.filter(w => w && w.selected !== false);
     list.push({
       name: 'Anagrafica Collaboratori',
       pass: activeWorkers.length >= 8,
@@ -40,24 +45,24 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
     });
 
     // 3. Rotazione Sabato Ufficio
-    const hasSatRotation = appData.rules.sabatoUfficioIds && appData.rules.sabatoUfficioIds.length >= 3;
+    const saturdayIds = Array.isArray(rules.sabatoUfficioIds) ? rules.sabatoUfficioIds : [];
     list.push({
-      name: 'Rotazione Sabato Ufficio (M1-M45)',
-      pass: !!hasSatRotation,
-      detail: `${appData.rules.sabatoUfficioIds?.length || 0} addetti in rotazione sequenziale`
+      name: 'Rotazione Sabato Ufficio',
+      pass: saturdayIds.length >= 3,
+      detail: `${saturdayIds.length} addetti in rotazione sequenziale`
     });
 
     // 4. Coppie Magazzino
-    const pairAOk = appData.rules.magPairA && appData.rules.magPairA.length >= 2;
-    const pairBOk = appData.rules.magPairB && appData.rules.magPairB.length >= 2;
+    const pairA = Array.isArray(rules.magPairA) ? rules.magPairA : [];
+    const pairB = Array.isArray(rules.magPairB) ? rules.magPairB : [];
     list.push({
       name: 'Coppie Magazzino A e B',
-      pass: !!(pairAOk && pairBOk),
-      detail: `Coppia A (${appData.rules.magPairA.length}) e Coppia B (${appData.rules.magPairB.length})`
+      pass: pairA.length >= 2 && pairB.length >= 2,
+      detail: `Coppia A (${pairA.length}) e Coppia B (${pairB.length})`
     });
 
     // 5. Profilo Severin e Orari Fissi
-    const sev = appData.workers.find(w => w.id === appData.rules.severinId);
+    const sev = workers.find(w => w.id === rules.severinId);
     list.push({
       name: 'Profilo Orario Speciale Severin (Pausa 30 min)',
       pass: !!sev,
