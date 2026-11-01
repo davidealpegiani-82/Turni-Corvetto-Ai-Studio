@@ -161,7 +161,13 @@ class RealtimeSocketManager {
       try {
         // Dopo un conflitto, non inviare snapshot già accodati e ormai obsoleti.
         // Una nuova modifica dell’utente potrà ripartire dalla versione cloud appena ricevuta.
-        if (sequence <= this.blockedThroughSequence) return false;
+        if (sequence <= this.blockedThroughSequence) {
+          this.emitNotification(
+            '⚠️ Salvataggio sospeso per conflitto',
+            'Una modifica remota è stata recuperata. Questa scrittura era già in coda e usava dati precedenti: non è stata inviata per evitare di sovrascrivere il cloud. Riprova dopo aver verificato la settimana.'
+          );
+          return false;
+        }
         if (!this.etag) await this.readCloud(false);
         const response = await fetch(FIREBASE_URL, {
           method: 'PUT',
