@@ -433,10 +433,10 @@ export const TurniView: React.FC<TurniViewProps> = ({
                               className={`p-1 text-center border-r border-b border-white/[0.08] cursor-pointer min-w-[125px] relative group ${holiday ? 'bg-amber-500/[0.04]' : ''}`}
                             >
                               <div
-                                className={`h-full min-h-[58px] p-1.5 rounded-2xl glass-tile flex flex-col items-center justify-center relative ${
+                                className={`h-full min-h-[58px] p-1.5 rounded-2xl glass-tile flex flex-col items-center justify-center relative ${[
                                   cell?.generated ? 'ring-1 ring-blue-500/40 shadow-sm shadow-blue-500/10' : '',
                                   holiday ? 'border border-amber-500/20' : ''
-                                }`}
+                                ].filter(Boolean).join(' ')}`}
                                 style={
                                   statusColor && !details.isRest && details.isFullDayLeave
                                     ? { backgroundColor: `${statusColor}18`, borderColor: `${statusColor}50` }
