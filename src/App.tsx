@@ -384,8 +384,18 @@ export default function App() {
     const currentWeek = appData.weeks[weekKey] || {};
     const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week);
 
-    if (merge.stale) {
-      showToast('Proposta da aggiornare', 'Nel frattempo sono state modificate alcune celle. Ho evitato di sovrascriverle: rigenera la proposta e verifica nuovamente.', 'warn');
+    // Applica le celle ancora compatibili anche se nel frattempo alcune sono cambiate:
+    // mergeProposalSafely conserva automaticamente sia le modifiche manuali sia quelle concorrenti.
+    // Evitiamo di scartare l'intera proposta per un conflitto limitato a poche celle.
+    if (merge.appliedCells === 0) {
+      const preserved = merge.preservedCells.length;
+      showToast(
+        'Nessuna modifica applicabile',
+        preserved
+          ? `La proposta non contiene nuove celle applicabili. Ho preservato ${preserved} celle modificate manualmente o da un altro dispositivo. Rigenera la proposta per riallinearla.`
+          : 'La proposta coincide già con i turni presenti. Non ci sono modifiche da salvare.',
+        'warn'
+      );
       return;
     }
 
@@ -421,7 +431,9 @@ export default function App() {
         // Re-check the merge against the latest in-memory week immediately before applying.
         const latestWeek = prev.weeks[weekKey] || {};
         const latestMerge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, latestWeek, proposal.week);
-        if (latestMerge.stale) return prev;
+        // Anche se una cella è stata modificata dopo la prima verifica, il merge
+        // restituisce già la settimana aggiornata con quelle celle preservate.
+        // Le altre celle della proposta vengono comunque applicate.
         prev.weeks[weekKey] = latestMerge.week;
         const officeSatWorker = proposal.meta?.actualOfficeSatId || proposal.meta?.nextUfficioId;
         if (officeSatWorker) prev.rules.lastSaturdayUfficioId = officeSatWorker;
@@ -448,7 +460,7 @@ export default function App() {
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
       emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : '✨ Proposta applicata e verificata',
-      `Settimana ${weekInfo.weekNo}: ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze rilevate, ${warningCount} avvisi.`,
+      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi.`,
       emergencyWarehouseOverride ? 'warn' : 'success'
     );
   };
