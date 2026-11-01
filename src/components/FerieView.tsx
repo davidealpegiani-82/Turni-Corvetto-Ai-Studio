@@ -355,34 +355,29 @@ export const FerieView: React.FC<FerieViewProps> = ({
                         {dayNum}
                       </span>
 
-                      {/* Chips delle assenze */}
+                      {/* Festività, assenze e impegni */}
                       <div className="flex flex-col gap-0.5 w-full mt-0.5 overflow-hidden">
-                        {entries.slice(0, 2).map((en, idx) => (
+                        {holiday && (
+                          <span className="text-[7px] leading-tight font-black px-1 rounded truncate bg-amber-500/90 text-slate-950" title={holiday.name}>
+                            {holiday.name}
+                          </span>
+                        )}
+                        {entries.slice(0, holiday ? 1 : 2).map((en, idx) => (
                           <div
                             key={idx}
                             onClick={() => {
-                              if (en.tipo === 'Malattia' || en.tipo === 'Ricovero') {
-                                onOpenMalattiaModal(en.reqId);
-                              } else {
-                                onOpenLeaveModal(en.reqId);
-                              }
+                              if (en.isEvent) return;
+                              if (en.tipo === 'Malattia' || en.tipo === 'Ricovero') onOpenMalattiaModal(en.reqId);
+                              else onOpenLeaveModal(en.reqId);
                             }}
-                            className={`text-[8px] font-black px-1 rounded truncate text-white cursor-pointer shadow-sm ${
-                              en.tipo === 'Ferie'
-                                ? 'bg-emerald-500/90 hover:bg-emerald-500'
-                                : en.tipo === 'Malattia' || en.tipo === 'Ricovero'
-                                ? 'bg-red-500/90 hover:bg-red-500'
-                                : en.status === 'richiesta'
-                                ? 'bg-amber-500/90 hover:bg-amber-500'
-                                : 'bg-purple-500/90 hover:bg-purple-500'
-                            }`}
-                            title={`${en.workerName} — ${en.tipo} (${en.status})`}
+                            className={`text-[7px] leading-tight font-black px-1 rounded truncate text-white shadow-sm ${en.isEvent ? 'bg-indigo-500/90' : en.tipo === 'Ferie' ? 'bg-emerald-500/90 cursor-pointer' : en.tipo === 'Malattia' || en.tipo === 'Ricovero' ? 'bg-red-500/90 cursor-pointer' : en.status === 'richiesta' ? 'bg-amber-500/90 cursor-pointer' : 'bg-purple-500/90 cursor-pointer'}`}
+                            title={en.isEvent ? `Impegno: ${en.workerName}` : `${en.workerName} — ${en.tipo} (${en.status})`}
                           >
-                            {en.workerName}
+                            {en.isEvent ? en.workerName : `${en.workerName} · ${en.tipo}`}
                           </div>
                         ))}
-                        {entries.length > 2 && (
-                          <span className="text-[7px] text-slate-500 dark:text-slate-400 font-bold">+{entries.length - 2}</span>
+                        {entries.length > (holiday ? 1 : 2) && (
+                          <span className="text-[7px] text-slate-500 dark:text-slate-400 font-bold">+{entries.length - (holiday ? 1 : 2)}</span>
                         )}
                       </div>
                     </div>
