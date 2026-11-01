@@ -14,7 +14,7 @@ const app = {
 
 test('validator checks all half-hour slots and detects a midday gap', () => {
   const week: WeekShifts = {
-    mag1: { 0: { mIn: '06:30', mOut: '12:00' } },
+    mag1: { 0: { mIn: '06:30', mOut: '10:00' } },
     mag2: { 0: { mIn: '06:30', mOut: '10:00' } },
     office1: { 0: { mIn: '06:30', mOut: '12:00', pIn: '13:00', pOut: '17:30' } },
     office2: { 0: { mIn: '06:30', mOut: '12:00', pIn: '13:00', pOut: '17:30' } }
