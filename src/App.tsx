@@ -291,7 +291,7 @@ export default function App() {
     changeType: string,
     description: string,
     pushNotif?: { title: string; body: string; url?: string }
-  ): Promise<boolean> => {
+  ): Promise<boolean> | null => {
     try {
       // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
       // un updater React, che in StrictMode può essere invocato più di una volta.
@@ -302,23 +302,19 @@ export default function App() {
       appDataRef.current = next;
       setAppData(next);
 
-      // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
-      // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
-      return socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
-        if (!saved) {
-          showToast(
-            'Sincronizzazione non confermata',
-            'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
-            'warn'
-          );
-        }
-        return saved;
-      });
+      // Il manager gestisce e notifica un solo esito di sincronizzazione.
+      return socketManager.sendDataUpdate(next, changeType, description, pushNotif);
     } catch (error) {
       console.error('[Turni Corvetto] Modifica locale non applicata:', changeType, error);
       const detail = error instanceof Error ? error.message : String(error);
-      showToast('Modifica non applicata', detail || 'Errore durante l’aggiornamento dei dati.', 'warn');
-      return Promise.resolve(false);
+      // Mostra l'errore dopo gli eventuali toast di successo del chiamante,
+      // così un messaggio positivo non può nascondere il fallimento locale.
+      void Promise.resolve().then(() => showToast(
+        'Modifica non applicata',
+        detail || 'Errore durante l’aggiornamento dei dati.',
+        'warn'
+      ));
+      return null;
     }
   }, [showToast]);
 
@@ -423,7 +419,7 @@ export default function App() {
     }
 
     phase = 'preparazione salvataggio e sincronizzazione';
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         // Re-check the merge against the latest in-memory week immediately before applying.
         const latestWeek = prev.weeks[weekKey] || {};
@@ -452,6 +448,7 @@ export default function App() {
         body: `È stata pubblicata la nuova programmazione dei turni per ${weekInfo.label}.`
       }
     );
+    if (!savePromise) return;
 
     phase = 'completamento';
     setProposal(null);
