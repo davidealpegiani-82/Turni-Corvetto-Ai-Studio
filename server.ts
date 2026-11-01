@@ -11,8 +11,8 @@ import { AppData, PushSubscriptionRecord } from './src/types/turni';
 import { handleAICopilot } from './src/services/aiCopilotServer';
 import { reconcileAllLeavesWithWeeks } from './src/services/engine';
 
-const PORT = 3000;
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+const PORT = Number(process.env.PORT) || 3000;
+const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(process.cwd(), 'data'));
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 const VAPID_FILE = path.join(DATA_DIR, 'vapid.json');
 const SUBS_FILE = path.join(DATA_DIR, 'push_subscriptions.json');
@@ -114,6 +114,8 @@ async function syncToFirebase(data: AppData) {
     });
     if (res.ok) {
       console.log('[Firebase RTDB] Cloud sincronizzato con successo.');
+    } else {
+      console.warn(`[Firebase RTDB] Scrittura rifiutata: HTTP ${res.status}`);
     }
   } catch (err) {
     console.warn('[Firebase RTDB] Errore sync cloud:', err);
@@ -171,11 +173,16 @@ if (fs.existsSync(SUBS_FILE)) {
 
 function saveDatabase() {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(appData, null, 2));
-    // Sincronizza anche con Firebase RTDB cloud in background
-    syncToFirebase(appData);
+    const temporaryFile = `${DB_FILE}.tmp`;
+    fs.writeFileSync(temporaryFile, JSON.stringify(appData, null, 2));
+    fs.renameSync(temporaryFile, DB_FILE);
+    // Sincronizza anche con Firebase RTDB cloud in background.
+    void syncToFirebase(appData);
+    return true;
   } catch (e) {
     console.error('Errore scrittura DB:', e);
+    try { if (fs.existsSync(`${DB_FILE}.tmp`)) fs.unlinkSync(`${DB_FILE}.tmp`); } catch {}
+    return false;
   }
 }
 
@@ -237,6 +244,11 @@ async function startServer() {
 
   app.use(express.json({ limit: '20mb' }));
 
+  // Health check usato dal provider per verificare che API e server siano attivi.
+  app.get('/api/health', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', service: 'turni-corvetto', revision: appData.updatedRevision || 0, timestamp: Date.now() });
+  });
+
   // WebSocket Server per Sincronizzazione in Tempo Reale
   const wss = new WebSocketServer({ server, path: '/ws' });
   const clients = new Set<WebSocket>();
@@ -283,6 +295,12 @@ async function startServer() {
 
         if (msg.type === 'update_data') {
           if (msg.data && typeof msg.data === 'object') {
+            const expectedRevision = Number(msg.expectedRevision);
+            if (Number.isFinite(expectedRevision) && expectedRevision !== (Number(appData.updatedRevision) || 0)) {
+              ws.send(JSON.stringify({ type: 'revision_conflict', data: appData, revision: appData.updatedRevision || 0 }));
+              return;
+            }
+            const previousAppData = appData;
             appData = msg.data;
             appData.updatedAt = Date.now();
             appData.updatedBy = msg.clientId || 'remote_client';
@@ -291,7 +309,11 @@ async function startServer() {
             appData.leaveRequests = appData.leaveRequests || [];
             reconcileAllLeavesWithWeeks(appData.weeks, appData.leaveRequests, appData);
 
-            saveDatabase();
+            if (!saveDatabase()) {
+              appData = previousAppData;
+              ws.send(JSON.stringify({ type: 'revision_conflict', data: appData, revision: appData.updatedRevision || 0 }));
+              return;
+            }
 
             // Broadcast istantaneo a tutti gli altri client
             broadcast({
@@ -358,6 +380,12 @@ async function startServer() {
         res.status(400).json({ error: 'Payload non valido' });
         return;
       }
+      const expectedRevision = Number(req.body.expectedRevision);
+      if (Number.isFinite(expectedRevision) && expectedRevision !== (Number(appData.updatedRevision) || 0)) {
+        res.status(409).json({ error: 'REVISION_CONFLICT', data: appData, revision: appData.updatedRevision || 0 });
+        return;
+      }
+      const previousAppData = appData;
       appData = incoming;
       appData.updatedAt = Date.now();
       appData.updatedBy = req.body.clientId || 'api';
@@ -365,7 +393,11 @@ async function startServer() {
       appData.weeks = appData.weeks || {};
       appData.leaveRequests = appData.leaveRequests || [];
       reconcileAllLeavesWithWeeks(appData.weeks, appData.leaveRequests, appData);
-      saveDatabase();
+      if (!saveDatabase()) {
+        appData = previousAppData;
+        res.status(500).json({ error: 'DATABASE_WRITE_FAILED' });
+        return;
+      }
 
       broadcast({
         type: 'data_updated',
