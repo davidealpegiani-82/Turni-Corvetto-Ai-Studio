@@ -47,6 +47,7 @@ class RealtimeSocketManager {
   public getClientId(): string { return this.clientId; }
   public getStatus(): SocketStatus { return this.status; }
   public getClientCount(): number { return this.clientCount; }
+  public async refreshNow() { await this.refreshRemote(); }
 
   private setStatus(status: SocketStatus) {
     this.status = status;
