@@ -100,11 +100,33 @@ test('separate FINITURE showroom is not counted as branch office coverage', () =
 });
 
 test('real sanitized Corvetto week W44 is checked across the full timetable', () => {
-  const policy = policyFromAppData(corvettoW44App);
+  const policy = policyFromAppData(corvettoW44App, '2026-10-26');
   const result = validateWeekV2(corvettoW44App, corvettoW44Week, policy);
   assert.equal(result.checkedSlots, 240);
   assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.day === 5), false);
   const fridayClosing = result.findings.find(f => f.code === 'COVERAGE_GAP' && f.day === 4 && f.area === 'office' && f.time === '17:00');
   assert.equal(fridayClosing?.expected, 2);
   assert.equal(fridayClosing?.actual, 1);
+  const saturdayLoaderAlert = result.findings.find(f => f.code === 'SKILL_COVERAGE_WARNING' && f.day === 5 && f.message.includes('ruspa/pala'));
+  assert.equal(saturdayLoaderAlert?.severity, 'warning');
+});
+
+test('missing equipment qualification is a warning, not an automatic block', () => {
+  const skillApp = {
+    workers: [
+      { id: 'mag1', name: 'Mag 1', group: 'MAGAZZINO', selected: true, brain: { warehouse: true }, profile: { qualifications: { forklift: { status: 'valid' }, loader: { status: 'none' } } } },
+      { id: 'mag2', name: 'Mag 2', group: 'MAGAZZINO', selected: true, brain: { warehouse: true }, profile: { qualifications: { forklift: { status: 'valid' }, loader: { status: 'none' } } } },
+      { id: 'office1', name: 'Office 1', group: 'MANAGER', selected: true, brain: { office: true }, profile: { qualifications: { firstAid: { status: 'valid' }, fireSafety: { status: 'valid' } } } },
+      { id: 'office2', name: 'Office 2', group: 'EDILE', selected: true, brain: { office: true }, profile: { qualifications: { firstAid: { status: 'valid' }, fireSafety: { status: 'valid' } } } }
+    ]
+  } as unknown as AppData;
+  const week: WeekShifts = {
+    mag1: { 0: { mIn: '06:30', mOut: '17:30' } },
+    mag2: { 0: { mIn: '06:30', mOut: '17:30' } },
+    office1: { 0: { mIn: '06:30', mOut: '17:30' } },
+    office2: { 0: { mIn: '06:30', mOut: '17:30' } }
+  };
+  const result = validateWeekV2(skillApp, week);
+  assert.equal(result.valid, true);
+  assert.ok(result.findings.some(f => f.code === 'SKILL_COVERAGE_WARNING' && f.area === 'warehouse'));
 });
