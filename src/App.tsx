@@ -1111,7 +1111,7 @@ export default function App() {
         onOpenExportMenu={() => setExportMenuOpen(true)}
         onOpenToolsMenu={() => setToolsMenuOpen(true)}
         onOpenHelpGuide={() => setHelpGuideOpen(true)}
-        onOpenNotifications={() => { setNotificationsModalOpen(true); setUnreadCount(0); }}
+        onOpenNotifications={() => setNotificationsModalOpen(true)}
         onOpenAtmosphere={() => setAtmosphereModalOpen(true)}
         weekNumber={weekInfo.weekNo}
       />
