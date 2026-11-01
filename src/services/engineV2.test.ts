@@ -54,3 +54,13 @@ test('three-way merge applies untouched proposal cells only', () => {
   assert.equal(result.appliedCells, 1);
   assert.equal(result.stale, false);
 });
+
+test('Saturday office coverage correctly requires one person, not the weekday opening minimum', () => {
+  const week: WeekShifts = {
+    mag1: { 5: { mIn: '07:00', mOut: '12:00' } },
+    mag2: { 5: { mIn: '07:00', mOut: '12:00' } },
+    office1: { 5: { mIn: '07:00', mOut: '12:00' } }
+  };
+  const result = validateWeekV2(app, week);
+  assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'office' && f.day === 5), false);
+});
