@@ -1268,6 +1268,7 @@ export default function App() {
         onOpenRolDetails={handleOpenRolDetails}
       />
 
+      {leaveModal.open && (
       <LeaveModal
         isOpen={leaveModal.open}
         onClose={() => setLeaveModal({ open: false, leaveId: null })}
@@ -1278,6 +1279,8 @@ export default function App() {
         onExportPDF={handleExportFacsimilePDF}
       />
 
+      )}
+      {malattiaModal.open && (
       <MalattiaModal
         isOpen={malattiaModal.open}
         onClose={() => setMalattiaModal({ open: false, leaveId: null })}
@@ -1287,6 +1290,8 @@ export default function App() {
         onDeleteMalattia={handleDeleteLeave}
       />
 
+      )}
+      {eventModal.open && (
       <BranchEventModal
         isOpen={eventModal.open}
         onClose={() => setEventModal({ open: false, eventId: null })}
@@ -1296,6 +1301,8 @@ export default function App() {
         onDeleteEvent={handleDeleteEvent}
       />
 
+      )}
+      {specificheModal.open && (
       <SpecificheImpegnoModal
         isOpen={specificheModal.open}
         onClose={() => setSpecificheModal({ open: false, event: null, rolData: null })}
@@ -1316,6 +1323,7 @@ export default function App() {
         }}
       />
 
+      )}
       <ExportMenuModal
         isOpen={exportMenuOpen}
         onClose={() => setExportMenuOpen(false)}
@@ -1353,6 +1361,7 @@ export default function App() {
         }}
       />
 
+      {teamModalOpen && (
       <TeamModal
         isOpen={teamModalOpen}
         onClose={() => setTeamModalOpen(false)}
@@ -1364,6 +1373,8 @@ export default function App() {
         onDeleteWorker={handleDeleteWorker}
       />
 
+      )}
+      {workerEditModal.open && (
       <WorkerEditModal
         isOpen={workerEditModal.open}
         onClose={() => setWorkerEditModal({ open: false, workerId: null })}
@@ -1374,6 +1385,8 @@ export default function App() {
         onDeactivateWorker={handleToggleWorkerActive}
       />
 
+      )}
+      {rulesModalOpen && (
       <RulesModal
         isOpen={rulesModalOpen}
         onClose={() => setRulesModalOpen(false)}
@@ -1388,6 +1401,8 @@ export default function App() {
         }}
       />
 
+      )}
+      {diagnosticsModalOpen && (
       <DiagnosticsModal
         isOpen={diagnosticsModalOpen}
         onClose={() => setDiagnosticsModalOpen(false)}
@@ -1395,11 +1410,13 @@ export default function App() {
         socketStatus={socketStatus}
       />
 
+      )}
       <HelpGuideModal
         isOpen={helpGuideOpen}
         onClose={() => setHelpGuideOpen(false)}
       />
 
+      {quickSwapModal.open && (
       <QuickSwapModal
         isOpen={quickSwapModal.open}
         onClose={() => setQuickSwapModal(prev => ({ ...prev, open: false }))}
@@ -1409,6 +1426,7 @@ export default function App() {
         onConfirmSwap={handleConfirmSwap}
       />
 
+      )}
       <NotificationCenterModal
         isOpen={notificationsModalOpen}
         onClose={() => setNotificationsModalOpen(false)}
@@ -1519,9 +1537,6 @@ export default function App() {
           <div className="font-extrabold text-xs leading-tight tracking-wide">Assistente</div>
           <div className="text-[10px] text-purple-200">Turni & Verifiche</div>
         </div>
-        <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider">
-          Live
-        </span>
       </button>
 
       {/* Assistente locale per controlli operativi */}
