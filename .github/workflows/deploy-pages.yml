@@ -1,4 +1,4 @@
-name: Deploy Turni Corvetto to GitHub Pages
+name: Deploy Turni Corvetto to GitHub Pages # free static hosting
 
 on:
   pull_request:
