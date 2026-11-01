@@ -353,7 +353,7 @@ export default function App() {
       (prev) => {
         if (!prev.weeks[weekKey]) prev.weeks[weekKey] = {};
         if (!prev.weeks[weekKey][workerId]) prev.weeks[weekKey][workerId] = {};
-        prev.weeks[weekKey][workerId][dayIdx] = data;
+        prev.weeks[weekKey][workerId][dayIdx] = { ...data, manualEdit: true, generated: false };
         return prev;
       },
       'edit_shift',
