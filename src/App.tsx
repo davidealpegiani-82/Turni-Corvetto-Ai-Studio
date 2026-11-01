@@ -235,31 +235,15 @@ export default function App() {
       });
     };
 
-    // 1. Carica subito i dati completi via REST API per idratazione immediata
-    fetch('/api/data')
-      .then(res => res.json())
-      .then(res => {
-        if (res.data && res.data.workers && res.data.workers.length) {
-          const d = res.data;
-          d.leaveBalances = d.leaveBalances || {};
-          d.leaveRequests = d.leaveRequests || [];
-          d.events = d.events || [];
-          d.weeks = d.weeks || {};
-          d.workers = enrichWorkerProfiles(d.workers);
-          reconcileAllLeavesWithWeeks(d.weeks, d.leaveRequests, d);
-          setAppData(d);
-        }
-      })
-      .catch(err => console.warn('Caricamento iniziale /api/data:', err));
-
-    // 2. Registra Service Worker per PWA e Push
+    // Hosting statico: i dati vengono caricati direttamente da Firebase RTDB.
+    // Il Service Worker gestisce installazione PWA e cache offline; il push server-side non è richiesto.
     registerServiceWorker().then(async () => {
       const sub = await getPushSubscription();
       setPushSubscribed(!!sub);
     });
 
-    // 3. Connetti al WebSocket
-    socketManager.connect();
+    // Connessione cloud Firebase REST + streaming SSE (senza server Node/WebSocket).
+    void socketManager.connect();
 
     const unsubStatus = socketManager.onStatusChange((status, count) => {
       setSocketStatus(status);
@@ -1439,18 +1423,8 @@ export default function App() {
         onResyncFirebase={async () => {
           try {
             showToast('Sincronizzazione Cloud', 'Recupero dati da Firebase RTDB...', 'info');
-            const res = await fetch('/api/firebase/resync', { method: 'POST' });
-            const json = await res.json();
-            if (json.success) {
-              const dataRes = await fetch('/api/data');
-              const dataJson = await dataRes.json();
-              if (dataJson.data) {
-                setAppData(dataJson.data);
-              }
-              showToast('Dati Recuperati con Successo', `Riallineate ${json.weeksCount} settimane, ${json.leavesCount} ferie/permessi, ${json.eventsCount} impegni!`, 'success');
-            } else {
-              showToast('Errore Sincronizzazione', json.error || 'Verifica la connessione o i dati Cloud.', 'warn');
-            }
+            await socketManager.refreshNow();
+            showToast('Sincronizzazione Cloud', 'Richiesto il riallineamento con Firebase. Controlla lo stato della connessione.', 'info');
           } catch (e: any) {
             showToast('Errore Rete', 'Errore recupero dati: ' + e.message, 'warn');
           }
