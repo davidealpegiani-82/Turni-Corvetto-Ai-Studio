@@ -149,7 +149,7 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Stato sincronizzazione e push
+  // Stato sincronizzazione cloud
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -217,7 +217,7 @@ export default function App() {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
 
-  // Inizializzazione WebSocket e Service Worker
+  // Inizializzazione Firebase Realtime e Service Worker
   useEffect(() => {
     const enrichWorkerProfiles = (workers: Worker[]): Worker[] => {
       const defaultWorkers = createDefaultAppData().workers;
@@ -721,7 +721,6 @@ export default function App() {
     setSpecificheModal({ open: true, event: null, rolData });
   };
 
-  // 6. Applicazione Azioni Consigliate dall'AI Copilot
   // 6. Esportazioni PDF e ICS
   const handleExportWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
