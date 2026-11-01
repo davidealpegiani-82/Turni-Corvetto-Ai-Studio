@@ -22,6 +22,7 @@ import {
 import { RolModalData } from './SpecificheImpegnoModal';
 import { TurniTimelineView } from './TurniTimelineView';
 import { playGlassTap } from '../services/soundFx';
+import { getItalianHoliday } from '../services/holidays';
 
 interface TurniViewProps {
   appData: AppData;
@@ -333,15 +334,17 @@ export const TurniView: React.FC<TurniViewProps> = ({
 
               {weekDates.map((d, dayIdx) => {
                 const isToday = localDateKey(d) === todayStr;
+                const holiday = getItalianHoliday(d);
                 return (
                   <th
                     key={dayIdx}
                     className={`py-3 px-2 text-center border-r border-white/10 transition-colors ${
-                      isToday ? 'bg-gradient-to-b from-blue-600 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-600/30' : ''
+                      isToday ? 'bg-gradient-to-b from-blue-600 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-600/30' : holiday ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300' : ''
                     }`}
                   >
                     <div>{daysNames[dayIdx]}</div>
                     <div className="text-sm font-extrabold tabular-nums">{d.getDate()}</div>
+                    {holiday && <div className="mt-0.5 max-w-[100px] text-[8px] leading-tight font-black normal-case tracking-normal text-amber-700 dark:text-amber-300">{holiday.name}</div>}
                   </th>
                 );
               })}
@@ -414,6 +417,7 @@ export const TurniView: React.FC<TurniViewProps> = ({
                           const statusColor = getStatusColor(cell?.status);
                           const isRest = isRestStatus(cell?.status);
                           const dayStr = localDateKey(dateObj);
+                          const holiday = getItalianHoliday(dateObj);
 
                           // Eventi del giorno per questo lavoratore (inclusi eventi di intera filiale)
                           const dayEvents = (appData.events || []).filter(
@@ -426,11 +430,12 @@ export const TurniView: React.FC<TurniViewProps> = ({
                             <td
                               key={dayIdx}
                               onClick={() => onOpenDayModal(w.id, dayIdx, dateObj)}
-                              className="p-1 text-center border-r border-b border-white/[0.08] cursor-pointer min-w-[125px] relative group"
+                              className={`p-1 text-center border-r border-b border-white/[0.08] cursor-pointer min-w-[125px] relative group ${holiday ? 'bg-amber-500/[0.04]' : ''}`}
                             >
                               <div
                                 className={`h-full min-h-[58px] p-1.5 rounded-2xl glass-tile flex flex-col items-center justify-center relative ${
-                                  cell?.generated ? 'ring-1 ring-blue-500/40 shadow-sm shadow-blue-500/10' : ''
+                                  cell?.generated ? 'ring-1 ring-blue-500/40 shadow-sm shadow-blue-500/10' : '',
+                                  holiday ? 'border border-amber-500/20' : ''
                                 }`}
                                 style={
                                   statusColor && !details.isRest && details.isFullDayLeave
