@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Copy, Trash2, Check, Clock, Briefcase, CalendarOff, Palmtree, AlertCircle } from 'lucide-react';
 import { AppData, DayShift } from '../types/turni';
 import { getWeekKey, getWorkerNastroForDate, shiftMinutes, localDateKey } from '../services/engine';
+import { defaultPresets } from '../data/initialData';
 
 interface DayShiftModalProps {
   isOpen: boolean;
@@ -19,8 +20,27 @@ interface DayShiftModalProps {
 
 type ModalMode = 'work' | 'partial_leave' | 'absence';
 
-export const DayShiftModal: React.FC<DayShiftModalProps> = ({
-  isOpen,
+type ActiveDayShiftModalProps = Omit<DayShiftModalProps, 'workerId' | 'dayIdx' | 'dateObj'> & {
+  workerId: string;
+  dayIdx: number;
+  dateObj: Date;
+};
+
+// Il wrapper non usa hook: monta il componente interno solo quando i dati sono completi.
+// In questo modo l'apertura/chiusura della modale non cambia mai il numero di hook React.
+export const DayShiftModal: React.FC<DayShiftModalProps> = (props) => {
+  if (!props.isOpen || !props.workerId || props.dayIdx === null || !props.dateObj) return null;
+  return (
+    <DayShiftModalContent
+      {...props}
+      workerId={props.workerId}
+      dayIdx={props.dayIdx}
+      dateObj={props.dateObj}
+    />
+  );
+};
+
+const DayShiftModalContent: React.FC<ActiveDayShiftModalProps> = ({
   onClose,
   workerId,
   dayIdx,
@@ -32,7 +52,6 @@ export const DayShiftModal: React.FC<DayShiftModalProps> = ({
   onOpenEventDetails,
   onOpenRolDetails
 }) => {
-  if (!isOpen || !workerId || dayIdx === null || !dateObj) return null;
 
   const daysNames = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const worker = appData.workers.find(w => w.id === workerId);
@@ -40,6 +59,8 @@ export const DayShiftModal: React.FC<DayShiftModalProps> = ({
   const nastroHours = getWorkerNastroForDate(workerId, dateObj, appData);
 
   const currentData = appData.weeks[weekKey]?.[workerId]?.[dayIdx] || {};
+  // I dati salvati da versioni precedenti potrebbero non contenere la lista preset.
+  const quickPresets = Array.isArray(appData.presets) && appData.presets.length > 0 ? appData.presets : defaultPresets;
 
   // Determina modalità iniziale in base ai dati della cella
   const getInitialMode = (data: DayShift): ModalMode => {
@@ -420,12 +441,17 @@ export const DayShiftModal: React.FC<DayShiftModalProps> = ({
                 Orari Rapidi Presenza
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                {appData.presets.map((p, idx) => (
+                {quickPresets.map((p, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => handleSetPreset(p)}
-                    className="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-blue-500 text-left text-xs font-medium text-slate-200 transition"
+                    aria-pressed={mIn === p.mIn && mOut === p.mOut && pIn === p.pIn && pOut === p.pOut && mode === 'work'}
+                    className={`min-h-[44px] touch-manipulation select-none cursor-pointer p-2 rounded-xl border text-left text-xs font-medium transition active:scale-[0.99] ${
+                      mIn === p.mIn && mOut === p.mOut && pIn === p.pIn && pOut === p.pOut && mode === 'work'
+                        ? 'bg-blue-600/20 border-blue-500 text-white ring-1 ring-blue-500/40'
+                        : 'bg-slate-800 border-slate-700 hover:border-blue-500 text-slate-200'
+                    }`}
                   >
                     {p.label}
                   </button>
