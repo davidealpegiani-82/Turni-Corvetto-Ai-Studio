@@ -21,10 +21,10 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
   const [testsRun, setTestsRun] = useState(false);
   const [testResults, setTestResults] = useState<Array<{ name: string; pass: boolean; detail?: string }>>([]);
 
-  const runDiagnostics = () => {
+  const runDiagnostics = async () => {
     const list: Array<{ name: string; pass: boolean; detail?: string }> = [];
 
-    // 1. Sincronizzazione WebSocket
+    // 1. Sincronizzazione Firebase RTDB / SSE
     list.push({
       name: 'Connessione Firebase Realtime',
       pass: socketStatus === 'connected',
@@ -64,12 +64,19 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
       detail: sev ? `${sev.name} configurato` : 'ID Severin non trovato'
     });
 
-    // 6. Supporto PWA & Service Worker
-    const hasSW = 'serviceWorker' in navigator;
+    // 6. Stato effettivo del Service Worker PWA (non vengono dichiarate push non attive).
+    let swRegistration: ServiceWorkerRegistration | undefined;
+    try {
+      if ('serviceWorker' in navigator) {
+        swRegistration = await navigator.serviceWorker.getRegistration();
+      }
+    } catch (error) {
+      console.warn('[Diagnostica] Lettura Service Worker non riuscita:', error);
+    }
     list.push({
-      name: 'Service Worker & Notifiche Push Support',
-      pass: hasSW,
-      detail: hasSW ? 'API Service Worker e Push disponibili nel browser' : 'Non supportato'
+      name: 'Service Worker PWA',
+      pass: !!swRegistration,
+      detail: swRegistration ? 'Service Worker registrato per cache e uso PWA' : 'Service Worker non registrato su questo browser'
     });
 
     setTestResults(list);
@@ -87,7 +94,7 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Diagnostica Sistema & Controlli Integrità</h3>
-              <span className="text-xs text-slate-400">Verifica conformità regole, WebSockets e sincronizzazione</span>
+              <span className="text-xs text-slate-400">Verifica integrità dati, regole e sincronizzazione Firebase</span>
             </div>
           </div>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
