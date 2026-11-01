@@ -57,6 +57,40 @@ export const DEFAULT_CORVETTO_POLICY: CoveragePolicy = {
   minimumRestMinutes: 660
 };
 
+
+/** Builds the validator policy from the live app configuration, with safe Corvetto defaults. */
+export function policyFromAppData(appData: AppData): CoveragePolicy {
+  const rules = appData.rules as unknown as Record<string, any>;
+  const branchHours = rules?.branchHours || {};
+  const weekday = branchHours.monFri || {};
+  const saturday = branchHours.sat || {};
+  const officeCoverage = rules?.officeCoverage || {};
+  const positive = (value: unknown, fallback: number) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+  };
+  return {
+    open: weekday.open || rules?.branchMonFriOpen || DEFAULT_CORVETTO_POLICY.open,
+    close: weekday.close || rules?.branchMonFriClose || DEFAULT_CORVETTO_POLICY.close,
+    saturdayOpen: saturday.open || DEFAULT_CORVETTO_POLICY.saturdayOpen,
+    saturdayClose: saturday.close || DEFAULT_CORVETTO_POLICY.saturdayClose,
+    warehouse: {
+      minimum: 1,
+      openingMinimum: positive(rules?.minAperturaMag, 2),
+      openingUntil: rules?.openingCoverageUntil || '08:30',
+      closingMinimum: 1
+    },
+    office: {
+      minimum: 1,
+      openingMinimum: positive(rules?.minAperturaImp, 2),
+      openingUntil: rules?.officeOpeningCoverageUntil || '08:30',
+      closingMinimum: positive(officeCoverage.minClose, 1)
+    },
+    slotMinutes: 30,
+    minimumRestMinutes: positive(rules?.minimumRestMinutes, 660)
+  };
+}
+
 function toMinutes(value?: string): number | null {
   if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return null;
   const [hours, minutes] = value.split(':').map(Number);
@@ -100,6 +134,8 @@ function covers(shift: DayShift | undefined, start: number, end: number): boolea
 
 function workerInArea(worker: Worker, area: CoverageArea): boolean {
   if (area === 'warehouse') return worker.group === 'MAGAZZINO' || worker.brain?.warehouse === true;
+  // FINITURE/Sandrini lavora su un presidio separato e non copre il banco edile Corvetto.
+  if (worker.group === 'FINITURE' || worker.brain?.officeProfile === 'finiture') return false;
   return worker.brain?.office === true || worker.group === 'EDILE' || worker.group === 'MANAGER';
 }
 
