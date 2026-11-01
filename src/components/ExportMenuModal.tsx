@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, Eye, Mail, Image, Calendar, MessageSquare, Download } from 'lucide-react';
+import { X, FileText, Eye, Mail, Calendar, MessageSquare, Download } from 'lucide-react';
 
 interface ExportMenuModalProps {
   isOpen: boolean;
@@ -7,7 +7,6 @@ interface ExportMenuModalProps {
   onExportPDF: () => void;
   onPreviewPDF: () => void;
   onExportEmail: () => void;
-  onExportJPG: () => void;
   onExportICS: () => void;
   onShareWhatsApp: () => void;
 }
@@ -18,7 +17,6 @@ export const ExportMenuModal: React.FC<ExportMenuModalProps> = ({
   onExportPDF,
   onPreviewPDF,
   onExportEmail,
-  onExportJPG,
   onExportICS,
   onShareWhatsApp
 }) => {
@@ -81,8 +79,8 @@ export const ExportMenuModal: React.FC<ExportMenuModalProps> = ({
                 <Mail className="w-5 h-5" />
               </div>
               <div>
-                <strong className="text-sm font-bold text-white block">Invia per Email</strong>
-                <span className="text-xs text-slate-400">Prepara il messaggio con allegato per colleghi e direzione</span>
+                <strong className="text-sm font-bold text-white block">Prepara Email</strong>
+                <span className="text-xs text-slate-400">Scarica il PDF e apre una bozza: allega il file manualmente</span>
               </div>
             </div>
             <Mail className="w-4 h-4 text-slate-500 group-hover:text-purple-400" />
@@ -120,23 +118,7 @@ export const ExportMenuModal: React.FC<ExportMenuModalProps> = ({
             <MessageSquare className="w-4 h-4 text-slate-500 group-hover:text-emerald-400" />
           </button>
 
-          <a
-            href="/turni-standalone.html"
-            download="Turni_Corvetto_v9.11.19.html"
-            onClick={onClose}
-            className="w-full p-3 rounded-2xl bg-slate-800/80 border border-slate-700 hover:border-cyan-500 hover:bg-slate-800 flex items-center justify-between text-left transition group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-cyan-500/15 text-cyan-400 group-hover:bg-cyan-500/25">
-                <Download className="w-5 h-5" />
-              </div>
-              <div>
-                <strong className="text-sm font-bold text-white block">Scarica File HTML Standalone (.html)</strong>
-                <span className="text-xs text-slate-400">File singolo autonomo offline (v9.11.19 / Netlify Drop)</span>
-              </div>
-            </div>
-            <Download className="w-4 h-4 text-slate-500 group-hover:text-cyan-400" />
-          </a>
+>
         </div>
 
         {/* Chiusura */}
