@@ -208,6 +208,22 @@ export function validateWeekV2(
       };
       checkSkill('forklift', 'muletto');
       checkSkill('loader', 'ruspa/pala');
+      const autonomousOpening = warehouseAtOpen.some(w =>
+        ['autonomous', 'mentor'].includes(String(w.profile?.openingExperience || '').toLowerCase())
+      );
+      if (!autonomousOpening) {
+        findings.push({
+          id: `experience-${day}-opening`,
+          severity: 'warning',
+          code: 'OPENING_EXPERIENCE_WARNING',
+          day,
+          area: 'warehouse',
+          time: isSaturday ? (policy.saturdayOpen || '07:00') : policy.open,
+          expected: 1,
+          actual: 0,
+          message: `${DAY_NAMES[day]}: nessun magazziniere presente in apertura con esperienza autonoma o da tutor.`
+        });
+      }
       for (const key of ['firstAid', 'fireSafety'] as const) {
         const qualified = branchAtOpen.some(w => hasValidQualification(w, key, policy.weekStartDate ? isoDatePlusDays(policy.weekStartDate, day) : undefined));
         if (!qualified) {
