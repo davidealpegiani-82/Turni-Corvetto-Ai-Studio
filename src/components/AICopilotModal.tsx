@@ -46,7 +46,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
         'Verifica conformità settimana',
         'Controlla sicurezza carrellisti 06:30',
         'Chi è di turno questo sabato?',
-        'Verifica monte ore 40h e riposi'
+        'Riepilogo monte ore settimanale'
       ]
     }
   ]);
@@ -91,9 +91,9 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
       const normalized = text.toLocaleLowerCase('it-IT');
       let reply = '';
       let audit: AIChatMessage['audit'] = null;
-      let quickFollowUps = ['Verifica conformità settimana', 'Controlla sicurezza carrellisti 06:30', 'Chi è di turno questo sabato?', 'Verifica monte ore e riposi'];
+      let quickFollowUps = ['Verifica conformità settimana', 'Controlla sicurezza carrellisti 06:30', 'Chi è di turno questo sabato?', 'Riepilogo monte ore settimanale'];
 
-      if (/verifica|controll|conform|copertur|sicurezza|carrell|riposo|violazion/.test(normalized)) {
+      if (/verifica|controll|conform|copertur|sicurezza|carrell|riposo|violazion/.test(normalized) && !/ore|monte|straordin|40h|40 h/.test(normalized)) {
         const monday = weekKeyToMonday(weekKey);
         const validation = validateWeekV2(
           appData,

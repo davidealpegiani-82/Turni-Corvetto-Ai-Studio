@@ -149,7 +149,7 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Stato sincronizzazione e push
+  // Stato sincronizzazione cloud
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -217,7 +217,7 @@ export default function App() {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
 
-  // Inizializzazione WebSocket e Service Worker
+  // Inizializzazione Firebase Realtime e Service Worker
   useEffect(() => {
     const enrichWorkerProfiles = (workers: Worker[]): Worker[] => {
       const defaultWorkers = createDefaultAppData().workers;
@@ -291,7 +291,7 @@ export default function App() {
     changeType: string,
     description: string,
     pushNotif?: { title: string; body: string; url?: string }
-  ): Promise<boolean> => {
+  ): Promise<boolean> | null => {
     try {
       // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
       // un updater React, che in StrictMode può essere invocato più di una volta.
@@ -302,23 +302,19 @@ export default function App() {
       appDataRef.current = next;
       setAppData(next);
 
-      // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
-      // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
-      return socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
-        if (!saved) {
-          showToast(
-            'Sincronizzazione non confermata',
-            'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
-            'warn'
-          );
-        }
-        return saved;
-      });
+      // Il manager gestisce e notifica un solo esito di sincronizzazione.
+      return socketManager.sendDataUpdate(next, changeType, description, pushNotif);
     } catch (error) {
       console.error('[Turni Corvetto] Modifica locale non applicata:', changeType, error);
       const detail = error instanceof Error ? error.message : String(error);
-      showToast('Modifica non applicata', detail || 'Errore durante l’aggiornamento dei dati.', 'warn');
-      return Promise.resolve(false);
+      // Mostra l'errore dopo gli eventuali toast di successo del chiamante,
+      // così un messaggio positivo non può nascondere il fallimento locale.
+      void Promise.resolve().then(() => showToast(
+        'Modifica non applicata',
+        detail || 'Errore durante l’aggiornamento dei dati.',
+        'warn'
+      ));
+      return null;
     }
   }, [showToast]);
 
@@ -364,7 +360,7 @@ export default function App() {
 
   // 2. Generazione Proposta Automatica
   const handleOpenProposal = () => {
-    const prop = generateAutoProposal(appData, currentDate);
+    const prop = generateAutoProposal(appDataRef.current, currentDate);
     setProposal(prop);
   };
 
@@ -376,7 +372,8 @@ export default function App() {
     phase = 'preparazione unione turni';
     const weekKey = proposal.weekKey;
     const weekInfo = getWeekInfo(currentDate);
-    const currentWeek = appData.weeks[weekKey] || {};
+    const latestAppData = appDataRef.current;
+    const currentWeek = latestAppData.weeks[weekKey] || {};
     const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week);
 
     // Applica le celle ancora compatibili anche se nel frattempo alcune sono cambiate:
@@ -398,8 +395,8 @@ export default function App() {
     const monday = new Date(currentDate);
     monday.setHours(12, 0, 0, 0);
     monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
-    const policy = policyFromAppData(appData, localDateKey(monday));
-    const validation = validateWeekV2(appData, merge.week, policy);
+    const policy = policyFromAppData(latestAppData, localDateKey(monday));
+    const validation = validateWeekV2(latestAppData, merge.week, policy);
     const errors = validation.findings.filter(f => f.severity === 'error');
     const emergencyOnlyWarehouse = errors.length > 0 && errors.every(f =>
       f.code === 'COVERAGE_GAP' && f.area === 'warehouse' && f.expected === 2
@@ -423,7 +420,7 @@ export default function App() {
     }
 
     phase = 'preparazione salvataggio e sincronizzazione';
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         // Re-check the merge against the latest in-memory week immediately before applying.
         const latestWeek = prev.weeks[weekKey] || {};
@@ -452,6 +449,7 @@ export default function App() {
         body: `È stata pubblicata la nuova programmazione dei turni per ${weekInfo.label}.`
       }
     );
+    if (!savePromise) return;
 
     phase = 'completamento';
     setProposal(null);
@@ -485,7 +483,7 @@ export default function App() {
     (proposal.choices || []).forEach(c => {
       if (c.selected) choicesMap[c.id] = c.selected;
     });
-    const nextProp = generateAutoProposal(appData, currentDate, choicesMap);
+    const nextProp = generateAutoProposal(appDataRef.current, currentDate, choicesMap);
     setProposal(nextProp);
     showToast('Ricalcolo Effettuato', 'Scelte applicate al motore di generazione.', 'info');
   };
@@ -497,7 +495,7 @@ export default function App() {
     const prevKey = getWeekKey(prevDate);
     const curKey = getWeekKey(currentDate);
 
-    if (appData.weeks[prevKey]) {
+    if (appDataRef.current.weeks[prevKey]) {
       updateAppDataAuthoritative(
         (prev) => {
           prev.weeks[curKey] = deepClone(prev.weeks[prevKey]);
@@ -723,7 +721,6 @@ export default function App() {
     setSpecificheModal({ open: true, event: null, rolData });
   };
 
-  // 6. Applicazione Azioni Consigliate dall'AI Copilot
   // 6. Esportazioni PDF e ICS
   const handleExportWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
@@ -758,7 +755,7 @@ export default function App() {
     showToast('Calendario iCal Scaricato', 'File .ics con turni ed impegni della settimana generato con successo.', 'success');
   };
 
-  const handleShareWhatsAppWeek = () => {
+  const handleShareWhatsAppWeek = async () => {
     const weekInfo = getWeekInfo(currentDate);
     const weekKey = getWeekKey(currentDate);
     const eventsThisWeek = (appData.events || []).filter(e => {
@@ -787,18 +784,31 @@ export default function App() {
     lines.push('_Turni Corvetto Live_');
     const text = lines.join('\n');
 
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text);
-      }
-    } catch (e) {}
-
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    let copied = false;
+    let opened = false;
     try {
-      window.open(url, '_blank');
-    } catch (e) {}
-
-    showToast('WhatsApp & Appunti', 'Riepilogo copiato negli appunti e link WhatsApp preparato.', 'success');
+      const popup = window.open(url, '_blank');
+      opened = !!popup;
+    } catch (error) {
+      console.warn('[Condivisione] Apertura WhatsApp non riuscita:', error);
+    }
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      }
+    } catch (error) {
+      console.warn('[Condivisione] Copia appunti non riuscita:', error);
+    }
+    if (!opened) window.location.href = url;
+    showToast(
+      copied ? 'Riepilogo copiato' : 'WhatsApp preparato',
+      copied
+        ? 'Il testo è stato copiato negli appunti e WhatsApp è stato aperto.'
+        : 'Il riepilogo è stato inserito nel collegamento WhatsApp. La copia negli appunti non è disponibile su questo browser.',
+      copied ? 'success' : 'info'
+    );
   };
 
   // 7. Configurazione Team e Collaboratori
@@ -1331,10 +1341,7 @@ export default function App() {
         onPreviewPDF={handlePreviewWeeklyPDF}
         onExportEmail={() => {
           handleExportWeeklyPDF();
-          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`In allegato la programmazione turni per la settimana ${weekInfo.label}.\n\nSaluti,\nFiliale Corvetto`)}`;
-        }}
-        onExportJPG={() => {
-          handleExportWeeklyPDF();
+          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`Ho scaricato la programmazione turni per la settimana ${weekInfo.label}. Allego il PDF scaricato separatamente prima di inviare questa email.\n\nSaluti,\nFiliale Corvetto`)}`;
         }}
         onExportICS={handleExportWeekICS}
         onShareWhatsApp={handleShareWhatsAppWeek}
@@ -1352,9 +1359,13 @@ export default function App() {
         onResetWeekTurns={handleResetWeekTurns}
         onResyncFirebase={async () => {
           try {
-            showToast('Sincronizzazione Cloud', 'Recupero dati da Firebase RTDB...', 'info');
-            await socketManager.refreshNow();
-            showToast('Sincronizzazione Cloud', 'Richiesto il riallineamento con Firebase. Controlla lo stato della connessione.', 'info');
+            showToast('Sincronizzazione Cloud', 'Controllo e recupero della versione più recente da Firebase RTDB...', 'info');
+            const synced = await socketManager.refreshNow();
+            if (synced) {
+              showToast('Sincronizzazione completata', 'I dati cloud sono stati letti correttamente e l’app è riallineata.', 'success');
+            } else {
+              showToast('Sincronizzazione non riuscita', 'Firebase non ha risposto correttamente. I dati locali non sono stati dichiarati sincronizzati.', 'warn');
+            }
           } catch (e: any) {
             showToast('Errore Rete', 'Errore recupero dati: ' + e.message, 'warn');
           }

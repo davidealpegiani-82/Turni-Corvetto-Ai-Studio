@@ -89,7 +89,7 @@ export const ToolsMenuModal: React.FC<ToolsMenuModalProps> = ({
                 <Radio className="w-5 h-5" />
               </div>
               <div>
-                <strong className="text-sm font-bold text-white block">Centro Notifiche Push & Real-Time</strong>
+                <strong className="text-sm font-bold text-white block">Avvisi e sincronizzazione</strong>
                 <span className="text-slate-400 text-xs">Gestisci registrazioni push e invia messaggi di prova</span>
               </div>
             </div>

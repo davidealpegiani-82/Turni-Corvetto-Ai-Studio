@@ -49,7 +49,7 @@ class RealtimeSocketManager {
   public getClientId(): string { return this.clientId; }
   public getStatus(): SocketStatus { return this.status; }
   public getClientCount(): number { return this.clientCount; }
-  public async refreshNow() { await this.refreshRemote(); }
+  public async refreshNow(): Promise<boolean> { return this.refreshRemote(); }
 
   private setStatus(status: SocketStatus) {
     this.status = status;
@@ -97,13 +97,15 @@ class RealtimeSocketManager {
     return data;
   }
 
-  private async refreshRemote() {
+  private async refreshRemote(): Promise<boolean> {
     try {
       await this.readCloud(true);
       this.setStatus('connected');
+      return true;
     } catch (error) {
       console.warn('[Firebase] Aggiornamento remoto non riuscito:', error);
       this.setStatus('error');
+      return false;
     }
   }
 
@@ -161,7 +163,13 @@ class RealtimeSocketManager {
       try {
         // Dopo un conflitto, non inviare snapshot già accodati e ormai obsoleti.
         // Una nuova modifica dell’utente potrà ripartire dalla versione cloud appena ricevuta.
-        if (sequence <= this.blockedThroughSequence) return false;
+        if (sequence <= this.blockedThroughSequence) {
+          this.emitNotification(
+            '⚠️ Salvataggio sospeso per conflitto',
+            'Una modifica remota è stata recuperata. Questa scrittura era già in coda e usava dati precedenti: non è stata inviata per evitare di sovrascrivere il cloud. Riprova dopo aver verificato la settimana.'
+          );
+          return false;
+        }
         if (!this.etag) await this.readCloud(false);
         const response = await fetch(FIREBASE_URL, {
           method: 'PUT',
