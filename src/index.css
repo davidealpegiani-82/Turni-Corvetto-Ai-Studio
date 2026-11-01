@@ -895,3 +895,81 @@ body.light-theme .glass-card .text-slate-400 {
     border: none !important;
   }
 }
+
+
+/* ACCESSIBILITA' — correzione finale contrasto testi nei due temi.
+   Le classi di colore Tailwind vengono normalizzate in base al tema
+   scelto nell'app, senza dipendere dal tema del sistema operativo. */
+body:not(.light-theme) [class*="text-slate-"],
+body:not(.light-theme) [class*="text-gray-"],
+body:not(.light-theme) [class*="text-zinc-"],
+body:not(.light-theme) [class*="text-neutral-"],
+body:not(.light-theme) [class*="text-stone-"] { color: #e2e8f0 !important; }
+
+body.light-theme [class*="text-slate-"],
+body.light-theme [class*="text-gray-"],
+body.light-theme [class*="text-zinc-"],
+body.light-theme [class*="text-neutral-"],
+body.light-theme [class*="text-stone-"] { color: #334155 !important; }
+
+body:not(.light-theme) [class*="text-blue-"],
+body:not(.light-theme) [class*="text-sky-"],
+body:not(.light-theme) [class*="text-cyan-"] { color: #bfdbfe !important; }
+body.light-theme [class*="text-blue-"],
+body.light-theme [class*="text-sky-"],
+body.light-theme [class*="text-cyan-"] { color: #1e40af !important; }
+
+body:not(.light-theme) [class*="text-green-"],
+body:not(.light-theme) [class*="text-emerald-"],
+body:not(.light-theme) [class*="text-teal-"] { color: #a7f3d0 !important; }
+body.light-theme [class*="text-green-"],
+body.light-theme [class*="text-emerald-"],
+body.light-theme [class*="text-teal-"] { color: #065f46 !important; }
+
+body:not(.light-theme) [class*="text-red-"],
+body:not(.light-theme) [class*="text-rose-"] { color: #fecaca !important; }
+body.light-theme [class*="text-red-"],
+body.light-theme [class*="text-rose-"] { color: #991b1b !important; }
+
+body:not(.light-theme) [class*="text-amber-"],
+body:not(.light-theme) [class*="text-yellow-"],
+body:not(.light-theme) [class*="text-orange-"] { color: #fde68a !important; }
+body.light-theme [class*="text-amber-"],
+body.light-theme [class*="text-yellow-"],
+body.light-theme [class*="text-orange-"] { color: #92400e !important; }
+
+body:not(.light-theme) [class*="text-purple-"],
+body:not(.light-theme) [class*="text-violet-"],
+body:not(.light-theme) [class*="text-indigo-"],
+body:not(.light-theme) [class*="text-pink-"],
+body:not(.light-theme) [class*="text-fuchsia-"] { color: #ddd6fe !important; }
+body.light-theme [class*="text-purple-"],
+body.light-theme [class*="text-violet-"],
+body.light-theme [class*="text-indigo-"],
+body.light-theme [class*="text-pink-"],
+body.light-theme [class*="text-fuchsia-"] { color: #5b21b6 !important; }
+
+/* Varianti dark: non devono rendere pallido il tema chiaro. */
+body.light-theme [class*="dark:text-"] { color: #334155 !important; }
+body:not(.light-theme) [class*="dark:text-"] { color: #e2e8f0 !important; }
+
+/* Testo neutro e controlli: leggibili anche in tabelle e modali. */
+body.light-theme .text-white { color: #0f172a !important; }
+body:not(.light-theme) .text-black,
+body:not(.light-theme) .text-slate-950 { color: #f8fafc !important; }
+body.light-theme input, body.light-theme textarea, body.light-theme select,
+body.light-theme select option { color: #0f172a !important; }
+body:not(.light-theme) input, body:not(.light-theme) textarea,
+body:not(.light-theme) select, body:not(.light-theme) select option { color: #f8fafc !important; }
+body.light-theme table th, body.light-theme table td { color: #1e293b !important; }
+body:not(.light-theme) table th, body:not(.light-theme) table td { color: #e2e8f0 !important; }
+
+/* Mantiene bianco il testo dei pulsanti con sfondo pieno e scuro. */
+body.light-theme button[class*="bg-blue-600"],
+body.light-theme button[class*="bg-blue-700"],
+body.light-theme button[class*="bg-indigo-600"],
+body.light-theme button[class*="bg-emerald-600"],
+body.light-theme button[class*="bg-green-600"],
+body.light-theme button[class*="bg-red-600"],
+body.light-theme button[class*="bg-purple-600"],
+body.light-theme button[class*="bg-rose-600"] { color: #ffffff !important; }
