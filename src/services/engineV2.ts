@@ -58,7 +58,8 @@ export const DEFAULT_CORVETTO_POLICY: CoveragePolicy = {
   warehouse: { minimum: 1, openingMinimum: 2, openingUntil: '08:30', closingMinimum: 1 },
   office: { minimum: 1, openingMinimum: 2, openingUntil: '08:30', closingMinimum: 1 },
   slotMinutes: 30,
-  minimumRestMinutes: 660
+  minimumRestMinutes: 660,
+  checkSkillsAtOpening: true
 };
 
 
