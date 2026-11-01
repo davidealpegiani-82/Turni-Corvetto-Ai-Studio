@@ -83,6 +83,7 @@ class RealtimeSocketManager {
             this.emitData(msg.data, { changeType: 'initial_sync' });
           } else if (msg.type === 'revision_conflict' && msg.data) {
             this.emitData(msg.data, { sourceClientId: 'server-conflict', changeType: 'revision_conflict', description: 'Un altro dispositivo ha salvato prima di questa modifica. Dati riallineati dal server.' });
+            this.emitNotification('⚠️ Modifiche riallineate', 'Il server ha protetto i dati più recenti da una sovrascrittura. Controlla l’ultima modifica prima di riprovare.');
           } else if (msg.type === 'data_updated' && msg.data) {
             this.emitData(msg.data, {
               sourceClientId: msg.sourceClientId,
