@@ -1563,20 +1563,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Accesso rapido ai controlli locali */}
-      <button
-        type="button"
-        onClick={() => setAiCopilotOpen(true)}
-        className="fixed bottom-6 right-6 z-40 p-3 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-xl shadow-purple-600/35 flex items-center gap-2.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-white dark:ring-slate-900 group"
-        title="Apri l'assistente locale per controlli su turni e coperture"
-      >
-        <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🧭</span>
-        <div className="text-left hidden sm:block">
-          <div className="font-extrabold text-xs leading-tight tracking-wide">Assistente</div>
-          <div className="text-[10px] text-purple-200">Turni & Verifiche</div>
-        </div>
-      </button>
-
       {/* Assistente locale per controlli operativi */}
       <AICopilotModal
         open={aiCopilotOpen}
