@@ -1350,9 +1350,13 @@ export default function App() {
         onResetWeekTurns={handleResetWeekTurns}
         onResyncFirebase={async () => {
           try {
-            showToast('Sincronizzazione Cloud', 'Recupero dati da Firebase RTDB...', 'info');
-            await socketManager.refreshNow();
-            showToast('Sincronizzazione Cloud', 'Richiesto il riallineamento con Firebase. Controlla lo stato della connessione.', 'info');
+            showToast('Sincronizzazione Cloud', 'Controllo e recupero della versione più recente da Firebase RTDB...', 'info');
+            const synced = await socketManager.refreshNow();
+            if (synced) {
+              showToast('Sincronizzazione completata', 'I dati cloud sono stati letti correttamente e l’app è riallineata.', 'success');
+            } else {
+              showToast('Sincronizzazione non riuscita', 'Firebase non ha risposto correttamente. I dati locali non sono stati dichiarati sincronizzati.', 'warn');
+            }
           } catch (e: any) {
             showToast('Errore Rete', 'Errore recupero dati: ' + e.message, 'warn');
           }
