@@ -1,7 +1,7 @@
 import type { AppData, WeekShifts } from '../../types/turni';
 
 // Sanitized schedule fixture from the repository's 2026-W44 sample.
-// Names and free-text notes are deliberately omitted.
+// Personal names and free-text notes are deliberately omitted.
 export const corvettoW44App = {
   workers: [
   {
@@ -15,6 +15,25 @@ export const corvettoW44App = {
       "office": true,
       "warehouse": false,
       "officeProfile": "standard"
+    },
+    "profile": {
+      "openingExperience": "mentor",
+      "qualifications": {
+        "fireSafety": {
+          "expiry": "2027-10-15",
+          "status": "valid"
+        },
+        "firstAid": {
+          "expiry": "2027-11-30",
+          "status": "valid"
+        },
+        "forklift": {
+          "status": "none"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -28,6 +47,24 @@ export const corvettoW44App = {
       "office": true,
       "warehouse": false,
       "officeProfile": "standard"
+    },
+    "profile": {
+      "openingExperience": "autonomous",
+      "qualifications": {
+        "fireSafety": {
+          "status": "none"
+        },
+        "firstAid": {
+          "expiry": "2027-05-20",
+          "status": "valid"
+        },
+        "forklift": {
+          "status": "none"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -41,6 +78,24 @@ export const corvettoW44App = {
       "office": true,
       "warehouse": false,
       "officeProfile": "standard"
+    },
+    "profile": {
+      "openingExperience": "autonomous",
+      "qualifications": {
+        "fireSafety": {
+          "expiry": "2027-04-10",
+          "status": "valid"
+        },
+        "firstAid": {
+          "status": "none"
+        },
+        "forklift": {
+          "status": "none"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -54,6 +109,25 @@ export const corvettoW44App = {
       "office": true,
       "warehouse": false,
       "officeProfile": "severin"
+    },
+    "profile": {
+      "openingExperience": "mentor",
+      "qualifications": {
+        "fireSafety": {
+          "expiry": "2027-06-15",
+          "status": "valid"
+        },
+        "firstAid": {
+          "expiry": "2027-08-30",
+          "status": "valid"
+        },
+        "forklift": {
+          "status": "none"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -67,6 +141,23 @@ export const corvettoW44App = {
       "office": true,
       "warehouse": false,
       "officeProfile": "finiture"
+    },
+    "profile": {
+      "openingExperience": "unknown",
+      "qualifications": {
+        "fireSafety": {
+          "status": "none"
+        },
+        "firstAid": {
+          "status": "none"
+        },
+        "forklift": {
+          "status": "none"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -80,6 +171,26 @@ export const corvettoW44App = {
       "office": false,
       "warehouse": true,
       "officeProfile": ""
+    },
+    "profile": {
+      "openingExperience": "mentor",
+      "qualifications": {
+        "fireSafety": {
+          "status": "none"
+        },
+        "firstAid": {
+          "expiry": "2027-03-12",
+          "status": "valid"
+        },
+        "forklift": {
+          "expiry": "2027-06-15",
+          "status": "valid"
+        },
+        "loader": {
+          "expiry": "2027-06-15",
+          "status": "valid"
+        }
+      }
     }
   },
   {
@@ -93,6 +204,25 @@ export const corvettoW44App = {
       "office": false,
       "warehouse": true,
       "officeProfile": ""
+    },
+    "profile": {
+      "openingExperience": "autonomous",
+      "qualifications": {
+        "fireSafety": {
+          "expiry": "2027-08-14",
+          "status": "valid"
+        },
+        "firstAid": {
+          "status": "none"
+        },
+        "forklift": {
+          "expiry": "2027-09-20",
+          "status": "valid"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -106,6 +236,25 @@ export const corvettoW44App = {
       "office": false,
       "warehouse": true,
       "officeProfile": ""
+    },
+    "profile": {
+      "openingExperience": "mentor",
+      "qualifications": {
+        "fireSafety": {
+          "status": "none"
+        },
+        "firstAid": {
+          "status": "none"
+        },
+        "forklift": {
+          "expiry": "2027-04-30",
+          "status": "valid"
+        },
+        "loader": {
+          "expiry": "2027-04-30",
+          "status": "valid"
+        }
+      }
     }
   },
   {
@@ -119,6 +268,25 @@ export const corvettoW44App = {
       "office": false,
       "warehouse": true,
       "officeProfile": ""
+    },
+    "profile": {
+      "openingExperience": "autonomous",
+      "qualifications": {
+        "fireSafety": {
+          "status": "none"
+        },
+        "firstAid": {
+          "expiry": "2027-09-18",
+          "status": "valid"
+        },
+        "forklift": {
+          "expiry": "2027-12-10",
+          "status": "valid"
+        },
+        "loader": {
+          "status": "none"
+        }
+      }
     }
   },
   {
@@ -132,6 +300,26 @@ export const corvettoW44App = {
       "office": false,
       "warehouse": true,
       "officeProfile": ""
+    },
+    "profile": {
+      "openingExperience": "mentor",
+      "qualifications": {
+        "fireSafety": {
+          "expiry": "2027-07-22",
+          "status": "valid"
+        },
+        "firstAid": {
+          "status": "none"
+        },
+        "forklift": {
+          "expiry": "2027-08-05",
+          "status": "valid"
+        },
+        "loader": {
+          "expiry": "2027-08-05",
+          "status": "valid"
+        }
+      }
     }
   }
 ],
