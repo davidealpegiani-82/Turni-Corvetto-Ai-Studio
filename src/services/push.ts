@@ -1,5 +1,3 @@
-import { PushSubscriptionRecord } from '../types/turni';
-
 // Suono discreto di notifica sintetizzato con Web Audio API.
 export function playNotificationChime() {
   try {
