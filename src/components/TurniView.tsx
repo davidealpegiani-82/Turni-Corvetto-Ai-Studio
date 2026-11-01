@@ -414,17 +414,17 @@ export const TurniView: React.FC<TurniViewProps> = ({
                           const cellHours = countableDayHours(w.id, dayIdx, cell, weekKey, appData);
                           totalWeekMinutes += cellHours * 60;
 
-                          const statusColor = getStatusColor(cell?.status);
                           const isRest = isRestStatus(cell?.status);
                           const dayStr = localDateKey(dateObj);
                           const holiday = getItalianHoliday(dateObj);
+                          const details = getCellDisplayDetails(cell, w.id, dayIdx, weekKey, appData);
+                          // Il colore segue la causale visualizzata, non un eventuale status storico rimasto nella cella.
+                          const statusColor = getStatusColor(details.leaveLabel || cell?.status);
 
                           // Eventi del giorno per questo lavoratore (inclusi eventi di intera filiale)
                           const dayEvents = (appData.events || []).filter(
                             e => e.date === dayStr && (e.participantIds?.includes(w.id) || !e.participantIds || e.participantIds.length === 0 || e.participantIds.length === appData.workers.length)
                           );
-
-                          const details = getCellDisplayDetails(cell, w.id, dayIdx, weekKey, appData);
 
                           return (
                             <td

@@ -530,6 +530,102 @@ body.light-theme .bg-indigo-600\/20 {
 }
 
 /* Stili Ottimizzati per Stampa A4 dei Moduli */
+/* ========================================================
+   CONTRASTO TESTI: PALETTE COERENTE NEI DUE TEMI
+   Le classi semantiche slate/black vengono adattate allo sfondo.
+   Le etichette su fondi colorati mantengono invece il contrasto
+   previsto dal colore del badge.
+   ======================================================== */
+
+body:not(.light-theme) .text-black:not([class*="bg-"]),
+body:not(.light-theme) .text-slate-950:not([class*="bg-"]),
+body:not(.light-theme) .text-slate-900:not([class*="bg-"]) {
+  color: #f8fafc !important;
+}
+
+body:not(.light-theme) .text-slate-800:not([class*="bg-"]) {
+  color: #f1f5f9 !important;
+}
+
+body:not(.light-theme) .text-slate-700:not([class*="bg-"]),
+body:not(.light-theme) .text-slate-600:not([class*="bg-"]) {
+  color: #e2e8f0 !important;
+}
+
+body:not(.light-theme) .text-slate-500:not([class*="bg-"]) {
+  color: #cbd5e1 !important;
+}
+
+/* Superfici legacy chiare presenti in alcune schede/modali: scurite
+   nel tema dark per evitare testo chiaro su pannello bianco. */
+body:not(.light-theme) .bg-white,
+body:not(.light-theme) .bg-slate-50,
+body:not(.light-theme) .bg-slate-100 {
+  background-color: rgba(22, 33, 56, 0.96) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  color: #f1f5f9 !important;
+}
+
+/* In tema chiaro il testo bianco resta bianco quando è dentro
+   un pulsante o un badge con fondo cromatico saturo. */
+body.light-theme .text-white[class*="bg-"],
+body.light-theme .text-slate-100[class*="bg-"],
+body.light-theme .text-slate-200[class*="bg-"],
+body.light-theme [class*="bg-red-"] .text-white,
+body.light-theme [class*="bg-blue-"] .text-white,
+body.light-theme [class*="bg-emerald-"] .text-white,
+body.light-theme [class*="bg-green-"] .text-white,
+body.light-theme [class*="bg-purple-"] .text-white,
+body.light-theme [class*="bg-indigo-"] .text-white,
+body.light-theme [class*="bg-rose-"] .text-white,
+body.light-theme [class*="bg-orange-"] .text-white,
+body.light-theme [class*="bg-teal-"] .text-white,
+body.light-theme [class*="bg-sky-"] .text-white,
+body.light-theme [class*="bg-pink-"] .text-white,
+body.light-theme [class*="bg-red-"] .text-slate-100,
+body.light-theme [class*="bg-blue-"] .text-slate-100,
+body.light-theme [class*="bg-emerald-"] .text-slate-100,
+body.light-theme [class*="bg-purple-"] .text-slate-100,
+body.light-theme [class*="bg-indigo-"] .text-slate-100,
+body.light-theme [class*="bg-rose-"] .text-slate-100,
+body.light-theme [class*="bg-orange-"] .text-slate-100,
+body.light-theme [class*="bg-teal-"] .text-slate-100,
+body.light-theme [class*="bg-sky-"] .text-slate-100,
+body.light-theme [class*="bg-pink-"] .text-slate-100,
+body.light-theme [class*="bg-red-"] .text-slate-200,
+body.light-theme [class*="bg-blue-"] .text-slate-200,
+body.light-theme [class*="bg-emerald-"] .text-slate-200,
+body.light-theme [class*="bg-purple-"] .text-slate-200,
+body.light-theme [class*="bg-indigo-"] .text-slate-200,
+body.light-theme [class*="bg-rose-"] .text-slate-200,
+body.light-theme [class*="bg-orange-"] .text-slate-200,
+body.light-theme [class*="bg-teal-"] .text-slate-200,
+body.light-theme [class*="bg-sky-"] .text-slate-200,
+body.light-theme [class*="bg-pink-"] .text-slate-200 {
+  color: #ffffff !important;
+}
+
+/* Testi scuri intenzionali su badge chiari (es. ambra) restano scuri
+   anche nel tema dark. */
+body:not(.light-theme) .text-black[class*="bg-"],
+body:not(.light-theme) .text-slate-950[class*="bg-"],
+body:not(.light-theme) .text-slate-900[class*="bg-"] {
+  color: #0f172a !important;
+}
+
+/* Placeholder e controlli nativi leggibili in entrambi i temi. */
+body:not(.light-theme) input::placeholder,
+body:not(.light-theme) textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;

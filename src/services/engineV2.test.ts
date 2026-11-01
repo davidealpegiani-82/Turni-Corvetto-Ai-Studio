@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { AppData, WeekShifts } from '../types/turni';
 import { mergeProposalSafely, policyFromAppData, validateWeekV2 } from './engineV2';
+import { getCellDisplayDetails } from './engine';
 import { corvettoW44App, corvettoW44Week } from './fixtures/corvettoW44';
 
 const app = {
@@ -131,4 +132,34 @@ test('missing equipment qualification is a warning, not an automatic block', () 
   assert.equal(result.valid, true, JSON.stringify(result.findings.filter(f => f.severity === 'error')));
   assert.ok(result.findings.some(f => f.code === 'SKILL_COVERAGE_WARNING' && f.area === 'warehouse'));
   assert.ok(result.findings.some(f => f.code === 'OPENING_EXPERIENCE_WARNING' && f.area === 'warehouse'));
+});
+
+
+test('tabella mostra la causale della richiesta collegata anche se lo status storico è MALATTIA', () => {
+  const appData = {
+    ...corvettoW44App,
+    weeks: {},
+    leaveRequests: [{
+      id: 'permesso-drigo-2026-10-29',
+      workerId: 'w_9',
+      tipo: 'Permesso Non retribuito',
+      mode: 'single',
+      day: '2026-10-29',
+      fullDay: true,
+      status: 'approvata',
+      syncTurns: true,
+      createdAt: '2026-10-01T09:00:00.000Z'
+    }]
+  } as unknown as AppData;
+
+  const details = getCellDisplayDetails({
+    status: 'MALATTIA',
+    leaveType: 'Malattia',
+    leaveFullDay: true,
+    leaveHours: 8,
+    leaveRequestId: 'permesso-drigo-2026-10-29'
+  }, 'w_9', 3, '2026-W44', appData);
+
+  assert.equal(details.isFullDayLeave, true);
+  assert.equal(details.leaveLabel, 'Permesso Non retribuito');
 });
