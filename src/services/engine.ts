@@ -701,7 +701,9 @@ export function getCellDisplayDetails(
   if (!leaveReq) {
     leaveReq = (appData.leaveRequests || []).find(
       r => r.workerId === workerId && r.status !== 'rifiutata' && (
-        r.mode === 'single' ? r.day === dayIso : (r.fromDay && r.toDay && dayIso >= r.fromDay && dayIso <= r.toDay)
+        r.mode === 'single'
+        ? r.day === dayIso
+        : (r.fromDay && (r.openEnded ? dayIso >= r.fromDay : !!r.toDay && dayIso >= r.fromDay && dayIso <= r.toDay))
       )
     );
   }
