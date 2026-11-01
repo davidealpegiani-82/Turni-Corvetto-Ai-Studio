@@ -36,6 +36,7 @@ interface TurniViewProps {
   onToggleSelectAll: () => void;
   onOpenEventDetails: (eventId: string, defaultDate?: string, defaultWorkerId?: string) => void;
   onOpenRolDetails: (rolData: RolModalData) => void;
+  onOpenLeaveRequest: (leaveRequestId: string | undefined, workerId: string, date: string, leaveLabel?: string) => void;
   onOpenSwapModal?: () => void;
   onSwitchToToday?: () => void;
   onGoToCurrentWeek?: () => void;
@@ -53,6 +54,7 @@ export const TurniView: React.FC<TurniViewProps> = ({
   onToggleSelectAll,
   onOpenEventDetails,
   onOpenRolDetails,
+  onOpenLeaveRequest,
   onOpenSwapModal,
   onSwitchToToday,
   onGoToCurrentWeek
@@ -474,31 +476,11 @@ export const TurniView: React.FC<TurniViewProps> = ({
                                   {/* Causale Giornata Intera (Ferie, Malattia, Ricovero, ROL, ecc.) */}
                                   <div
                                     onClick={(ev) => {
-                                      if (details.leaveLabel?.toUpperCase().includes('ROL') || details.leaveLabel?.toUpperCase().includes('PERM') || cell?.status === 'ROL') {
-                                        ev.stopPropagation();
-                                        onOpenRolDetails({
-                                          workerId: w.id,
-                                          workerName: w.name,
-                                          workerRole: w.role,
-                                          workerGroup: w.group,
-                                          date: dateObj,
-                                          dayIdx,
-                                          leaveLabel: details.leaveLabel || 'ROL',
-                                          leaveHours: cellHours,
-                                          totalCountableHours: cellHours,
-                                          note: cell?.note,
-                                          status: cell?.status,
-                                          leaveRequestId: cell?.leaveRequestId,
-                                          cell
-                                        });
-                                      }
+                                      ev.stopPropagation();
+                                      onOpenLeaveRequest(cell?.leaveRequestId, w.id, dayStr, details.leaveLabel);
                                     }}
-                                    className={`flex flex-col items-center justify-center gap-0.5 ${
-                                      details.leaveLabel?.toUpperCase().includes('ROL') || details.leaveLabel?.toUpperCase().includes('PERM') || cell?.status === 'ROL'
-                                        ? 'cursor-pointer hover:scale-105 transition-transform'
-                                        : ''
-                                    }`}
-                                    title={details.leaveLabel?.toUpperCase().includes('ROL') || cell?.status === 'ROL' ? 'Clicca per vedere le specifiche del ROL' : undefined}
+                                    className="flex flex-col items-center justify-center gap-0.5 cursor-pointer hover:scale-105 transition-transform"
+                                    title={`Apri la richiesta: ${details.leaveLabel || 'assenza'}`}
                                   >
                                     <span
                                       className="font-black text-[11px] uppercase tracking-wider"
@@ -559,24 +541,7 @@ export const TurniView: React.FC<TurniViewProps> = ({
                                         <span
                                           onClick={(ev) => {
                                             ev.stopPropagation();
-                                            onOpenRolDetails({
-                                              workerId: w.id,
-                                              workerName: w.name,
-                                              workerRole: w.role,
-                                              workerGroup: w.group,
-                                              date: dateObj,
-                                              dayIdx,
-                                              leaveLabel: details.leaveLabel || 'ROL',
-                                              leaveHours: details.leaveHours,
-                                              leaveTimeRange: details.leaveTimeRange,
-                                              workedTimes: details.workedTimes,
-                                              workedHours: details.workedHours,
-                                              totalCountableHours: details.totalCountableHours,
-                                              note: cell?.note,
-                                              status: cell?.status,
-                                              leaveRequestId: cell?.leaveRequestId,
-                                              cell
-                                            });
+                                            onOpenLeaveRequest(cell?.leaveRequestId, w.id, dayStr, details.leaveLabel);
                                           }}
                                           className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50 cursor-pointer hover:bg-amber-200 transition"
                                           title="Ore assenza per permesso/ROL – Clicca per vedere le specifiche ROL"
@@ -592,24 +557,7 @@ export const TurniView: React.FC<TurniViewProps> = ({
                                     <div
                                       onClick={(ev) => {
                                         ev.stopPropagation();
-                                        onOpenRolDetails({
-                                          workerId: w.id,
-                                          workerName: w.name,
-                                          workerRole: w.role,
-                                          workerGroup: w.group,
-                                          date: dateObj,
-                                          dayIdx,
-                                          leaveLabel: details.leaveLabel || 'ROL',
-                                          leaveHours: details.leaveHours,
-                                          leaveTimeRange: details.leaveTimeRange,
-                                          workedTimes: details.workedTimes,
-                                          workedHours: details.workedHours,
-                                          totalCountableHours: details.totalCountableHours,
-                                          note: cell?.note,
-                                          status: cell?.status,
-                                          leaveRequestId: cell?.leaveRequestId,
-                                          cell
-                                        });
+                                        onOpenLeaveRequest(cell?.leaveRequestId, w.id, dayStr, details.leaveLabel);
                                       }}
                                       className="text-[9px] font-bold text-purple-900 dark:text-purple-300 bg-purple-100 dark:bg-purple-500/20 border border-purple-200 dark:border-purple-500/30 px-1 py-0.5 rounded truncate max-w-[110px] mt-0.5 flex items-center justify-center gap-1 shadow-2xs cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-500/40 hover:scale-105 transition-all"
                                       title={`${details.leaveLabel}${details.leaveTimeRange ? ` (${details.leaveTimeRange})` : ''}${cell?.note ? ` – ${cell.note}` : ''} – Clicca per vedere le specifiche ROL`}
