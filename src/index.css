@@ -626,6 +626,227 @@ body.light-theme textarea::placeholder {
   opacity: 1 !important;
 }
 
+/* ========================================================
+   CONTRASTO GLOBALE V2 — PALETTE SEMANTICA COMPLETA
+   Le classi cromatiche scure devono diventare chiare su superfici
+   dark; nel tema chiaro le varianti chiare devono diventare scure.
+   Vale anche per badge, select, righe e schede delle richieste.
+   ======================================================== */
+
+/* Tema scuro: evita testo scuro su badge/sfondi colorati traslucidi.
+   Le tinte semantiche restano riconoscibili, ma il testo passa a
+   tonalità chiare ad alto contrasto. */
+body:not(.light-theme) .text-blue-700,
+body:not(.light-theme) .text-blue-800,
+body:not(.light-theme) .text-blue-900,
+body:not(.light-theme) .text-sky-700,
+body:not(.light-theme) .text-sky-800,
+body:not(.light-theme) .text-sky-900,
+body:not(.light-theme) .text-cyan-700,
+body:not(.light-theme) .text-cyan-800,
+body:not(.light-theme) .text-cyan-900 {
+  color: #bfdbfe !important;
+}
+
+body:not(.light-theme) .text-emerald-700,
+body:not(.light-theme) .text-emerald-800,
+body:not(.light-theme) .text-emerald-900,
+body:not(.light-theme) .text-green-700,
+body:not(.light-theme) .text-green-800,
+body:not(.light-theme) .text-green-900,
+body:not(.light-theme) .text-teal-700,
+body:not(.light-theme) .text-teal-800,
+body:not(.light-theme) .text-teal-900 {
+  color: #a7f3d0 !important;
+}
+
+body:not(.light-theme) .text-red-700,
+body:not(.light-theme) .text-red-800,
+body:not(.light-theme) .text-red-900,
+body:not(.light-theme) .text-rose-700,
+body:not(.light-theme) .text-rose-800,
+body:not(.light-theme) .text-rose-900 {
+  color: #fecaca !important;
+}
+
+body:not(.light-theme) .text-amber-700,
+body:not(.light-theme) .text-amber-800,
+body:not(.light-theme) .text-amber-900,
+body:not(.light-theme) .text-yellow-700,
+body:not(.light-theme) .text-yellow-800,
+body:not(.light-theme) .text-yellow-900,
+body:not(.light-theme) .text-orange-700,
+body:not(.light-theme) .text-orange-800,
+body:not(.light-theme) .text-orange-900 {
+  color: #fde68a !important;
+}
+
+body:not(.light-theme) .text-purple-700,
+body:not(.light-theme) .text-purple-800,
+body:not(.light-theme) .text-purple-900,
+body:not(.light-theme) .text-violet-700,
+body:not(.light-theme) .text-violet-800,
+body:not(.light-theme) .text-violet-900,
+body:not(.light-theme) .text-fuchsia-700,
+body:not(.light-theme) .text-fuchsia-800,
+body:not(.light-theme) .text-fuchsia-900,
+body:not(.light-theme) .text-pink-700,
+body:not(.light-theme) .text-pink-800,
+body:not(.light-theme) .text-pink-900,
+body:not(.light-theme) .text-indigo-700,
+body:not(.light-theme) .text-indigo-800,
+body:not(.light-theme) .text-indigo-900 {
+  color: #ddd6fe !important;
+}
+
+/* I testi cromatici di intensità media vengono schiariti anch'essi:
+   utile per stati, date, dettagli e descrizioni dentro card scure. */
+body:not(.light-theme) .text-blue-600,
+body:not(.light-theme) .text-sky-600,
+body:not(.light-theme) .text-cyan-600 {
+  color: #93c5fd !important;
+}
+body:not(.light-theme) .text-emerald-600,
+body:not(.light-theme) .text-green-600,
+body:not(.light-theme) .text-teal-600 {
+  color: #6ee7b7 !important;
+}
+body:not(.light-theme) .text-red-600,
+body:not(.light-theme) .text-rose-600 {
+  color: #fca5a5 !important;
+}
+body:not(.light-theme) .text-amber-600,
+body:not(.light-theme) .text-yellow-600,
+body:not(.light-theme) .text-orange-600 {
+  color: #fcd34d !important;
+}
+body:not(.light-theme) .text-purple-600,
+body:not(.light-theme) .text-violet-600,
+body:not(.light-theme) .text-fuchsia-600,
+body:not(.light-theme) .text-pink-600,
+body:not(.light-theme) .text-indigo-600 {
+  color: #c4b5fd !important;
+}
+
+/* Tema chiaro: le varianti chiare non devono rimanere pallide
+   su card bianche. I pulsanti/badge saturi vengono ripristinati sotto. */
+body.light-theme .text-blue-200,
+body.light-theme .text-blue-300,
+body.light-theme .text-blue-400,
+body.light-theme .text-sky-200,
+body.light-theme .text-sky-300,
+body.light-theme .text-sky-400,
+body.light-theme .text-cyan-200,
+body.light-theme .text-cyan-300,
+body.light-theme .text-cyan-400 {
+  color: #1e40af !important;
+}
+body.light-theme .text-emerald-200,
+body.light-theme .text-emerald-300,
+body.light-theme .text-emerald-400,
+body.light-theme .text-green-200,
+body.light-theme .text-green-300,
+body.light-theme .text-green-400,
+body.light-theme .text-teal-200,
+body.light-theme .text-teal-300,
+body.light-theme .text-teal-400 {
+  color: #065f46 !important;
+}
+body.light-theme .text-red-200,
+body.light-theme .text-red-300,
+body.light-theme .text-red-400,
+body.light-theme .text-rose-200,
+body.light-theme .text-rose-300,
+body.light-theme .text-rose-400 {
+  color: #991b1b !important;
+}
+body.light-theme .text-amber-200,
+body.light-theme .text-amber-300,
+body.light-theme .text-amber-400,
+body.light-theme .text-yellow-200,
+body.light-theme .text-yellow-300,
+body.light-theme .text-yellow-400,
+body.light-theme .text-orange-200,
+body.light-theme .text-orange-300,
+body.light-theme .text-orange-400 {
+  color: #92400e !important;
+}
+body.light-theme .text-purple-200,
+body.light-theme .text-purple-300,
+body.light-theme .text-purple-400,
+body.light-theme .text-violet-200,
+body.light-theme .text-violet-300,
+body.light-theme .text-violet-400,
+body.light-theme .text-fuchsia-200,
+body.light-theme .text-fuchsia-300,
+body.light-theme .text-fuchsia-400,
+body.light-theme .text-pink-200,
+body.light-theme .text-pink-300,
+body.light-theme .text-pink-400,
+body.light-theme .text-indigo-200,
+body.light-theme .text-indigo-300,
+body.light-theme .text-indigo-400 {
+  color: #5b21b6 !important;
+}
+
+/* Ripristina testo bianco solo su superfici realmente sature,
+   senza trasformare badge pastello in coppie bianco/chiaro. */
+body.light-theme [class*="bg-blue-600"] .text-white,
+body.light-theme [class*="bg-blue-700"] .text-white,
+body.light-theme [class*="bg-red-600"] .text-white,
+body.light-theme [class*="bg-red-700"] .text-white,
+body.light-theme [class*="bg-emerald-600"] .text-white,
+body.light-theme [class*="bg-emerald-700"] .text-white,
+body.light-theme [class*="bg-green-600"] .text-white,
+body.light-theme [class*="bg-green-700"] .text-white,
+body.light-theme [class*="bg-purple-600"] .text-white,
+body.light-theme [class*="bg-purple-700"] .text-white,
+body.light-theme [class*="bg-indigo-600"] .text-white,
+body.light-theme [class*="bg-indigo-700"] .text-white,
+body.light-theme [class*="bg-amber-600"] .text-white,
+body.light-theme [class*="bg-orange-600"] .text-white,
+body.light-theme [class*="bg-rose-600"] .text-white,
+body.light-theme [class*="bg-pink-600"] .text-white {
+  color: #ffffff !important;
+}
+
+/* Controlli nativi: testo, opzioni e placeholder sempre leggibili. */
+body:not(.light-theme) select,
+body:not(.light-theme) select option {
+  color: #f1f5f9 !important;
+  background-color: #172033 !important;
+}
+body.light-theme select,
+body.light-theme select option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+body:not(.light-theme) input,
+body:not(.light-theme) textarea {
+  color: #f8fafc;
+  caret-color: #93c5fd;
+}
+body.light-theme input,
+body.light-theme textarea {
+  color: #0f172a;
+  caret-color: #1d4ed8;
+}
+
+/* Schede richieste: contrasto coerente per intestazioni, date,
+   note e menu stato, indipendentemente dalle varianti dark: di Tailwind. */
+body:not(.light-theme) .glass-card .text-slate-900,
+body:not(.light-theme) .glass-card .text-slate-800,
+body:not(.light-theme) .glass-card .text-slate-700,
+body:not(.light-theme) .glass-card .text-slate-600 {
+  color: #e2e8f0 !important;
+}
+body.light-theme .glass-card .text-slate-100,
+body.light-theme .glass-card .text-slate-200,
+body.light-theme .glass-card .text-slate-300,
+body.light-theme .glass-card .text-slate-400 {
+  color: #334155 !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;
