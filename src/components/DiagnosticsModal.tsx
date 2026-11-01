@@ -8,15 +8,13 @@ interface DiagnosticsModalProps {
   onClose: () => void;
   appData: AppData;
   socketStatus: SocketStatus;
-  connectedClients: number;
 }
 
 export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
   isOpen,
   onClose,
   appData,
-  socketStatus,
-  connectedClients
+  socketStatus
 }) => {
   if (!isOpen) return null;
 
@@ -28,9 +26,9 @@ export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
 
     // 1. Sincronizzazione WebSocket
     list.push({
-      name: 'Connessione WebSocket Real-Time',
+      name: 'Connessione Firebase Realtime',
       pass: socketStatus === 'connected',
-      detail: socketStatus === 'connected' ? `Connesso con successo al server (${connectedClients} client attivi)` : `Stato: ${socketStatus}`
+      detail: socketStatus === 'connected' ? 'Firebase raggiungibile e streaming attivo' : `Stato: ${socketStatus}`
     });
 
     // 2. Integrità Team Collaboratori
