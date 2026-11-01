@@ -33,19 +33,3 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     return null;
   }
 }
-
-// Le notifiche push richiedono un servizio mittente protetto. Su GitHub Pages statico
-// non esponiamo chiavi private nel browser: restano attive le notifiche in-app/realtime.
-export async function getPushSubscription(): Promise<PushSubscription | null> {
-  return null;
-}
-
-export async function requestPushSubscription(): Promise<{ success: boolean; error?: string; subscription?: PushSubscription }> {
-  return { success: false, error: 'Le notifiche push in background non sono disponibili nella versione gratuita senza server. Gli aggiornamenti in tempo reale e gli avvisi interni all’app restano attivi.' };
-}
-
-export async function triggerPushNotification(_payload: {
-  title: string; body: string; icon?: string; url?: string; tag?: string;
-}): Promise<boolean> {
-  return false;
-}

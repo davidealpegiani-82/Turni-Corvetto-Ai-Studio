@@ -9,7 +9,6 @@ import {
   Sun,
   Moon,
   Bell,
-  Radio,
   Users
 } from 'lucide-react';
 import { SocketStatus } from '../services/socket';
@@ -22,10 +21,6 @@ interface HeaderProps {
   activeView: 'turni' | 'oggi' | 'ferie' | 'eventi';
   setActiveView: (view: 'turni' | 'oggi' | 'ferie' | 'eventi') => void;
   socketStatus: SocketStatus;
-  connectedClients: number;
-  pushSubscribed: boolean;
-  onRequestPush: () => void;
-  onSendTestPush: () => void;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
   onGenerateProposal: () => void;
@@ -36,7 +31,6 @@ interface HeaderProps {
   onOpenHelpGuide: () => void;
   onOpenNotifications: () => void;
   onOpenAtmosphere?: () => void;
-  unreadCount: number;
   weekNumber: number;
 }
 
@@ -48,10 +42,6 @@ export const Header: React.FC<HeaderProps> = ({
   activeView,
   setActiveView,
   socketStatus,
-  connectedClients,
-  pushSubscribed,
-  onRequestPush,
-  onSendTestPush,
   theme,
   onToggleTheme,
   onGenerateProposal,
@@ -61,7 +51,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenToolsMenu,
   onOpenHelpGuide,
   onOpenNotifications,
-  unreadCount,
   weekNumber
 }) => {
   return (
@@ -86,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
-              {/* Stato WebSocket Realtime */}
+              {/* Stato sincronizzazione Firebase Realtime */}
               <div
                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border backdrop-blur-md transition ${
                   socketStatus === 'connected'
@@ -106,33 +95,17 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}
                 />
                 {socketStatus === 'connected' ? (
-                  <span>Sync Real-Time Attivo</span>
+                  <span>Cloud sincronizzato</span>
                 ) : socketStatus === 'connecting' ? (
-                  <span>Connessione socket...</span>
+                  <span>Connessione cloud...</span>
                 ) : (
-                  <span>Modalità offline</span>
+                  <span>Cloud non disponibile</span>
                 )}
               </div>
 
-              {/* Contatore utenti connessi */}
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full glass-card text-slate-400 text-[11px] font-medium border border-white/5">
-                <Users className="w-3 h-3 text-blue-400" />
-                <span className="tabular-nums">{connectedClients} {connectedClients === 1 ? 'dispositivo' : 'dispositivi'}</span>
-              </div>
 
-              {/* Stato Notifiche Push */}
-              <button
-                onClick={pushSubscribed ? onSendTestPush : onRequestPush}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-semibold cursor-pointer backdrop-blur-md transition ${
-                  pushSubscribed
-                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/20'
-                    : 'bg-purple-500/15 border-purple-500/40 text-purple-300 hover:bg-purple-500/25 animate-pulse'
-                }`}
-                title={pushSubscribed ? 'Notifiche Push attive! Clicca per inviare un test' : 'Clicca per abilitare le notifiche push'}
-              >
-                <Radio className="w-3 h-3" />
-                {pushSubscribed ? 'Push Attivo' : 'Attiva Notifiche Push'}
-              </button>
+
+
             </div>
           </div>
         </div>
@@ -147,14 +120,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenNotifications}
             className="relative p-2 rounded-xl glass-btn-ghost transition cursor-pointer"
-            title="Centro Notifiche"
+            title="Avvisi e stato sincronizzazione"
           >
             <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-[10px] font-bold flex items-center justify-center text-white shadow-sm shadow-red-600/50">
-                {unreadCount}
-              </span>
-            )}
           </button>
 
           <button
@@ -226,18 +194,16 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Pulsanti Azione Principali */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* AI Copilot Button */}
+          {/* Assistente controlli locali */}
           <button
             type="button"
             onClick={onOpenAICopilot}
             className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/25 border border-white/20 flex items-center gap-1.5 transition active:scale-95 cursor-pointer backdrop-blur-md"
-            title="Apri l'Assistente AI Copilot: modifica turni, inserisci ferie/impegni e verifica conformità in tempo reale"
+            title="Apri l'assistente locale per controlli su turni, coperture e monte ore"
           >
-            <span className="text-sm">🤖</span>
-            <span>AI Copilot</span>
-            <span className="hidden sm:inline px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-extrabold uppercase">
-              Live
-            </span>
+            <span className="text-sm">🧭</span>
+            <span>Assistente controlli</span>
+            
           </button>
 
           {activeView === 'turni' && (

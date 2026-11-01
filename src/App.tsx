@@ -36,7 +36,6 @@ import {
   Worker,
   WorkerQualificationsMap,
   WorkerSkillsProfile,
-  AIProposedAction
 } from './types/turni';
 import {
   getWeekInfo,
@@ -56,9 +55,6 @@ import {
 } from './services/socket';
 import {
   registerServiceWorker,
-  getPushSubscription,
-  requestPushSubscription,
-  triggerPushNotification,
   playNotificationChime
 } from './services/push';
 import {
@@ -80,6 +76,8 @@ import {
 
 export default function App() {
   const [appData, setAppData] = useState<AppData>(createDefaultAppData());
+  // Snapshot sincrono autorevole: evita side-effect dentro gli updater React (che possono essere rieseguiti).
+  const appDataRef = useRef<AppData>(appData);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [activeView, setActiveView] = useState<'turni' | 'oggi' | 'ferie' | 'eventi'>('turni');
   const [quickSwapModal, setQuickSwapModal] = useState<{ open: boolean; dayIdx: number }>({ open: false, dayIdx: 0 });
@@ -153,10 +151,8 @@ export default function App() {
 
   // Stato sincronizzazione e push
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('disconnected');
-  const [connectedClients, setConnectedClients] = useState<number>(1);
-  const [pushSubscribed, setPushSubscribed] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{ title: string; body: string; type?: 'info' | 'success' | 'warn' } | null>(null);
-  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Modali
   const [proposal, setProposal] = useState<GeneratedProposal | null>(null);
@@ -209,9 +205,16 @@ export default function App() {
     } else {
       playNotificationChime();
     }
-    setTimeout(() => {
+    // Un solo timer: un avviso precedente non deve cancellare quello più recente.
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
+      toastTimerRef.current = null;
     }, 4500);
+  }, []);
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
 
   // Inizializzazione WebSocket e Service Worker
@@ -237,17 +240,13 @@ export default function App() {
 
     // Hosting statico: i dati vengono caricati direttamente da Firebase RTDB.
     // Il Service Worker gestisce installazione PWA e cache offline; il push server-side non è richiesto.
-    registerServiceWorker().then(async () => {
-      const sub = await getPushSubscription();
-      setPushSubscribed(!!sub);
-    });
+    void registerServiceWorker();
 
     // Connessione cloud Firebase REST + streaming SSE (senza server Node/WebSocket).
     void socketManager.connect();
 
-    const unsubStatus = socketManager.onStatusChange((status, count) => {
+    const unsubStatus = socketManager.onStatusChange((status) => {
       setSocketStatus(status);
-      setConnectedClients(count);
     });
 
     const unsubData = socketManager.onDataUpdate((incomingData, meta) => {
@@ -260,13 +259,13 @@ export default function App() {
           incomingData.workers = enrichWorkerProfiles(incomingData.workers);
         }
         reconcileAllLeavesWithWeeks(incomingData.weeks, incomingData.leaveRequests, incomingData);
+        appDataRef.current = incomingData;
         setAppData(incomingData);
       }
     });
 
     const unsubNotif = socketManager.onRemoteNotification((title, body) => {
       showToast(title, body, 'info');
-      setUnreadCount(c => c + 1);
     });
 
     return () => {
@@ -286,50 +285,42 @@ export default function App() {
     } catch (e) {}
   };
 
-  // Richiesta attivazione notifiche push
-  const handleRequestPush = async () => {
-    const res = await requestPushSubscription();
-    if (res.success) {
-      setPushSubscribed(true);
-      showToast('🔔 Notifiche Push Attivate', 'Riceverai avvisi in tempo reale su questo dispositivo!', 'success');
-      triggerPushNotification({
-        title: 'Turni Corvetto Live',
-        body: 'Dispositivo registrato con successo alle Notifiche Push!'
-      });
-    } else {
-      showToast('Notifiche Push', res.error || 'Verifica i permessi delle notifiche del browser.', 'warn');
-    }
-  };
-
-  const handleSendTestPush = async () => {
-    const success = await triggerPushNotification({
-      title: 'Notifica di Prova — Corvetto Live',
-      body: 'Test di sincronizzazione e notifica push riuscito!'
-    });
-    if (success) {
-      showToast('🔔 Notifica Push Inviata', 'Inviata a tutti i dispositivi registrati.', 'success');
-    }
-  };
-
   // Funzione di aggiornamento centralizzata con broadcast realtime
   const updateAppDataAuthoritative = useCallback((
     updater: (prev: AppData) => AppData,
     changeType: string,
     description: string,
     pushNotif?: { title: string; body: string; url?: string }
-  ) => {
-    setAppData((prev) => {
-      const next = updater(deepClone(prev));
+  ): Promise<boolean> => {
+    try {
+      // Calcolo sincrono fuori da setState: nessuna rete o mutazione collaterale dentro
+      // un updater React, che in StrictMode può essere invocato più di una volta.
+      const next = updater(deepClone(appDataRef.current));
       next.updatedAt = Date.now();
       next.updatedBy = socketManager.getClientId();
       next.updatedRevision = (next.updatedRevision || 0) + 1;
+      appDataRef.current = next;
+      setAppData(next);
 
-      // Broadcast su WebSocket
-      socketManager.sendDataUpdate(next, changeType, description, pushNotif);
-
-      return next;
-    });
-  }, []);
+      // La scrittura cloud parte solo dopo aver prodotto lo stato locale.
+      // Il manager restituisce un esito reale e segnala i salvataggi non confermati.
+      return socketManager.sendDataUpdate(next, changeType, description, pushNotif).then(saved => {
+        if (!saved) {
+          showToast(
+            'Sincronizzazione non confermata',
+            'La modifica è visibile su questo dispositivo ma Firebase non ne ha confermato il salvataggio. Controlla la connessione e riprova la sincronizzazione.',
+            'warn'
+          );
+        }
+        return saved;
+      });
+    } catch (error) {
+      console.error('[Turni Corvetto] Modifica locale non applicata:', changeType, error);
+      const detail = error instanceof Error ? error.message : String(error);
+      showToast('Modifica non applicata', detail || 'Errore durante l’aggiornamento dei dati.', 'warn');
+      return Promise.resolve(false);
+    }
+  }, [showToast]);
 
   // 1. Modifica Cella Turno Singola
   const handleSaveDay = (workerId: string, dayIdx: number, data: DayShift) => {
@@ -466,9 +457,9 @@ export default function App() {
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
-      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : '✨ Proposta applicata e verificata',
-      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi.`,
-      emergencyWarehouseOverride ? 'warn' : 'success'
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata sul dispositivo',
+      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Sincronizzazione cloud in corso.`,
+      emergencyWarehouseOverride ? 'warn' : 'info'
     );
     } catch (error) {
       console.error('[Turni Corvetto] Errore applicazione proposta:', phase, error);
@@ -733,94 +724,6 @@ export default function App() {
   };
 
   // 6. Applicazione Azioni Consigliate dall'AI Copilot
-  const handleApplyAIAction = (action: AIProposedAction) => {
-    if (action.type === 'update_shift' && action.shiftData) {
-      const s = action.shiftData;
-      const targetWeekKey = getWeekKey(currentDate);
-      const workerName = appData.workers.find(w => w.id === s.workerId)?.name || s.workerName || 'collaboratore';
-
-      updateAppDataAuthoritative(
-        (prev) => {
-          if (!prev.weeks[targetWeekKey]) prev.weeks[targetWeekKey] = {};
-          if (!prev.weeks[targetWeekKey][s.workerId]) prev.weeks[targetWeekKey][s.workerId] = {};
-          prev.weeks[targetWeekKey][s.workerId][s.dayIdx] = {
-            mIn: s.mIn || '',
-            mOut: s.mOut || '',
-            pIn: s.pIn || '',
-            pOut: s.pOut || '',
-            status: s.status || 'LAVORO',
-            note: s.note || '',
-            generated: false
-          };
-          return prev;
-        },
-        'ai_update_shift',
-        `Modificato turno per ${workerName} (${s.dayName}) via AI Copilot`,
-        {
-          title: `🤖 Turno Aggiornato da AI`,
-          body: `${workerName}: turno ${s.dayName} aggiornato.`
-        }
-      );
-      showToast('Turno Applicato', `Turno di ${workerName} salvato e sincronizzato in tempo reale.`, 'success');
-    } else if (action.type === 'create_leave' && action.leaveData) {
-      const l = action.leaveData;
-      handleSaveLeave({
-        workerId: l.workerId,
-        tipo: l.tipo,
-        mode: l.mode,
-        day: l.day,
-        fromDay: l.fromDay,
-        toDay: l.toDay,
-        hours: l.hours,
-        fullDay: l.fullDay ?? true,
-        fromTime: l.fromTime,
-        toTime: l.toTime,
-        note: l.note || 'Richiesta creata da AI Copilot',
-        status: 'approvata',
-        syncTurns: true
-      });
-      showToast('Assenza Registrata', `Richiesta ${l.tipo} salvata e applicata ai turni.`, 'success');
-    } else if (action.type === 'create_event' && action.eventData) {
-      const ev = action.eventData;
-      handleSaveEvent({
-        title: ev.title,
-        type: ev.tipo === 'corso' ? 'Corso' : ev.tipo === 'visita' ? 'Visita medica' : ev.tipo === 'chiusura' ? 'Chiusura' : 'Riunione',
-        date: ev.day,
-        allDay: false,
-        fromTime: ev.fromTime,
-        toTime: ev.toTime,
-        location: ev.luogo || 'Filiale Corvetto',
-        notes: ev.note || 'Inserito da AI Copilot',
-        participantIds: ev.partecipanti || [],
-        reminderMinutes: 30
-      });
-      showToast('Impegno Creato', `${ev.title} registrato nel calendario di filiale.`, 'success');
-    } else if (action.type === 'batch_update_shifts' && action.batchShifts) {
-      const targetWeekKey = getWeekKey(currentDate);
-      updateAppDataAuthoritative(
-        (prev) => {
-          if (!prev.weeks[targetWeekKey]) prev.weeks[targetWeekKey] = {};
-          for (const s of action.batchShifts || []) {
-            if (!prev.weeks[targetWeekKey][s.workerId]) prev.weeks[targetWeekKey][s.workerId] = {};
-            prev.weeks[targetWeekKey][s.workerId][s.dayIdx] = {
-              mIn: s.mIn || '',
-              mOut: s.mOut || '',
-              pIn: s.pIn || '',
-              pOut: s.pOut || '',
-              status: s.status || 'LAVORO',
-              note: s.note || '',
-              generated: false
-            };
-          }
-          return prev;
-        },
-        'ai_batch_update',
-        action.description || 'Turni multipli aggiornati da AI Copilot'
-      );
-      showToast('Modifiche Multiple Applicate', 'Tutti i turni proposti sono stati salvati.', 'success');
-    }
-  };
-
   // 6. Esportazioni PDF e ICS
   const handleExportWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
@@ -1216,10 +1119,6 @@ export default function App() {
         activeView={activeView}
         setActiveView={setActiveView}
         socketStatus={socketStatus}
-        connectedClients={connectedClients}
-        pushSubscribed={pushSubscribed}
-        onRequestPush={handleRequestPush}
-        onSendTestPush={handleSendTestPush}
         theme={theme}
         onToggleTheme={handleToggleTheme}
         onGenerateProposal={handleOpenProposal}
@@ -1228,9 +1127,8 @@ export default function App() {
         onOpenExportMenu={() => setExportMenuOpen(true)}
         onOpenToolsMenu={() => setToolsMenuOpen(true)}
         onOpenHelpGuide={() => setHelpGuideOpen(true)}
-        onOpenNotifications={() => { setNotificationsModalOpen(true); setUnreadCount(0); }}
+        onOpenNotifications={() => setNotificationsModalOpen(true)}
         onOpenAtmosphere={() => setAtmosphereModalOpen(true)}
-        unreadCount={unreadCount}
         weekNumber={weekInfo.weekNo}
       />
 
@@ -1370,6 +1268,7 @@ export default function App() {
         onOpenRolDetails={handleOpenRolDetails}
       />
 
+      {leaveModal.open && (
       <LeaveModal
         isOpen={leaveModal.open}
         onClose={() => setLeaveModal({ open: false, leaveId: null })}
@@ -1380,6 +1279,8 @@ export default function App() {
         onExportPDF={handleExportFacsimilePDF}
       />
 
+      )}
+      {malattiaModal.open && (
       <MalattiaModal
         isOpen={malattiaModal.open}
         onClose={() => setMalattiaModal({ open: false, leaveId: null })}
@@ -1389,6 +1290,8 @@ export default function App() {
         onDeleteMalattia={handleDeleteLeave}
       />
 
+      )}
+      {eventModal.open && (
       <BranchEventModal
         isOpen={eventModal.open}
         onClose={() => setEventModal({ open: false, eventId: null })}
@@ -1398,6 +1301,8 @@ export default function App() {
         onDeleteEvent={handleDeleteEvent}
       />
 
+      )}
+      {specificheModal.open && (
       <SpecificheImpegnoModal
         isOpen={specificheModal.open}
         onClose={() => setSpecificheModal({ open: false, event: null, rolData: null })}
@@ -1418,6 +1323,7 @@ export default function App() {
         }}
       />
 
+      )}
       <ExportMenuModal
         isOpen={exportMenuOpen}
         onClose={() => setExportMenuOpen(false)}
@@ -1455,6 +1361,7 @@ export default function App() {
         }}
       />
 
+      {teamModalOpen && (
       <TeamModal
         isOpen={teamModalOpen}
         onClose={() => setTeamModalOpen(false)}
@@ -1466,6 +1373,8 @@ export default function App() {
         onDeleteWorker={handleDeleteWorker}
       />
 
+      )}
+      {workerEditModal.open && (
       <WorkerEditModal
         isOpen={workerEditModal.open}
         onClose={() => setWorkerEditModal({ open: false, workerId: null })}
@@ -1476,6 +1385,8 @@ export default function App() {
         onDeactivateWorker={handleToggleWorkerActive}
       />
 
+      )}
+      {rulesModalOpen && (
       <RulesModal
         isOpen={rulesModalOpen}
         onClose={() => setRulesModalOpen(false)}
@@ -1490,19 +1401,22 @@ export default function App() {
         }}
       />
 
+      )}
+      {diagnosticsModalOpen && (
       <DiagnosticsModal
         isOpen={diagnosticsModalOpen}
         onClose={() => setDiagnosticsModalOpen(false)}
         appData={appData}
         socketStatus={socketStatus}
-        connectedClients={connectedClients}
       />
 
+      )}
       <HelpGuideModal
         isOpen={helpGuideOpen}
         onClose={() => setHelpGuideOpen(false)}
       />
 
+      {quickSwapModal.open && (
       <QuickSwapModal
         isOpen={quickSwapModal.open}
         onClose={() => setQuickSwapModal(prev => ({ ...prev, open: false }))}
@@ -1512,13 +1426,11 @@ export default function App() {
         onConfirmSwap={handleConfirmSwap}
       />
 
+      )}
       <NotificationCenterModal
         isOpen={notificationsModalOpen}
         onClose={() => setNotificationsModalOpen(false)}
-        pushSubscribed={pushSubscribed}
-        onRequestPush={handleRequestPush}
-        onSendTestPush={handleSendTestPush}
-        connectedClients={connectedClients}
+        socketStatus={socketStatus}
       />
 
       {/* Modale Anteprima Facsimile Ufficiale (Zero blocchi di Chrome) */}
@@ -1613,31 +1525,27 @@ export default function App() {
         </div>
       )}
 
-      {/* Floating Action Button AI Copilot per accesso immediato su tutti i dispositivi */}
+      {/* Accesso rapido ai controlli locali */}
       <button
         type="button"
         onClick={() => setAiCopilotOpen(true)}
         className="fixed bottom-6 right-6 z-40 p-3 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-xl shadow-purple-600/35 flex items-center gap-2.5 transition-all transform hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-white dark:ring-slate-900 group"
-        title="Apri l'Assistente AI Copilot per modificare turni, ferie e verificare conformità"
+        title="Apri l'assistente locale per controlli su turni e coperture"
       >
-        <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🤖</span>
+        <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">🧭</span>
         <div className="text-left hidden sm:block">
-          <div className="font-extrabold text-xs leading-tight tracking-wide">AI Copilot</div>
+          <div className="font-extrabold text-xs leading-tight tracking-wide">Assistente</div>
           <div className="text-[10px] text-purple-200">Turni & Verifiche</div>
         </div>
-        <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider">
-          Live
-        </span>
       </button>
 
-      {/* Modale AI Copilot Interattivo */}
+      {/* Assistente locale per controlli operativi */}
       <AICopilotModal
         open={aiCopilotOpen}
         onClose={() => setAiCopilotOpen(false)}
         appData={appData}
         weekKey={getWeekKey(currentDate)}
         currentDate={currentDate}
-        onApplyAction={handleApplyAIAction}
       />
 
       {/* Modale Rinomina Filiale / Titolo App (Zero blocchi di Chrome) */}
