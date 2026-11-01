@@ -49,7 +49,7 @@ class RealtimeSocketManager {
   public getClientId(): string { return this.clientId; }
   public getStatus(): SocketStatus { return this.status; }
   public getClientCount(): number { return this.clientCount; }
-  public async refreshNow() { await this.refreshRemote(); }
+  public async refreshNow(): Promise<boolean> { return this.refreshRemote(); }
 
   private setStatus(status: SocketStatus) {
     this.status = status;
@@ -97,13 +97,15 @@ class RealtimeSocketManager {
     return data;
   }
 
-  private async refreshRemote() {
+  private async refreshRemote(): Promise<boolean> {
     try {
       await this.readCloud(true);
       this.setStatus('connected');
+      return true;
     } catch (error) {
       console.warn('[Firebase] Aggiornamento remoto non riuscito:', error);
       this.setStatus('error');
+      return false;
     }
   }
 
