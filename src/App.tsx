@@ -468,7 +468,7 @@ export default function App() {
     phase = 'conferma salvataggio cloud';
     const cloudSaved = await savePromise;
     if (!cloudSaved) {
-      setProposalApplyFeedback({ status: 'sync-error', message: 'Firebase non ha confermato il salvataggio. Non chiudo il report e non dichiaro completata l’operazione. Controlla la connessione e aggiorna i dati prima di riprovare.' });
+      setProposalApplyFeedback({ status: 'sync-error', message: 'I turni sono stati aggiornati su questo dispositivo, ma Firebase non ha confermato il salvataggio: gli altri dispositivi potrebbero non vedere le modifiche. Non posso dichiarare completata la sincronizzazione. Controlla la connessione e aggiorna i dati.' });
       showToast('Salvataggio cloud non confermato', 'La proposta non ha ricevuto conferma da Firebase. Verifica la connessione e aggiorna i dati.', 'warn');
       return;
     }
@@ -478,8 +478,8 @@ export default function App() {
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
-      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata sul dispositivo',
-      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Sincronizzazione cloud in corso.`,
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata e sincronizzata',
+      `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Turni salvati e sincronizzati su Firebase.`,
       emergencyWarehouseOverride ? 'warn' : 'info'
     );
     } catch (error) {
