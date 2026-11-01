@@ -20,6 +20,6 @@ npm test
 
 La policy predefinita codifica gli orari feriali 06:30–17:30 e sabato 07:00–12:00. Il presidio feriale iniziale è configurato con soglia rinforzata nelle prime ore e minimo ordinario/di chiusura pari a uno; il sabato l'ufficio richiede una sola persona. Questi valori sono parametri di test e dovranno essere derivati dalle regole effettive salvate nell'app prima dell'attivazione.
 
-Il controllo del riposo usa la fine dell'ultimo intervallo di un giorno e l'inizio del primo del successivo. Le qualifiche muletto, ruspa/pala, primo soccorso e antincendio producono avvisi non bloccanti se mancanti o scadute alla data della settimana. Le casistiche di assenze parziali, festività, corsi, trasferte, profili Severin, rotazioni del sabato e monte ore devono ancora essere coperte da ulteriori test basati su settimane reali di Corvetto.
+Il controllo del riposo usa la fine dell'ultimo intervallo di un giorno e l'inizio del primo del successivo. Le qualifiche muletto, ruspa/pala, primo soccorso e antincendio producono avvisi non bloccanti se mancanti o scadute alla data della settimana; viene inoltre segnalata l'assenza di un operatore con esperienza autonoma o da tutor in apertura. Le casistiche di assenze parziali, festività, corsi, trasferte, profili Severin, rotazioni del sabato e monte ore devono ancora essere coperte da ulteriori test basati su settimane reali di Corvetto.
 
 **Non integrare questo modulo nel generatore attivo e non promuovere questa branch finché test e confronto con settimane reali non sono completati.**
