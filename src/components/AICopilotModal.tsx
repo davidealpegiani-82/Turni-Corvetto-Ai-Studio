@@ -49,7 +49,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
     {
       id: 'welcome_1',
       sender: 'assistant',
-      text: `👋 **Ciao! Sono il tuo Assistente AI Copilot per la gestione turni e conformità della Filiale Corvetto.**\n\nPuoi dirmi in linguaggio naturale cosa desideri fare, ad esempio:\n• *"Metti Gianluca alle 06:30 giovedì per coprire l'apertura"* \n• *"Inserisci ferie per Simone dal 10 al 14 Novembre"* \n• *"Aggiungi riunione di filiale lunedì alle 14:30"* \n• *"Verifica se ci sono errori, violazioni o scoperture questa settimana"* \n• *"Mario ha la febbre mercoledì: come mi consigli di risolvere?"*\n\nVerificherò tutte le regole contrattuali, di sicurezza carrellisti (06:30) e di riposo 11h in tempo reale!`,
+      text: `👋 **Ciao! Sono l'assistente operativo locale di Turni Corvetto.**\n\nPosso controllare senza costi e senza inviare i dati a servizi esterni:\n• coperture e scoperture durante la giornata\n• qualifiche e competenze in apertura\n• riposo minimo tra i turni\n• turni del sabato\n• monte ore settimanale\n\nLa generazione conversazionale di modifiche tramite AI esterna non è attiva nella versione gratuita statica. Per modificare i turni usa le celle e il generatore di proposte: le modifiche vengono comunque validate.,
       timestamp: Date.now(),
       quickFollowUps: [
         'Verifica conformità settimana',
