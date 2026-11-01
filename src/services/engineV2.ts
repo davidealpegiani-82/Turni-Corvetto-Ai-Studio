@@ -8,6 +8,8 @@ export interface CoveragePolicy {
   close: string;
   saturdayOpen?: string;
   saturdayClose?: string;
+  saturdayWarehouseMinimum?: number;
+  saturdayOfficeMinimum?: number;
   warehouse: { minimum: number; openingMinimum?: number; openingUntil?: string; closingMinimum?: number };
   office: { minimum: number; openingMinimum?: number; openingUntil?: string; closingMinimum?: number };
   slotMinutes?: number;
@@ -74,6 +76,8 @@ export function policyFromAppData(appData: AppData): CoveragePolicy {
     close: weekday.close || rules?.branchMonFriClose || DEFAULT_CORVETTO_POLICY.close,
     saturdayOpen: saturday.open || DEFAULT_CORVETTO_POLICY.saturdayOpen,
     saturdayClose: saturday.close || DEFAULT_CORVETTO_POLICY.saturdayClose,
+    saturdayWarehouseMinimum: positive(rules?.minSabatoMag, 1),
+    saturdayOfficeMinimum: positive(rules?.minSabatoImp, 1),
     warehouse: {
       minimum: 1,
       openingMinimum: positive(rules?.minAperturaMag, 2),
@@ -166,7 +170,7 @@ export function validateWeekV2(
         const openingUntil = toMinutes(areaPolicy.openingUntil || (isSaturday ? '07:00' : '08:30')) ?? open;
         let required = areaPolicy.minimum;
         // Il sabato è previsto un solo addetto ufficio; il minimo feriale non va trascinato al sabato.
-        if (isSaturday && area === 'office') required = 1;
+        if (isSaturday) required = area === 'office' ? (policy.saturdayOfficeMinimum ?? 1) : (policy.saturdayWarehouseMinimum ?? areaPolicy.minimum);
         else if (start < openingUntil) required = Math.max(required, areaPolicy.openingMinimum ?? areaPolicy.minimum);
         if (end >= close) required = areaPolicy.closingMinimum ?? areaPolicy.minimum;
         if (present.length < required) {
