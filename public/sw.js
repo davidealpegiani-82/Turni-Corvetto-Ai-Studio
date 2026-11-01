@@ -1,122 +1,69 @@
-// Service Worker per Turni Corvetto Live
-// Supporto Notifiche Push in background e caching offline
-
-const CACHE_NAME = 'turni-corvetto-v1';
+// Service Worker per Turni Corvetto — compatibile con GitHub Pages e sottopercorsi.
+const APP_BASE = new URL('./', self.registration.scope).pathname;
+const CACHE_NAME = 'turni-corvetto-static-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon.svg'
+  APP_BASE,
+  `${APP_BASE}index.html`,
+  `${APP_BASE}manifest.webmanifest`,
+  `${APP_BASE}icon.svg`,
+  `${APP_BASE}icon-192.png`,
+  `${APP_BASE}icon-512.png`
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   self.skipWaiting();
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE).catch(err => {
+    console.warn('[PWA] Cache iniziale parziale:', err);
+  })));
+});
+
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('Pre-cache parziale:', err);
-      });
-    })
+    caches.keys().then(keys => Promise.all(
+      keys.filter(key => key.startsWith('turni-corvetto-') && key !== CACHE_NAME).map(key => caches.delete(key))
+    )).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-// Network first con fallback a cache per affidabilità
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-
-  // Evita cache per le API WebSocket e endpoint /api/
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/ws')) {
-    return;
-  }
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(APP_BASE)) return;
 
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-        });
-      })
+    fetch(event.request).then(response => {
+      if (response && response.status === 200) {
+        const copy = response.clone();
+        event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)));
+      }
+      return response;
+    }).catch(() => caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      if (event.request.mode === 'navigate') return caches.match(`${APP_BASE}index.html`);
+      return undefined;
+    }))
   );
 });
 
-// Gestione Notifiche Push
-self.addEventListener('push', (event) => {
-  let data = {
-    title: 'Turni Corvetto Live',
-    body: 'Nuovo aggiornamento sui turni o impegni di filiale.',
-    icon: '/icon.svg',
-    badge: '/icon.svg',
-    data: { url: '/' }
-  };
-
-  try {
-    if (event.data) {
-      data = Object.assign(data, event.data.json());
-    }
-  } catch (err) {
-    if (event.data) {
-      data.body = event.data.text();
-    }
-  }
-
-  const options = {
+// Supporto notifiche push predisposto, ma il mittente server-side non è attivo su hosting statico gratuito.
+self.addEventListener('push', event => {
+  let data = { title: 'Turni Corvetto', body: 'Nuovo aggiornamento sui turni.', icon: `${APP_BASE}icon.svg`, data: { url: APP_BASE } };
+  try { if (event.data) data = Object.assign(data, event.data.json()); } catch {}
+  event.waitUntil(self.registration.showNotification(data.title, {
     body: data.body,
-    icon: data.icon || '/icon.svg',
-    badge: data.badge || '/icon.svg',
-    vibrate: [100, 50, 100],
-    data: data.data || { url: '/' },
-    actions: [
-      { action: 'open', title: 'Apri Applicazione' },
-      { action: 'close', title: 'Chiudi' }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+    icon: data.icon || `${APP_BASE}icon.svg`,
+    badge: `${APP_BASE}icon.svg`,
+    data: data.data || { url: APP_BASE }
+  }));
 });
 
-// Click sulla notifica push
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   event.notification.close();
-
-  if (event.action === 'close') return;
-
-  const urlToOpen = (event.notification.data && event.notification.data.url) || '/';
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (let client of windowClients) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
-  );
+  const target = (event.notification.data && event.notification.data.url) || APP_BASE;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
+    for (const client of windows) {
+      if (client.url.includes(self.location.origin) && 'focus' in client) return client.focus();
+    }
+    return self.clients.openWindow ? self.clients.openWindow(target) : undefined;
+  }));
 });
