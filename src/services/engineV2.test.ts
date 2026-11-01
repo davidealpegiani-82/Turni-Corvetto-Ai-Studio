@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { AppData, WeekShifts } from '../types/turni';
-import { mergeProposalSafely, validateWeekV2 } from './engineV2';
+import { mergeProposalSafely, policyFromAppData, validateWeekV2 } from './engineV2';
 
 const app = {
   workers: [
@@ -63,4 +63,35 @@ test('Saturday office coverage correctly requires one person, not the weekday op
   };
   const result = validateWeekV2(app, week);
   assert.equal(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'office' && f.day === 5), false);
+});
+
+test('policy is derived from the branch rules stored in AppData', () => {
+  const configured = {
+    ...app,
+    rules: {
+      branchHours: { monFri: { open: '06:30', close: '17:30' }, sat: { open: '07:00', close: '12:00' } },
+      minAperturaMag: 2,
+      minAperturaImp: 2,
+      minSabatoMag: 1,
+      minSabatoImp: 1,
+      officeCoverage: { minClose: 2 }
+    }
+  } as unknown as AppData;
+  const policy = policyFromAppData(configured);
+  assert.equal(policy.open, '06:30');
+  assert.equal(policy.close, '17:30');
+  assert.equal(policy.warehouse.openingMinimum, 2);
+  assert.equal(policy.office.closingMinimum, 2);
+  assert.equal(policy.saturdayOpen, '07:00');
+});
+
+test('separate FINITURE showroom is not counted as branch office coverage', () => {
+  const showroomOnly = {
+    workers: [
+      { id: 'showroom', name: 'Showroom', group: 'FINITURE', selected: true, brain: { office: true, officeProfile: 'finiture' } }
+    ]
+  } as unknown as AppData;
+  const week: WeekShifts = { showroom: { 5: { mIn: '07:00', mOut: '12:00' } } };
+  const result = validateWeekV2(showroomOnly, week);
+  assert.ok(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'office' && f.day === 5));
 });
