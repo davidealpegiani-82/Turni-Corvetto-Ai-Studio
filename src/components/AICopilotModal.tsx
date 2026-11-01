@@ -104,7 +104,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
       let quickFollowUps = ['Verifica conformità settimana', 'Controlla sicurezza carrellisti 06:30', 'Chi è di turno questo sabato?', 'Verifica monte ore e riposi'];
 
       if (/verifica|controll|conform|copertur|sicurezza|carrell|riposo|violazion/.test(normalized)) {
-        const monday = weekKeyToMonday(currentDate);
+        const monday = weekKeyToMonday(weekKey);
         const validation = validateWeekV2(
           appData,
           appData.weeks?.[weekKey] || {},
