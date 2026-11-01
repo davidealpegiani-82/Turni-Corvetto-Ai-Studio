@@ -49,7 +49,7 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({
     {
       id: 'welcome_1',
       sender: 'assistant',
-      text: `👋 **Ciao! Sono l'assistente operativo locale di Turni Corvetto.**\n\nPosso controllare senza costi e senza inviare i dati a servizi esterni:\n• coperture e scoperture durante la giornata\n• qualifiche e competenze in apertura\n• riposo minimo tra i turni\n• turni del sabato\n• monte ore settimanale\n\nLa generazione conversazionale di modifiche tramite AI esterna non è attiva nella versione gratuita statica. Per modificare i turni usa le celle e il generatore di proposte: le modifiche vengono comunque validate.,
+      text: `👋 **Ciao! Sono l'assistente operativo locale di Turni Corvetto.**\n\nPosso controllare senza costi e senza inviare i dati a servizi esterni:\n• coperture e scoperture durante la giornata\n• qualifiche e competenze in apertura\n• riposo minimo tra i turni\n• turni del sabato\n• monte ore settimanale\n\nLa generazione conversazionale di modifiche tramite AI esterna non è attiva nella versione gratuita statica. Per modificare i turni usa le celle e il generatore di proposte: le modifiche vengono comunque validate.`,
       timestamp: Date.now(),
       quickFollowUps: [
         'Verifica conformità settimana',
