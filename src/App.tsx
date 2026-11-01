@@ -746,6 +746,36 @@ export default function App() {
     setSpecificheModal({ open: true, event: null, rolData });
   };
 
+  // Dalla causale in tabella si apre la richiesta originale collegata alla giornata.
+  const handleOpenLeaveRequest = (leaveRequestId: string | undefined, workerId: string, date: string, leaveLabel?: string) => {
+    const matchesDate = (req: LeaveRequest) => {
+      if (req.workerId !== workerId) return false;
+      if (req.day) return req.day === date;
+      if (req.fromDay) return req.fromDay <= date && (req.toDay ? date <= req.toDay : !!req.openEnded);
+      return false;
+    };
+    const req = (leaveRequestId
+      ? appData.leaveRequests.find(item => item.id === leaveRequestId)
+      : undefined) || appData.leaveRequests
+        .filter(matchesDate)
+        .sort((left, right) => {
+          const leftMatch = left.tipo.toLowerCase() === (leaveLabel || '').toLowerCase() ? 1 : 0;
+          const rightMatch = right.tipo.toLowerCase() === (leaveLabel || '').toLowerCase() ? 1 : 0;
+          return rightMatch - leftMatch;
+        })[0];
+
+    if (!req) {
+      showToast('Richiesta non trovata', 'La causale è presente nel turno, ma non è collegata a una richiesta archiviata. Puoi comunque modificare il turno cliccando sull’orario.', 'warn');
+      return;
+    }
+
+    if (req.isMalattia || /malattia|ricovero/i.test(req.tipo)) {
+      setMalattiaModal({ open: true, leaveId: req.id });
+    } else {
+      setLeaveModal({ open: true, leaveId: req.id });
+    }
+  };
+
   // 6. Esportazioni PDF e ICS
   const handleExportWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
@@ -1219,6 +1249,7 @@ export default function App() {
             }}
             onOpenEventDetails={handleOpenEventDetails}
             onOpenRolDetails={handleOpenRolDetails}
+            onOpenLeaveRequest={handleOpenLeaveRequest}
             onOpenSwapModal={() => setQuickSwapModal(prev => ({ ...prev, open: true }))}
             onSwitchToToday={() => setActiveView('oggi')}
             onGoToCurrentWeek={() => setCurrentDate(new Date())}
