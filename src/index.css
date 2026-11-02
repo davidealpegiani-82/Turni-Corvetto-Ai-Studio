@@ -973,3 +973,69 @@ body.light-theme button[class*="bg-green-600"],
 body.light-theme button[class*="bg-red-600"],
 body.light-theme button[class*="bg-purple-600"],
 body.light-theme button[class*="bg-rose-600"] { color: #ffffff !important; }
+
+
+/* FIX CONTRASTO FINALE — badge e pulsanti saturi nel tema chiaro.
+   Il reset globale .text-white del tema chiaro rendeva scuri anche i
+   testi bianchi dentro pulsanti/badge colorati: ripristino selettivo. */
+body.light-theme :is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-pink-600"], [class*="bg-pink-700"],
+  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
+  [class*="bg-orange-600"], [class*="bg-orange-700"],
+  [class*="bg-amber-600"], [class*="bg-amber-700"],
+  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
+  [class*="bg-teal-600"], [class*="bg-teal-700"],
+  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
+  [class*="bg-sky-600"], [class*="bg-sky-700"]
+) :is(.text-white, .text-slate-100, .text-slate-200),
+body.light-theme :is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-pink-600"], [class*="bg-pink-700"],
+  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
+  [class*="bg-orange-600"], [class*="bg-orange-700"],
+  [class*="bg-amber-600"], [class*="bg-amber-700"],
+  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
+  [class*="bg-teal-600"], [class*="bg-teal-700"],
+  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
+  [class*="bg-sky-600"], [class*="bg-sky-700"]
+).text-white {
+  color: #ffffff !important;
+}
+
+/* I testi direttamente sui pulsanti pieni mantengono il bianco,
+   anche quando l'etichetta non è avvolta da uno span. */
+body.light-theme button:is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-pink-600"], [class*="bg-pink-700"],
+  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
+  [class*="bg-orange-600"], [class*="bg-orange-700"],
+  [class*="bg-amber-600"], [class*="bg-amber-700"],
+  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
+  [class*="bg-teal-600"], [class*="bg-teal-700"],
+  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
+  [class*="bg-sky-600"], [class*="bg-sky-700"]
+) {
+  color: #ffffff !important;
+}
