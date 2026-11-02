@@ -16,7 +16,13 @@ export function PdfPreviewViewer({ url }: PdfPreviewViewerProps) {
 
   useEffect(() => {
     let cancelled = false;
-    let loadedDocument: any = null;
+    let loadingTask: any = null;
+    let destroyPromise: Promise<void> | null = null;
+    const destroyLoadingTask = (): Promise<void> | null => {
+      if (!loadingTask || destroyPromise) return destroyPromise;
+      destroyPromise = loadingTask.destroy();
+      return destroyPromise;
+    };
     setLoading(true);
     setError('');
     setPdf(null);
@@ -31,10 +37,14 @@ export function PdfPreviewViewer({ url }: PdfPreviewViewerProps) {
         if (buffer.byteLength < 100 || new TextDecoder().decode(buffer.slice(0, 5)) !== '%PDF-') {
           throw new Error('Il documento generato non contiene un PDF valido.');
         }
-        const task = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
-        loadedDocument = await task.promise;
+        loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
         if (cancelled) {
-          await loadedDocument.destroy();
+          await destroyLoadingTask();
+          return;
+        }
+        const loadedDocument = await loadingTask.promise;
+        if (cancelled) {
+          await destroyLoadingTask();
           return;
         }
         setPdf(loadedDocument);
@@ -52,7 +62,10 @@ export function PdfPreviewViewer({ url }: PdfPreviewViewerProps) {
     loadPdf();
     return () => {
       cancelled = true;
-      if (loadedDocument) loadedDocument.destroy().catch(() => {});
+      const destruction = destroyLoadingTask();
+      if (destruction) void destruction.catch((err) => {
+        console.warn('[Anteprima PDF] Chiusura risorse PDF:', err);
+      });
     };
   }, [url]);
 
