@@ -897,202 +897,111 @@ body.light-theme .glass-card .text-slate-400 {
 }
 
 
-/* ACCESSIBILITA' — correzione finale contrasto testi nei due temi.
-   Le classi di colore Tailwind vengono normalizzate in base al tema
-   scelto nell'app, senza dipendere dal tema del sistema operativo. */
-body:not(.light-theme) [class*="text-slate-"],
-body:not(.light-theme) [class*="text-gray-"],
-body:not(.light-theme) [class*="text-zinc-"],
-body:not(.light-theme) [class*="text-neutral-"],
-body:not(.light-theme) [class*="text-stone-"] { color: #e2e8f0 !important; }
+/* ========================================================
+   CONTRASTO ACCESSIBILE — REGOLE FINALI MIRATE
+   Evita inversioni globali indiscriminate: il colore del testo
+   dipende dalla superficie e non soltanto dal tema selezionato.
+   ======================================================== */
 
-body.light-theme [class*="text-slate-"],
-body.light-theme [class*="text-gray-"],
-body.light-theme [class*="text-zinc-"],
-body.light-theme [class*="text-neutral-"],
-body.light-theme [class*="text-stone-"] { color: #334155 !important; }
-
-body:not(.light-theme) [class*="text-blue-"],
-body:not(.light-theme) [class*="text-sky-"],
-body:not(.light-theme) [class*="text-cyan-"] { color: #bfdbfe !important; }
-body.light-theme [class*="text-blue-"],
-body.light-theme [class*="text-sky-"],
-body.light-theme [class*="text-cyan-"] { color: #1e40af !important; }
-
-body:not(.light-theme) [class*="text-green-"],
-body:not(.light-theme) [class*="text-emerald-"],
-body:not(.light-theme) [class*="text-teal-"] { color: #a7f3d0 !important; }
-body.light-theme [class*="text-green-"],
-body.light-theme [class*="text-emerald-"],
-body.light-theme [class*="text-teal-"] { color: #065f46 !important; }
-
-body:not(.light-theme) [class*="text-red-"],
-body:not(.light-theme) [class*="text-rose-"] { color: #fecaca !important; }
-body.light-theme [class*="text-red-"],
-body.light-theme [class*="text-rose-"] { color: #991b1b !important; }
-
-body:not(.light-theme) [class*="text-amber-"],
-body:not(.light-theme) [class*="text-yellow-"],
-body:not(.light-theme) [class*="text-orange-"] { color: #fde68a !important; }
-body.light-theme [class*="text-amber-"],
-body.light-theme [class*="text-yellow-"],
-body.light-theme [class*="text-orange-"] { color: #92400e !important; }
-
-body:not(.light-theme) [class*="text-purple-"],
-body:not(.light-theme) [class*="text-violet-"],
-body:not(.light-theme) [class*="text-indigo-"],
-body:not(.light-theme) [class*="text-pink-"],
-body:not(.light-theme) [class*="text-fuchsia-"] { color: #ddd6fe !important; }
-body.light-theme [class*="text-purple-"],
-body.light-theme [class*="text-violet-"],
-body.light-theme [class*="text-indigo-"],
-body.light-theme [class*="text-pink-"],
-body.light-theme [class*="text-fuchsia-"] { color: #5b21b6 !important; }
-
-/* Varianti dark: non devono rendere pallido il tema chiaro. */
-body.light-theme [class*="dark:text-"] { color: #334155 !important; }
-body:not(.light-theme) [class*="dark:text-"] { color: #e2e8f0 !important; }
-
-/* Testo neutro e controlli: leggibili anche in tabelle e modali. */
-body.light-theme .text-white { color: #0f172a !important; }
-body:not(.light-theme) .text-black,
-body:not(.light-theme) .text-slate-950 { color: #f8fafc !important; }
-body.light-theme input, body.light-theme textarea, body.light-theme select,
-body.light-theme select option { color: #0f172a !important; }
-body:not(.light-theme) input, body:not(.light-theme) textarea,
-body:not(.light-theme) select, body:not(.light-theme) select option { color: #f8fafc !important; }
-body.light-theme table th, body.light-theme table td { color: #1e293b !important; }
-body:not(.light-theme) table th, body:not(.light-theme) table td { color: #e2e8f0 !important; }
-
-/* Mantiene bianco il testo dei pulsanti con sfondo pieno e scuro. */
-body.light-theme button[class*="bg-blue-600"],
-body.light-theme button[class*="bg-blue-700"],
-body.light-theme button[class*="bg-indigo-600"],
-body.light-theme button[class*="bg-emerald-600"],
-body.light-theme button[class*="bg-green-600"],
-body.light-theme button[class*="bg-red-600"],
-body.light-theme button[class*="bg-purple-600"],
-body.light-theme button[class*="bg-rose-600"] { color: #ffffff !important; }
-
-
-/* FIX CONTRASTO FINALE — badge e pulsanti saturi nel tema chiaro.
-   Il reset globale .text-white del tema chiaro rendeva scuri anche i
-   testi bianchi dentro pulsanti/badge colorati: ripristino selettivo. */
-body.light-theme :is(
-  [class*="bg-blue-600"], [class*="bg-blue-700"],
-  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
-  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
-  [class*="bg-green-600"], [class*="bg-green-700"],
-  [class*="bg-red-600"], [class*="bg-red-700"],
-  [class*="bg-rose-600"], [class*="bg-rose-700"],
-  [class*="bg-purple-600"], [class*="bg-purple-700"],
-  [class*="bg-violet-600"], [class*="bg-violet-700"],
-  [class*="bg-pink-600"], [class*="bg-pink-700"],
-  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
-  [class*="bg-orange-600"], [class*="bg-orange-700"],
-  [class*="bg-amber-600"], [class*="bg-amber-700"],
-  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
-  [class*="bg-teal-600"], [class*="bg-teal-700"],
-  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
-  [class*="bg-sky-600"], [class*="bg-sky-700"]
-) :is(.text-white, .text-slate-100, .text-slate-200),
-body.light-theme :is(
-  [class*="bg-blue-600"], [class*="bg-blue-700"],
-  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
-  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
-  [class*="bg-green-600"], [class*="bg-green-700"],
-  [class*="bg-red-600"], [class*="bg-red-700"],
-  [class*="bg-rose-600"], [class*="bg-rose-700"],
-  [class*="bg-purple-600"], [class*="bg-purple-700"],
-  [class*="bg-violet-600"], [class*="bg-violet-700"],
-  [class*="bg-pink-600"], [class*="bg-pink-700"],
-  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
-  [class*="bg-orange-600"], [class*="bg-orange-700"],
-  [class*="bg-amber-600"], [class*="bg-amber-700"],
-  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
-  [class*="bg-teal-600"], [class*="bg-teal-700"],
-  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
-  [class*="bg-sky-600"], [class*="bg-sky-700"]
-).text-white {
-  color: #ffffff !important;
+/* Modali: nel tema chiaro le superfici slate dei moduli diventano
+   chiare; controlli e testo devono quindi essere scuri e leggibili. */
+body.light-theme .fixed input,
+body.light-theme .fixed textarea,
+body.light-theme .fixed select {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  caret-color: #1d4ed8 !important;
+}
+body.light-theme .fixed select option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+body.light-theme .fixed input::placeholder,
+body.light-theme .fixed textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
 }
 
-/* I testi direttamente sui pulsanti pieni mantengono il bianco,
-   anche quando l'etichetta non è avvolta da uno span. */
-body.light-theme button:is(
-  [class*="bg-blue-600"], [class*="bg-blue-700"],
-  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
-  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
-  [class*="bg-green-600"], [class*="bg-green-700"],
-  [class*="bg-red-600"], [class*="bg-red-700"],
-  [class*="bg-rose-600"], [class*="bg-rose-700"],
-  [class*="bg-purple-600"], [class*="bg-purple-700"],
-  [class*="bg-violet-600"], [class*="bg-violet-700"],
-  [class*="bg-pink-600"], [class*="bg-pink-700"],
-  [class*="bg-fuchsia-600"], [class*="bg-fuchsia-700"],
-  [class*="bg-orange-600"], [class*="bg-orange-700"],
-  [class*="bg-amber-600"], [class*="bg-amber-700"],
-  [class*="bg-yellow-600"], [class*="bg-yellow-700"],
-  [class*="bg-teal-600"], [class*="bg-teal-700"],
-  [class*="bg-cyan-600"], [class*="bg-cyan-700"],
-  [class*="bg-sky-600"], [class*="bg-sky-700"]
-) {
-  color: #ffffff !important;
-}
-
-
-/* SUPERFICI MODALI SCURE — il tema chiaro non deve invertire il testo.
-   Diversi moduli (Malattia/Ricovero, Ferie/Permessi e altre finestre)
-   mantengono intenzionalmente pannelli slate-900/slate-800 anche con
-   il tema chiaro attivo. Le regole globali del tema chiaro li rendevano
-   testo scuro su fondo scuro. Qui il contrasto viene ripristinato
-   soltanto all'interno di queste superfici scure. */
-body.light-theme .bg-slate-900,
-body.light-theme .bg-slate-800,
-body.light-theme .bg-slate-800\/90,
-body.light-theme .bg-slate-800\/80,
-body.light-theme .bg-slate-800\/60,
-body.light-theme .bg-slate-800\/50,
-body.light-theme .bg-slate-800\/40 {
-  color: #f8fafc;
-}
-body.light-theme .bg-slate-900 .text-white,
-body.light-theme .bg-slate-800 .text-white,
-body.light-theme .bg-slate-800\/90 .text-white,
-body.light-theme .bg-slate-800\/80 .text-white,
-body.light-theme .bg-slate-800\/60 .text-white,
-body.light-theme .bg-slate-800\/50 .text-white,
-body.light-theme .bg-slate-800\/40 .text-white {
-  color: #ffffff !important;
-}
-body.light-theme .bg-slate-900 [class*="text-slate-"],
-body.light-theme .bg-slate-800 [class*="text-slate-"],
-body.light-theme .bg-slate-800\/90 [class*="text-slate-"],
-body.light-theme .bg-slate-800\/80 [class*="text-slate-"],
-body.light-theme .bg-slate-800\/60 [class*="text-slate-"],
-body.light-theme .bg-slate-800\/50 [class*="text-slate-"],
-body.light-theme .bg-slate-800\/40 [class*="text-slate-"] {
-  color: #cbd5e1 !important;
-}
-body.light-theme .bg-slate-900 input,
-body.light-theme .bg-slate-900 textarea,
-body.light-theme .bg-slate-900 select,
-body.light-theme .bg-slate-800 input,
-body.light-theme .bg-slate-800 textarea,
-body.light-theme .bg-slate-800 select {
+/* Nel tema scuro i controlli dei modali mantengono la superficie
+   scura prevista dal design, con testo e placeholder chiari. */
+body:not(.light-theme) .fixed input,
+body:not(.light-theme) .fixed textarea,
+body:not(.light-theme) .fixed select {
   color: #f8fafc !important;
-  background-color: #1e293b !important;
+  background-color: #172033 !important;
   border-color: #475569 !important;
+  caret-color: #93c5fd !important;
 }
-body.light-theme .bg-slate-900 select option,
-body.light-theme .bg-slate-800 select option {
+body:not(.light-theme) .fixed select option {
   color: #f8fafc !important;
-  background-color: #1e293b !important;
+  background-color: #172033 !important;
 }
-body.light-theme .bg-slate-900 input::placeholder,
-body.light-theme .bg-slate-900 textarea::placeholder,
-body.light-theme .bg-slate-800 input::placeholder,
-body.light-theme .bg-slate-800 textarea::placeholder {
+body:not(.light-theme) .fixed input::placeholder,
+body:not(.light-theme) .fixed textarea::placeholder {
   color: #94a3b8 !important;
-  opacity: 1;
+  opacity: 1 !important;
+}
+
+/* Etichette e valori nelle finestre chiare: contrasto esplicito,
+   senza alterare badge e pulsanti con colori di stato. */
+body.light-theme .fixed .text-white,
+body.light-theme .fixed .text-slate-100,
+body.light-theme .fixed .text-slate-200,
+body.light-theme .fixed .text-slate-300,
+body.light-theme .fixed .text-slate-400 {
+  color: #334155 !important;
+}
+
+/* Testo bianco conservato esclusivamente sui controlli pieni
+   con sfondo saturo: il selettore non coinvolge badge pastello. */
+body.light-theme .fixed button:is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-amber-600"], [class*="bg-orange-600"],
+  [class*="bg-pink-600"], [class*="bg-teal-600"],
+  [class*="bg-cyan-600"], [class*="bg-sky-600"]
+),
+body.light-theme .fixed :is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-amber-600"], [class*="bg-orange-600"],
+  [class*="bg-pink-600"], [class*="bg-teal-600"],
+  [class*="bg-cyan-600"], [class*="bg-sky-600"]
+) > .text-white,
+body.light-theme .fixed :is(
+  [class*="bg-blue-600"], [class*="bg-blue-700"],
+  [class*="bg-indigo-600"], [class*="bg-indigo-700"],
+  [class*="bg-emerald-600"], [class*="bg-emerald-700"],
+  [class*="bg-green-600"], [class*="bg-green-700"],
+  [class*="bg-red-600"], [class*="bg-red-700"],
+  [class*="bg-rose-600"], [class*="bg-rose-700"],
+  [class*="bg-purple-600"], [class*="bg-purple-700"],
+  [class*="bg-violet-600"], [class*="bg-violet-700"],
+  [class*="bg-amber-600"], [class*="bg-orange-600"],
+  [class*="bg-pink-600"], [class*="bg-teal-600"],
+  [class*="bg-cyan-600"], [class*="bg-sky-600"]
+) .text-white {
+  color: #ffffff !important;
+}
+
+/* Focus visibile e leggibile su input, select e textarea. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
