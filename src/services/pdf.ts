@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { AppData, LeaveRequest, BranchEvent } from '../types/turni';
 import { getWeekInfo, formatCellShort } from './engine';
 import { CENTROEDILE_LOGO_BASE64 } from '../constants/logo';
@@ -96,7 +96,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   doc.text(`Settimana n.${weekInfo.weekNo}: dal ${weekInfo.monStr} al ${weekInfo.satStr} (Sync Real-time)`, 14, 20);
 
   // Tabella principale
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: 25,
     head: [headers],
     body: rows,
@@ -169,7 +169,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       (e.participantIds || []).map(id => appData.workers.find(w => w.id === id)?.name).filter(Boolean).join(', ')
     ]);
 
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: finalY + 9,
       head: [['Data', 'Titolo', 'Orario', 'Luogo', 'Partecipanti']],
       body: eventRows,
