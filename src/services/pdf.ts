@@ -39,6 +39,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     const d = new Date(e.date + 'T12:00:00');
     return d >= weekInfo.monday && d <= weekInfo.saturday;
   }).map(e => e.title).filter(Boolean);
+  // Tiene traccia delle note dei singoli turni per evidenziarle nel PDF.
+  const shiftNoteTexts: string[] = [];
 
   groupOrder.forEach((groupKey) => {
     const workersInGroup = appData.workers
@@ -57,6 +59,15 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
 
         // Nel PDF sostituisce l'emoji del tipo assenza con un punto compatibile con Helvetica.
         cellText = cellText.replace(/🏖️\s*/g, '• ');
+
+        // Riporta anche la nota inserita nella singola casella del collaboratore.
+        const shiftNote = cell?.note?.trim();
+        if (shiftNote) {
+          shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
+          cellText = cellText === '—'
+            ? `• ${shiftNote}`
+            : `${cellText}\n• ${shiftNote}`;
+        }
 
         // Aggiungi impegni del giorno se presenti
         const mon = new Date(monday);
@@ -120,7 +131,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       } else if (/PERMESSO|(^|[^A-Z])ROL([^A-Z]|$)|DONAZIONE SANGUE|VISITA MEDICA/.test(value)) {
         data.cell.styles.textColor = [190, 115, 20];
         data.cell.styles.fontStyle = 'bold';
-      } else if (eventTitles.some(title => title && value.includes(title.toLocaleUpperCase('it-IT')))) {
+      } else if (
+        eventTitles.some(title => title && value.includes(title.toLocaleUpperCase('it-IT'))) ||
+        shiftNoteTexts.some(note => note && value.includes(note))
+      ) {
         data.cell.styles.textColor = [37, 99, 190];
         data.cell.styles.fontStyle = 'bold';
       }
