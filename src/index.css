@@ -1050,3 +1050,18 @@ button:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
+
+
+/* Etichette impegno con colore personalizzato nelle celle turni.
+   Il colore scelto dall'utente definisce l'accento, non il testo:
+   la leggibilità viene garantita separatamente nei due temi. */
+body.light-theme .note-color-chip {
+  background-color: color-mix(in srgb, var(--note-color, #64748b) 14%, #ffffff) !important;
+  border-color: color-mix(in srgb, var(--note-color, #64748b) 48%, #ffffff) !important;
+  color: #1e293b !important;
+}
+body:not(.light-theme) .note-color-chip {
+  background-color: color-mix(in srgb, var(--note-color, #64748b) 30%, #0f172a) !important;
+  border-color: color-mix(in srgb, var(--note-color, #64748b) 66%, #64748b) !important;
+  color: #ffffff !important;
+}
