@@ -69,8 +69,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         }
 
         row.push(cellText);
-
-
+      }
 
       rows.push(row);
     });
