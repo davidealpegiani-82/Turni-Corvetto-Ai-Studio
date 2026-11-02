@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FileText, Printer, Download, X } from 'lucide-react';
 import { Header } from './components/Header';
+import { PdfPreviewViewer } from './components/PdfPreviewViewer';
 import { TurniView } from './components/TurniView';
 import { FerieView } from './components/FerieView';
 import { EventiView } from './components/EventiView';
@@ -1576,12 +1577,7 @@ export default function App() {
               </a>
             </div>
 
-            <iframe
-              ref={globalPdfIframeRef}
-              src={pdfPreviewUrl}
-              className="w-full flex-1 rounded-2xl border border-slate-800 bg-white"
-              title="Anteprima PDF"
-            />
+            <PdfPreviewViewer url={pdfPreviewUrl} />
             <div className="pt-2 border-t border-slate-800 flex justify-end">
               <button
                 onClick={() => { URL.revokeObjectURL(pdfPreviewUrl); setPdfPreviewUrl(null); }}
