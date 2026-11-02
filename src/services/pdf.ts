@@ -59,7 +59,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         const dayStr = mon.toISOString().slice(0, 10);
         const dayEvents = (appData.events || []).filter(e => e.date === dayStr && e.participantIds?.includes(w.id));
         if (dayEvents.length > 0) {
-          const evText = dayEvents.map(e => `📌 ${e.title}`).join('\n');
+          const evText = dayEvents.map(e => `IMPEGNO: ${e.title}`).join('\n');
           cellText = cellText === '—' ? evText : `${cellText}\n${evText}`;
         }
 
