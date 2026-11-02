@@ -71,7 +71,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
           shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
           cellText = cellText === '—'
             ? `• ${shiftNote}`
-            : `${cellText}\\n• ${shiftNote}`;
+            : `${cellText}\n• ${shiftNote}`;
         }
 
         // Aggiungi impegni del giorno se presenti
@@ -128,7 +128,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
       // Le celle con orari mantengono il testo nero: i colori sono riservati
       // alle causali/annotazioni nelle celle senza turni lavorati.
-      const hasWorkTimes = /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(value);
+      const hasWorkTimes = /\b\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}\b/.test(value);
       if (hasWorkTimes) {
         data.cell.styles.textColor = [15, 23, 42];
         data.cell.styles.fontStyle = 'normal';
