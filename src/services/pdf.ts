@@ -60,13 +60,18 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         // Nel PDF sostituisce l'emoji del tipo assenza con un punto compatibile con Helvetica.
         cellText = cellText.replace(/🏖️\s*/g, '• ');
 
-        // Riporta anche la nota inserita nella singola casella del collaboratore.
-        const shiftNote = cell?.note?.trim();
-        if (shiftNote) {
+        // Evita di ripetere nella nota la causale di assenza già mostrata nella cella.
+        // Se la nota contiene anche un dettaglio aggiuntivo, conserva solo quel dettaglio.
+        let shiftNote = cell?.note?.trim() || '';
+        const absenceLabel = String(cell?.leaveType || cell?.status || '').trim();
+        if (/^(MALATTIA|RICOVERO)$/i.test(absenceLabel) && shiftNote) {
+          shiftNote = shiftNote.replace(/^(MALATTIA|RICOVERO)(?:\\s*[–—-]\\s*|\\s*:\\s*)?/i, '').trim();
+        }
+        if (shiftNote && !/^(MALATTIA|RICOVERO)$/i.test(shiftNote)) {
           shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
           cellText = cellText === '—'
             ? `• ${shiftNote}`
-            : `${cellText}\n• ${shiftNote}`;
+            : `${cellText}\\n• ${shiftNote}`;
         }
 
         // Aggiungi impegni del giorno se presenti
@@ -121,8 +126,13 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
-      // Evidenzia le eccezioni con colori leggibili anche in stampa.
-      if (/MALATTIA|RICOVERO/.test(value)) {
+      // Le celle con orari mantengono il testo nero: i colori sono riservati
+      // alle causali/annotazioni nelle celle senza turni lavorati.
+      const hasWorkTimes = /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(value);
+      if (hasWorkTimes) {
+        data.cell.styles.textColor = [15, 23, 42];
+        data.cell.styles.fontStyle = 'normal';
+      } else if (/MALATTIA|RICOVERO/.test(value)) {
         data.cell.styles.textColor = [190, 45, 45];
         data.cell.styles.fontStyle = 'bold';
       } else if (/FERIE|CONGEDO/.test(value)) {
