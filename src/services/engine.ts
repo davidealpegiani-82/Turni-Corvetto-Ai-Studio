@@ -1608,6 +1608,22 @@ export function generateAutoProposal(
   const shiftUfficio8hApertura = rules.ufficio8hApertura || { mIn: "06:30", mOut: "12:00", pIn: "13:00", pOut: "15:30" }; // 8h
   const shiftUfficio8hChiusura = rules.ufficio8h; // 08:30-13:00 / 14:00-17:30 (8h)
 
+  // Una cella vuota/placeholder non deve bloccare la generazione del turno base.
+  // Restano invece intatti riposi, assenze, turni manuali e celle con orari già inseriti.
+  const canGenerateBaseShift = (id: string, day: number): boolean => {
+    const cell = proposalWeek[id]?.[day] as (DayShift & { manualEdit?: boolean }) | undefined;
+    if (!cell || cell.generated) return true;
+    if (cell.manualEdit || isHardUnavailableCell(cell)) return false;
+
+    const hasAnyTime = !!(cell.mIn || cell.mOut || cell.pIn || cell.pOut);
+    if (hasAnyTime) return false;
+
+    const status = String(cell.status || '').toUpperCase();
+    if (status && status !== 'LAVORO') return false;
+    if (cell.leaveRequestId || cell.leaveType || cell.leaveFullDay !== undefined) return false;
+    return true;
+  };
+
   // Helper per assegnare il turno base preservando eventuali blocchi da impegni ed eventi
   const assignBaseShift = (id: string, day: number, shift: Partial<DayShift>) => {
     if (!proposalWeek[id]) proposalWeek[id] = {};
@@ -1632,7 +1648,7 @@ export function generateAutoProposal(
     }
 
     // A. Mario Ragone (Jolly Magazzino 8h Apertura)
-    if (!proposalWeek[rules.marioId]?.[day] || proposalWeek[rules.marioId][day].generated) {
+    if (canGenerateBaseShift(rules.marioId, day)) {
       assignBaseShift(rules.marioId, day, rules.marioOre);
     }
 
@@ -1682,7 +1698,7 @@ export function generateAutoProposal(
 
     // F. Magazzino (Coppia Sabato 7h Apertura 06:30 vs Altra Coppia 8h Chiusura 17:30)
     for (const id of [...rules.magPairA, ...rules.magPairB]) {
-      if (!proposalWeek[id]?.[day] || proposalWeek[id][day].generated) {
+      if (canGenerateBaseShift(id, day)) {
         const isSatPair = actualMagSatIds.includes(id);
         const shift = isSatPair ? rules.mag7h : rules.mag8h;
         assignBaseShift(id, day, shift);
