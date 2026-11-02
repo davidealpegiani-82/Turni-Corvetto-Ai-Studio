@@ -135,7 +135,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       } else if (/FERIE|CONGEDO/.test(value)) {
         data.cell.styles.textColor = [22, 128, 75];
         data.cell.styles.fontStyle = 'bold';
-      } else if (/PERMESSO|\\bROL\\b|DONAZIONE SANGUE|VISITA MEDICA/.test(value)) {
+      } else if (/PERMESSO|(^|[^A-Z])ROL([^A-Z]|$)|DONAZIONE SANGUE|VISITA MEDICA/.test(value)) {
         data.cell.styles.textColor = [190, 115, 20];
         data.cell.styles.fontStyle = 'bold';
       } else if (eventTitles.some(title => title && value.includes(title.toLocaleUpperCase('it-IT')))) {
