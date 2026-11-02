@@ -30,7 +30,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     return `${dName} ${d.getDate()}`;
   });
 
-  const headers = ["Collaboratore", ...dayHeaders, "Totale"];
+  const headers = ["Collaboratore", ...dayHeaders];
 
   // Raggruppa collaboratori per gruppo
   const groupOrder = appData.rules.groupOrder || ["MANAGER", "EDILE", "FINITURE", "MAGAZZINO"];
@@ -48,10 +48,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     if (!workersInGroup.length) return;
 
     workersInGroup.forEach((w) => {
-      const workerLabel = w.role ? `${w.name}\n(${w.role})` : w.name;
+      const workerLabel = w.name;
       const row = [workerLabel];
-
-      let totalMinutes = 0;
 
       for (let day = 0; day < 6; day++) {
         const cell = appData.weeks[weekKey]?.[w.id]?.[day];
@@ -72,23 +70,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
 
         row.push(cellText);
 
-        if (cell?.mIn && cell?.mOut) {
-          const [h1, m1] = cell.mIn.split(':').map(Number);
-          const [h2, m2] = cell.mOut.split(':').map(Number);
-          totalMinutes += Math.max(0, (h2 * 60 + m2) - (h1 * 60 + m1));
-        }
-        if (cell?.pIn && cell?.pOut) {
-          const [h1, m1] = cell.pIn.split(':').map(Number);
-          const [h2, m2] = cell.pOut.split(':').map(Number);
-          totalMinutes += Math.max(0, (h2 * 60 + m2) - (h1 * 60 + m1));
-        }
-        if (cell?.leaveFullDay) {
-          totalMinutes += (cell.leaveHours || 8) * 60;
-        }
-      }
 
-      const totalHoursStr = `${(totalMinutes / 60).toFixed(1)}h`;
-      row.push(totalHoursStr);
+
       rows.push(row);
     });
   });
@@ -126,7 +109,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       lineWidth: 0.15
     },
     didParseCell: (data) => {
-      if (data.section !== 'body' || data.column.index === 0 || data.column.index === 7) return;
+      if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
       // Evidenzia le eccezioni con colori leggibili anche in stampa.
       if (/MALATTIA|RICOVERO/.test(value)) {
@@ -150,12 +133,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         cellWidth: 44,
         fillColor: [248, 250, 252]
       },
-      7: {
-        fontStyle: 'bold',
-        fillColor: [241, 245, 249],
-        textColor: [37, 99, 235],
-        cellWidth: 16
-      }
+
     }
   });
 
