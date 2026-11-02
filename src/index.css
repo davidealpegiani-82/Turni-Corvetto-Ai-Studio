@@ -1039,3 +1039,60 @@ body.light-theme button:is(
 ) {
   color: #ffffff !important;
 }
+
+
+/* SUPERFICI MODALI SCURE — il tema chiaro non deve invertire il testo.
+   Diversi moduli (Malattia/Ricovero, Ferie/Permessi e altre finestre)
+   mantengono intenzionalmente pannelli slate-900/slate-800 anche con
+   il tema chiaro attivo. Le regole globali del tema chiaro li rendevano
+   testo scuro su fondo scuro. Qui il contrasto viene ripristinato
+   soltanto all'interno di queste superfici scure. */
+body.light-theme .bg-slate-900,
+body.light-theme .bg-slate-800,
+body.light-theme .bg-slate-800\/90,
+body.light-theme .bg-slate-800\/80,
+body.light-theme .bg-slate-800\/60,
+body.light-theme .bg-slate-800\/50,
+body.light-theme .bg-slate-800\/40 {
+  color: #f8fafc;
+}
+body.light-theme .bg-slate-900 .text-white,
+body.light-theme .bg-slate-800 .text-white,
+body.light-theme .bg-slate-800\/90 .text-white,
+body.light-theme .bg-slate-800\/80 .text-white,
+body.light-theme .bg-slate-800\/60 .text-white,
+body.light-theme .bg-slate-800\/50 .text-white,
+body.light-theme .bg-slate-800\/40 .text-white {
+  color: #ffffff !important;
+}
+body.light-theme .bg-slate-900 [class*="text-slate-"],
+body.light-theme .bg-slate-800 [class*="text-slate-"],
+body.light-theme .bg-slate-800\/90 [class*="text-slate-"],
+body.light-theme .bg-slate-800\/80 [class*="text-slate-"],
+body.light-theme .bg-slate-800\/60 [class*="text-slate-"],
+body.light-theme .bg-slate-800\/50 [class*="text-slate-"],
+body.light-theme .bg-slate-800\/40 [class*="text-slate-"] {
+  color: #cbd5e1 !important;
+}
+body.light-theme .bg-slate-900 input,
+body.light-theme .bg-slate-900 textarea,
+body.light-theme .bg-slate-900 select,
+body.light-theme .bg-slate-800 input,
+body.light-theme .bg-slate-800 textarea,
+body.light-theme .bg-slate-800 select {
+  color: #f8fafc !important;
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+}
+body.light-theme .bg-slate-900 select option,
+body.light-theme .bg-slate-800 select option {
+  color: #f8fafc !important;
+  background-color: #1e293b !important;
+}
+body.light-theme .bg-slate-900 input::placeholder,
+body.light-theme .bg-slate-900 textarea::placeholder,
+body.light-theme .bg-slate-800 input::placeholder,
+body.light-theme .bg-slate-800 textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
