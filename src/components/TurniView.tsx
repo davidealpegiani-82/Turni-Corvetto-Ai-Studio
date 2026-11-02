@@ -610,18 +610,10 @@ export const TurniView: React.FC<TurniViewProps> = ({
                                       }}
                                       className={`text-[9px] font-bold px-1.5 py-0.5 rounded truncate max-w-[110px] mt-0.5 flex items-center justify-center gap-1 cursor-pointer hover:scale-105 transition-all ${
                                         cell.noteColor
-                                          ? 'border shadow-2xs'
+                                          ? 'note-color-chip border shadow-2xs'
                                           : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                                       }`}
-                                      style={
-                                        cell.noteColor
-                                          ? {
-                                              backgroundColor: `${cell.noteColor}20`,
-                                              borderColor: `${cell.noteColor}60`,
-                                              color: cell.noteColor
-                                            }
-                                          : undefined
-                                      }
+                                      style={cell.noteColor ? ({ '--note-color': cell.noteColor } as React.CSSProperties) : undefined}
                                       title={`${cell.note} – Clicca per vedere le specifiche dell'impegno`}
                                     >
                                       <span>📌</span>
@@ -902,18 +894,10 @@ export const TurniView: React.FC<TurniViewProps> = ({
                               }}
                               className={`text-[9px] font-bold px-1.5 py-0.5 rounded truncate flex items-center justify-center gap-1 cursor-pointer hover:scale-105 transition-all ${
                                 cell.noteColor
-                                  ? 'border shadow-2xs'
+                                  ? 'note-color-chip border shadow-2xs'
                                   : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                               }`}
-                              style={
-                                cell.noteColor
-                                  ? {
-                                      backgroundColor: `${cell.noteColor}20`,
-                                      borderColor: `${cell.noteColor}60`,
-                                      color: cell.noteColor
-                                    }
-                                  : undefined
-                              }
+                              style={cell.noteColor ? ({ '--note-color': cell.noteColor } as React.CSSProperties) : undefined}
                               title={`${cell.note} – Clicca per vedere le specifiche`}
                             >
                               <span>📌</span>
