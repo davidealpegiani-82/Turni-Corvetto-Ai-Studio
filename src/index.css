@@ -997,6 +997,51 @@ body.light-theme .fixed :is(
   color: #ffffff !important;
 }
 
+/* Pannelli secondari dei modali: normalizza anche le varianti
+   semitrasparenti e le superfici blu/viola scure nel tema chiaro. */
+body.light-theme .fixed .bg-slate-800\/90,
+body.light-theme .fixed .bg-slate-800\/80,
+body.light-theme .fixed .bg-slate-700 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+body.light-theme .fixed [class*="bg-blue-950"],
+body.light-theme .fixed [class*="bg-indigo-950"],
+body.light-theme .fixed [class*="bg-sky-950"],
+body.light-theme .fixed [class*="bg-cyan-950"] {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+body.light-theme .fixed [class*="bg-purple-950"],
+body.light-theme .fixed [class*="bg-violet-950"],
+body.light-theme .fixed [class*="bg-fuchsia-950"] {
+  background-color: #f5f3ff !important;
+  border-color: #ddd6fe !important;
+}
+body.light-theme .fixed [class*="bg-emerald-950"],
+body.light-theme .fixed [class*="bg-green-950"],
+body.light-theme .fixed [class*="bg-teal-950"] {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+body.light-theme .fixed [class*="bg-red-950"],
+body.light-theme .fixed [class*="bg-rose-950"] {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+body.light-theme .fixed [class*="bg-amber-950"],
+body.light-theme .fixed [class*="bg-yellow-950"],
+body.light-theme .fixed [class*="bg-orange-950"] {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+body.light-theme .fixed [class*="from-blue-900"] {
+  background-image: linear-gradient(135deg, #eff6ff, #eef2ff) !important;
+}
+body.light-theme .fixed [class*="from-purple-900"] {
+  background-image: linear-gradient(135deg, #faf5ff, #eef2ff) !important;
+}
+
 /* Focus visibile e leggibile su input, select e textarea. */
 input:focus-visible,
 select:focus-visible,
