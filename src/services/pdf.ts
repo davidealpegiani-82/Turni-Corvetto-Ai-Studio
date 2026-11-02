@@ -35,6 +35,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   // Raggruppa collaboratori per gruppo
   const groupOrder = appData.rules.groupOrder || ["MANAGER", "EDILE", "FINITURE", "MAGAZZINO"];
   const rows: any[] = [];
+  const eventTitles = (appData.events || []).filter(e => {
+    const d = new Date(e.date + 'T12:00:00');
+    return d >= weekInfo.monday && d <= weekInfo.saturday;
+  }).map(e => e.title).filter(Boolean);
 
   groupOrder.forEach((groupKey) => {
     const workersInGroup = appData.workers
@@ -52,6 +56,9 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       for (let day = 0; day < 6; day++) {
         const cell = appData.weeks[weekKey]?.[w.id]?.[day];
         let cellText = formatCellShort(cell, w.id, day, weekKey, appData);
+
+        // Nel PDF sostituisce l'emoji del tipo assenza con un punto compatibile con Helvetica.
+        cellText = cellText.replace(/🏖️\s*/g, '• ');
 
         // Aggiungi impegni del giorno se presenti
         const mon = new Date(monday);
@@ -117,6 +124,24 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       textColor: [15, 23, 42],
       overflow: 'linebreak',
       lineWidth: 0.15
+    },
+    didParseCell: (data) => {
+      if (data.section !== 'body' || data.column.index === 0 || data.column.index === 7) return;
+      const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
+      // Evidenzia le eccezioni con colori leggibili anche in stampa.
+      if (/MALATTIA|RICOVERO/.test(value)) {
+        data.cell.styles.textColor = [190, 45, 45];
+        data.cell.styles.fontStyle = 'bold';
+      } else if (/FERIE|CONGEDO/.test(value)) {
+        data.cell.styles.textColor = [22, 128, 75];
+        data.cell.styles.fontStyle = 'bold';
+      } else if (/PERMESSO|\\bROL\\b|DONAZIONE SANGUE|VISITA MEDICA/.test(value)) {
+        data.cell.styles.textColor = [190, 115, 20];
+        data.cell.styles.fontStyle = 'bold';
+      } else if (eventTitles.some(title => title && value.includes(title.toLocaleUpperCase('it-IT')))) {
+        data.cell.styles.textColor = [37, 99, 190];
+        data.cell.styles.fontStyle = 'bold';
+      }
     },
     columnStyles: {
       0: {
