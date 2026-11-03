@@ -60,6 +60,7 @@ import {
 } from './services/push';
 import {
   buildWeeklyTurniPDF,
+  exportWeeklyTurniJPG,
   buildLeaveRequestPDF,
   downloadBlob
 } from './services/pdf';
@@ -785,6 +786,15 @@ export default function App() {
     showToast('PDF Scaricato', 'Documento A4 generato con successo.', 'success');
   };
 
+  const handleExportWeeklyJPG = async () => {
+    try {
+      const pages = await exportWeeklyTurniJPG(appData, currentDate);
+      showToast('JPG Scaricato', pages === 1 ? 'Immagine JPG della settimana generata in alta qualità.' : pages + ' immagini JPG generate, una per ogni pagina.', 'success');
+    } catch (error) {
+      console.error('Errore esportazione JPG:', error);
+      showToast('Esportazione JPG non riuscita', 'Non è stato possibile generare l’immagine. Riprova.', 'error');
+    }
+  };
   const handlePreviewWeeklyPDF = () => {
     const doc = buildWeeklyTurniPDF(appData, currentDate);
     const weekInfo = getWeekInfo(currentDate);
@@ -1397,6 +1407,7 @@ export default function App() {
         isOpen={exportMenuOpen}
         onClose={() => setExportMenuOpen(false)}
         onExportPDF={handleExportWeeklyPDF}
+        onExportJPG={handleExportWeeklyJPG}
         onPreviewPDF={handlePreviewWeeklyPDF}
         onExportEmail={() => {
           handleExportWeeklyPDF();
