@@ -154,7 +154,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
           const lineHeight = 3.2;
           data.cell.styles.minCellHeight = Math.max(
             Number(data.cell.styles.minCellHeight || 0),
-            4 + (annotations.length + 1) * lineHeight
+            4 + (annotations.length + 2) * lineHeight
           );
         }
         data.cell.styles.textColor = [15, 23, 42];
@@ -183,7 +183,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
 
       const centerX = data.cell.x + data.cell.width / 2;
       const lineHeight = 3.2;
-      let y = data.cell.y + data.cell.height / 2 + 1.2;
+      let y = data.cell.y + data.cell.height / 2 + 1.2 + lineHeight;
       const totalHeight = annotations.length * lineHeight;
       y -= totalHeight / 2;
 
@@ -234,7 +234,11 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     return d >= weekInfo.monday && d <= weekInfo.saturday;
   });
 
-  if (weekEvents.length > 0 && finalY < 185) {
+  if (weekEvents.length > 0) {
+    if (finalY > doc.internal.pageSize.getHeight() - 35) {
+      doc.addPage();
+      finalY = 12;
+    }
     doc.setFontSize(9);
     doc.setTextColor(15, 23, 42);
     doc.text('Impegni e Corsi della Settimana:', 10, finalY + 6);
