@@ -67,7 +67,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         let shiftNote = cell?.note?.trim() || '';
         const absenceLabel = String(cell?.leaveType || cell?.status || '').trim();
         if (/^(MALATTIA|RICOVERO)$/i.test(absenceLabel) && shiftNote) {
-          shiftNote = shiftNote.replace(/^(MALATTIA|RICOVERO)(?:\\s*[–—-]\\s*|\\s*:\\s*)?/i, '').trim();
+          shiftNote = shiftNote.replace(/^(MALATTIA|RICOVERO)(?:\s*[–—-]\s*|\s*:\s*)?/i, '').trim();
         }
         if (shiftNote && !/^(MALATTIA|RICOVERO)$/i.test(shiftNote)) {
           shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
@@ -135,16 +135,16 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
       const workerName = String(rows[data.row.index]?.[0] ?? '').toLocaleUpperCase('it-IT');
       const isSandriniRow = workerName.includes('SANDRINI');
-      const rawLines = String(data.cell.raw ?? '').split('\\n');
+      const rawLines = String(data.cell.raw ?? '').split('\n');
       const firstLine = rawLines[0] || '';
-      const hasStandardHours = /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(firstLine);
+      const hasStandardHours = /\b\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}\b/.test(firstLine);
 
       // Per Sandrini l'orario standard resta nero; le note vengono ridisegnate separatamente.
       if (isSandriniRow && hasStandardHours) {
         const annotations = rawLines.slice(1).filter(line => line.trim());
-        const inlineNote = firstLine.match(/(\\s*[·•]\\s*.+)$/);
+        const inlineNote = firstLine.match(/(\s*[·•]\s*.+)$/);
         if (inlineNote) {
-          annotations.unshift(inlineNote[1].replace(/^\\s*[·•]\\s*/, '• ').trim());
+          annotations.unshift(inlineNote[1].replace(/^\s*[·•]\s*/, '• ').trim());
           data.cell.text = [firstLine.slice(0, inlineNote.index).trim()];
         } else {
           data.cell.text = [firstLine];
