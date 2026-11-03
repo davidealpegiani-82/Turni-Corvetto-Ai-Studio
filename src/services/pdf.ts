@@ -89,14 +89,14 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         if (dayEvents.length > 0) {
           // Evita duplicati tra nota del turno e impegno/evento dello stesso giorno.
           const normalizeLine = (value: string) => value
-            .replace(/^[\\s•·-]+/, '')
-            .replace(/[\\s.]+$/g, '')
+            .replace(/^[\s•·-]+/, '')
+            .replace(/[\s.]+$/g, '')
             .normalize('NFD')
-            .replace(/[\\u0300-\\u036f]/g, '')
-            .replace(/\\s+/g, ' ')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, ' ')
             .trim()
             .toLocaleUpperCase('it-IT');
-          const existingLines = new Set(cellText.split('\\n').map(normalizeLine).filter(Boolean));
+          const existingLines = new Set(cellText.split('\n').map(normalizeLine).filter(Boolean));
           const uniqueEventTitles = [...new Set(
             dayEvents
               .map(e => String(e.title || '').trim())
@@ -130,7 +130,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     head: [headers],
     body: rows,
     theme: 'grid',
-    margin: { left: 10, right: 10, top: 5, bottom: 5 },
+    margin: { left: 10, right: 10, top: 25, bottom: 14 },
     headStyles: {
       fillColor: [30, 41, 59],
       textColor: [255, 255, 255],
@@ -140,13 +140,15 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     },
     styles: {
       fontSize: 7.5,
-      cellPadding: 1.3,
+      cellPadding: 1.5,
       halign: 'center',
       valign: 'middle',
       textColor: [15, 23, 42],
       overflow: 'linebreak',
-      lineWidth: 0.15
+      lineWidth: 0.12
     },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    rowPageBreak: 'avoid',
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
@@ -164,9 +166,15 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
           sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
           data.cell.text = [];
           const lineHeight = 3.2;
+          const noteLineCount = annotations.reduce((total, line) => {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6.8);
+            return total + (doc.splitTextToSize(line, Math.max(10, data.cell.width - 3)) as string[]).length;
+          }, 0);
+          const mainLineCount = (doc.splitTextToSize(firstLine, Math.max(10, data.cell.width - 3)) as string[]).length;
           data.cell.styles.minCellHeight = Math.max(
             Number(data.cell.styles.minCellHeight || 0),
-            2.6 + 3.6 + annotations.length * lineHeight
+            2.6 + 3.6 + Math.max(1, mainLineCount + noteLineCount) * lineHeight
           );
         } else {
           data.cell.text = [firstLine];
@@ -195,7 +203,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const annotations = sandriniAnnotations.get(`${data.row.index}-${data.column.index}`);
       if (!annotations?.length) return;
 
-      const firstLine = String(data.cell.raw ?? '').split('\\n')[0] || '';
+      const firstLine = String(data.cell.raw ?? '').split('\n')[0] || '';
       const centerX = data.cell.x + data.cell.width / 2;
       const maxWidth = data.cell.width - 3;
       const lineHeight = 3.2;
@@ -258,7 +266,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   if (weeklyNote) {
     if (finalY + 18 > doc.internal.pageSize.getHeight() - 12) {
       doc.addPage();
-      finalY = 12;
+      finalY = 25;
     }
     doc.setFontSize(9);
     doc.setTextColor(15, 23, 42);
@@ -272,7 +280,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     for (const line of splitNotes) {
       if (noteY > pageHeight - 12) {
         doc.addPage();
-        noteY = 14;
+        noteY = 26;
       }
       doc.text(line, 10, noteY);
       noteY += 3.5;
@@ -296,7 +304,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     doc.text('Impegni e Corsi della Settimana:', 10, finalY + 6);
 
     const eventRows = weekEvents.map(e => [
-      e.date,
+      formatDateItalian(e.date),
       e.title,
       e.allDay ? 'Giornata intera' : `${e.fromTime || ''} - ${e.toTime || ''}`,
       e.location || 'Corvetto',
@@ -308,9 +316,9 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       head: [['Data', 'Titolo', 'Orario', 'Luogo', 'Partecipanti']],
       body: eventRows,
       theme: 'grid',
-      margin: { left: 10, right: 10, top: 2, bottom: 4 },
-      headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontSize: 7 },
-      styles: { fontSize: 6.8, cellPadding: 1.5, valign: 'middle' },
+      margin: { left: 10, right: 10, top: 25, bottom: 14 },
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontSize: 7, fontStyle: 'bold' },
+      styles: { fontSize: 7, cellPadding: 1.8, valign: 'middle', overflow: 'linebreak' },
       columnStyles: {
         0: { cellWidth: 20 },
         1: { cellWidth: 50 },
@@ -319,6 +327,30 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         4: { cellWidth: 139 }
       }
     });
+  }
+
+  // Intestazione e piè di pagina coerenti su tutte le pagine, incluse quelle aggiunte
+  // per note lunghe o per la tabella degli impegni.
+  const totalPages = doc.getNumberOfPages();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  for (let page = 1; page <= totalPages; page++) {
+    doc.setPage(page);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(30, 41, 59);
+    doc.text(appData.title + ' — Programmazione Turni', 10, 9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(100, 116, 139);
+    doc.text('Settimana n.' + weekInfo.weekNo + ': dal ' + weekInfo.monStr + ' al ' + weekInfo.satStr, 10, 14);
+    doc.setDrawColor(220, 225, 230);
+    doc.setLineWidth(0.25);
+    doc.line(10, 18, pageWidth - 10, 18);
+    doc.setFontSize(6.5);
+    doc.setTextColor(120, 130, 145);
+    doc.text('Centroedile Milano • Filiale di Corvetto', 10, pageHeight - 6);
+    doc.text('Pagina ' + page + ' di ' + totalPages, pageWidth - 10, pageHeight - 6, { align: 'right' });
   }
 
   return doc;
