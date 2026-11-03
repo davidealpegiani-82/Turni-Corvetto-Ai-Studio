@@ -156,16 +156,19 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         if (annotations.length) {
           sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
           data.cell.text = [];
-          const lineHeight = 3.2;
+          const compactLineHeight = 2.7;
           const noteLineCount = annotations.reduce((total, line) => {
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(6.8);
             return total + (doc.splitTextToSize(line, Math.max(10, data.cell.width - 3)) as string[]).length;
           }, 0);
           const mainLineCount = (doc.splitTextToSize(firstLine, Math.max(10, data.cell.width - 3)) as string[]).length;
+          // Altezza calcolata sulle sole righe realmente stampate: niente spazio verticale
+          // aggiuntivo fisso, così la riga di Giuliano resta compatta come quelle standard.
+          const renderedLines = Math.max(1, mainLineCount + noteLineCount);
           data.cell.styles.minCellHeight = Math.max(
             Number(data.cell.styles.minCellHeight || 0),
-            2.6 + 3.6 + Math.max(1, mainLineCount + noteLineCount) * lineHeight
+            3 + renderedLines * compactLineHeight
           );
         } else {
           data.cell.text = [firstLine];
@@ -197,7 +200,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const firstLine = String(data.cell.raw ?? '').split('\n')[0] || '';
       const centerX = data.cell.x + data.cell.width / 2;
       const maxWidth = data.cell.width - 3;
-      const lineHeight = 3.2;
+      const lineHeight = 2.7;
 
       // Calcola anche le eventuali righe di testo a capo, poi centra verticalmente
       // l'intero blocco (orario + note), non ciascuna parte separatamente.
@@ -213,8 +216,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         };
       });
       const totalLines = mainLines.length + noteLines.reduce((sum, item) => sum + item.text.length, 0);
-      const totalHeight = 3.6 + Math.max(0, totalLines - 1) * lineHeight;
-      let y = data.cell.y + (data.cell.height - totalHeight) / 2 + 2.7;
+      const totalHeight = 2.7 + Math.max(0, totalLines - 1) * lineHeight;
+      let y = data.cell.y + (data.cell.height - totalHeight) / 2 + 2.2;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
