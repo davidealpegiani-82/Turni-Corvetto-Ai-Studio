@@ -123,15 +123,12 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     },
     styles: {
       fontSize: 7.5,
-      cellPadding: 2,
+      cellPadding: 1.3,
       halign: 'center',
       valign: 'middle',
       textColor: [15, 23, 42],
       overflow: 'linebreak',
-      lineWidth: 0.15,
-      // Altezza uniforme di base: evita che la riga di Sandrini risulti isolatamente più alta
-      // quando contiene una singola annotazione sotto l'orario standard.
-      minCellHeight: 13.6
+      lineWidth: 0.15
     },
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
@@ -155,9 +152,11 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         if (annotations.length) {
           sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
           const lineHeight = 3.2;
+          // Altezza minima solo per la cella di Giuliano con annotazioni:
+          // una riga orario + le note, con padding ridotto e senza spazio superfluo.
           data.cell.styles.minCellHeight = Math.max(
             Number(data.cell.styles.minCellHeight || 0),
-            4 + (annotations.length + 2) * lineHeight
+            2.6 + 3.5 + annotations.length * lineHeight
           );
         }
         data.cell.styles.textColor = [15, 23, 42];
@@ -186,7 +185,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
 
       const centerX = data.cell.x + data.cell.width / 2;
       const lineHeight = 3.2;
-      let y = data.cell.y + data.cell.height / 2 + 1.2 + lineHeight;
+      // Note ancorate in basso: non serve lasciare una grande fascia vuota sotto l'orario.
+      let y = data.cell.y + data.cell.height - 1.1 - (annotations.length - 1) * lineHeight;
 
       annotations.forEach((line) => {
         const normalized = line.toLocaleUpperCase('it-IT');
