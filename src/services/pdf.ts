@@ -87,8 +87,25 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         const dayStr = localDateKey(mon);
         const dayEvents = (appData.events || []).filter(e => e.date === dayStr && e.participantIds?.includes(w.id));
         if (dayEvents.length > 0) {
-          const evText = dayEvents.map(e => `• ${e.title}`).join('\n');
-          cellText = cellText === '—' ? evText : `${cellText}\n${evText}`;
+          // Evita duplicati tra nota del turno e impegno/evento dello stesso giorno.
+          const normalizeLine = (value: string) => value
+            .replace(/^[\\s•·-]+/, '')
+            .replace(/[\\s.]+$/g, '')
+            .normalize('NFD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .replace(/\\s+/g, ' ')
+            .trim()
+            .toLocaleUpperCase('it-IT');
+          const existingLines = new Set(cellText.split('\\n').map(normalizeLine).filter(Boolean));
+          const uniqueEventTitles = [...new Set(
+            dayEvents
+              .map(e => String(e.title || '').trim())
+              .filter(title => title && !existingLines.has(normalizeLine(title)))
+          )];
+          if (uniqueEventTitles.length > 0) {
+            const evText = uniqueEventTitles.map(title => `• ${title}`).join('\\n');
+            cellText = cellText === '—' ? evText : `${cellText}\\n${evText}`;
+          }
         }
 
         row.push(cellText);
