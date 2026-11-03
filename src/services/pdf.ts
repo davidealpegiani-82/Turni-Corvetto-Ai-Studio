@@ -143,6 +143,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
+      data.cell.styles.minCellHeight = 6.2;
       const workerName = String(rows[data.row.index]?.[0] ?? '').toLocaleUpperCase('it-IT');
       const isSandriniRow = workerName.includes('SANDRINI');
       const rawLines = String(data.cell.raw ?? '').split('\n');
@@ -156,20 +157,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         if (annotations.length) {
           sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
           data.cell.text = [];
-          const compactLineHeight = 2.7;
-          const noteLineCount = annotations.reduce((total, line) => {
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(6.8);
-            return total + (doc.splitTextToSize(line, Math.max(10, data.cell.width - 3)) as string[]).length;
-          }, 0);
-          const mainLineCount = (doc.splitTextToSize(firstLine, Math.max(10, data.cell.width - 3)) as string[]).length;
-          // Altezza calcolata sulle sole righe realmente stampate: niente spazio verticale
-          // aggiuntivo fisso, così la riga di Giuliano resta compatta come quelle standard.
-          const renderedLines = Math.max(1, mainLineCount + noteLineCount);
-          data.cell.styles.minCellHeight = Math.max(
-            Number(data.cell.styles.minCellHeight || 0),
-            3 + renderedLines * compactLineHeight
-          );
+          data.cell.styles.minCellHeight = 6.2;
         } else {
           data.cell.text = [firstLine];
         }
