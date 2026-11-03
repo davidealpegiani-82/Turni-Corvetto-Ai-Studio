@@ -363,9 +363,51 @@ export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date): Pr
       context.fillStyle = '#ffffff';
       context.fillRect(0, 0, canvas.width, canvas.height);
       await page.render({ canvas, canvasContext: context, viewport, background: '#ffffff' }).promise;
+
+      // Ritaglia l'immagine sul contenuto stampato, così il JPG mostra la tabella
+      // e non l'intero foglio A4 con grandi fasce bianche. Il footer PDF in fondo
+      // alla pagina viene escluso dal calcolo dell'area utile.
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+      const scanBottom = Math.max(1, canvas.height - Math.round(18 * 72 / 25.4 * 3));
+      let minX = canvas.width;
+      let minY = scanBottom;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < scanBottom; y += 2) {
+        for (let x = 0; x < canvas.width; x += 2) {
+          const offset = (y * canvas.width + x) * 4;
+          const r = pixels.data[offset];
+          const g = pixels.data[offset + 1];
+          const b = pixels.data[offset + 2];
+          // Considera contenuti, bordi e fondi leggermente colorati della tabella.
+          if (r < 250 || g < 250 || b < 250) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+
+      const padding = 12; // margine minimo per non avvicinare il bordo ai contenuti
+      const cropX = maxX >= 0 ? Math.max(0, minX - padding) : 0;
+      const cropY = maxY >= 0 ? Math.max(0, minY - padding) : 0;
+      const cropRight = maxX >= 0 ? Math.min(canvas.width, maxX + padding + 1) : canvas.width;
+      const cropBottom = maxY >= 0 ? Math.min(scanBottom, maxY + padding + 1) : scanBottom;
+      const jpgCanvas = document.createElement('canvas');
+      jpgCanvas.width = Math.max(1, cropRight - cropX);
+      jpgCanvas.height = Math.max(1, cropBottom - cropY);
+      const jpgContext = jpgCanvas.getContext('2d', { alpha: false });
+      if (!jpgContext) throw new Error('Impossibile creare l’immagine JPG ritagliata.');
+      jpgContext.fillStyle = '#ffffff';
+      jpgContext.fillRect(0, 0, jpgCanvas.width, jpgCanvas.height);
+      jpgContext.drawImage(canvas, cropX, cropY, jpgCanvas.width, jpgCanvas.height, 0, 0, jpgCanvas.width, jpgCanvas.height);
+
       const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((result) => result ? resolve(result) : reject(new Error('Conversione JPG non riuscita.')), 'image/jpeg', 0.96);
+        jpgCanvas.toBlob((result) => result ? resolve(result) : reject(new Error('Conversione JPG non riuscita.')), 'image/jpeg', 0.96);
       });
+      jpgCanvas.width = 0;
+      jpgCanvas.height = 0;
       const pageSuffix = pdf.numPages > 1 ? '_Pagina_' + pageNumber + '_di_' + pdf.numPages : '';
       downloadBlob(blob, 'Turni_' + safeTitle + '_Settimana_' + weekInfo.weekNo + pageSuffix + '.jpg');
       page.cleanup();
