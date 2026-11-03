@@ -105,6 +105,9 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   doc.setTextColor(100);
   doc.text(`Settimana n.${weekInfo.weekNo}: dal ${weekInfo.monStr} al ${weekInfo.satStr} (Sync Real-time)`, 14, 20);
 
+  // Annotazioni su celle con orari: disegnate separatamente per non colorare gli orari.
+  const mixedCellAnnotations = new Map<string, { lines: string[] }>();
+
   // Tabella principale
   autoTable(doc, {
     startY: 25,
@@ -133,8 +136,21 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
       // Le celle con orari mantengono il testo nero: i colori sono riservati
       // alle causali/annotazioni nelle celle senza turni lavorati.
-      const hasWorkTimes = /\b\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}\b/.test(value);
+      const hasWorkTimes = /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(value);
       if (hasWorkTimes) {
+        const rawLines = String(data.cell.raw ?? '').split('\\n');
+        if (rawLines.length > 1) {
+          const annotationLines = rawLines.slice(1).flatMap(line =>
+            doc.splitTextToSize(line, Math.max(10, data.cell.width - 4))
+          );
+          mixedCellAnnotations.set(`${data.row.index}-${data.column.index}`, { lines: annotationLines });
+          data.cell.text = [rawLines[0]];
+          data.cell.styles.valign = 'top';
+          data.cell.styles.minCellHeight = Math.max(
+            Number(data.cell.styles.minCellHeight || 0),
+            4 + (1 + annotationLines.length) * 3.2
+          );
+        }
         data.cell.styles.textColor = [15, 23, 42];
         data.cell.styles.fontStyle = 'normal';
       } else if (/MALATTIA|RICOVERO/.test(value)) {
@@ -153,6 +169,29 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         data.cell.styles.textColor = [37, 99, 190];
         data.cell.styles.fontStyle = 'bold';
       }
+    },
+    didDrawCell: (data) => {
+      if (data.section !== 'body' || data.column.index === 0) return;
+      const annotation = mixedCellAnnotations.get(`${data.row.index}-${data.column.index}`);
+      if (!annotation) return;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      annotation.lines.forEach((line, index) => {
+        const upper = line.toLocaleUpperCase('it-IT');
+        if (/PERMESSO|(^|[^A-Z])ROL([^A-Z]|$)|DONAZIONE SANGUE|VISITA MEDICA/.test(upper)) {
+          doc.setTextColor(190, 115, 20);
+        } else if (/MALATTIA|RICOVERO/.test(upper)) {
+          doc.setTextColor(190, 45, 45);
+        } else {
+          doc.setTextColor(37, 99, 190);
+        }
+        doc.text(line, data.cell.x + data.cell.width / 2, data.cell.y + 5.5 + index * 3.2, {
+          align: 'center',
+          baseline: 'middle'
+        });
+      });
+      doc.setTextColor(15, 23, 42);
     },
     columnStyles: {
       0: {
