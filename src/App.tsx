@@ -792,7 +792,7 @@ export default function App() {
       showToast('JPG Scaricato', pages === 1 ? 'Immagine JPG della settimana generata in alta qualità.' : pages + ' immagini JPG generate, una per ogni pagina.', 'success');
     } catch (error) {
       console.error('Errore esportazione JPG:', error);
-      showToast('Esportazione JPG non riuscita', 'Non è stato possibile generare l’immagine. Riprova.', 'error');
+      showToast('Esportazione JPG non riuscita', 'Non è stato possibile generare l’immagine. Riprova.', 'warn');
     }
   };
   const handlePreviewWeeklyPDF = () => {
