@@ -184,8 +184,6 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const centerX = data.cell.x + data.cell.width / 2;
       const lineHeight = 3.2;
       let y = data.cell.y + data.cell.height / 2 + 1.2 + lineHeight;
-      const totalHeight = annotations.length * lineHeight;
-      y -= totalHeight / 2;
 
       annotations.forEach((line) => {
         const normalized = line.toLocaleUpperCase('it-IT');
