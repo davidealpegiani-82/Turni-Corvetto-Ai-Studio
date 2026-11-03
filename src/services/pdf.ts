@@ -143,7 +143,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
-      data.cell.styles.minCellHeight = 7;
+      data.cell.styles.minCellHeight = 8;
       const workerName = String(rows[data.row.index]?.[0] ?? '').toLocaleUpperCase('it-IT');
       const isSandriniRow = workerName.includes('SANDRINI');
       const rawLines = String(data.cell.raw ?? '').split('\n');
@@ -157,7 +157,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         if (annotations.length) {
           sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
           data.cell.text = [];
-          data.cell.styles.minCellHeight = 7;
+          data.cell.styles.minCellHeight = 8;
         } else {
           data.cell.text = [firstLine];
         }
