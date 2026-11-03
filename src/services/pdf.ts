@@ -215,6 +215,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   // Note settimanali
   const weeklyNote = appData.notes[weekKey];
   if (weeklyNote) {
+    if (finalY + 18 > doc.internal.pageSize.getHeight() - 12) {
+      doc.addPage();
+      finalY = 12;
+    }
     doc.setFontSize(9);
     doc.setTextColor(15, 23, 42);
     doc.text(appData.notesTitle || "Note / Comunicazioni Filiale:", 10, finalY + 7);
