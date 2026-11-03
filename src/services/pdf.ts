@@ -1,4 +1,8 @@
 import { jsPDF } from 'jspdf';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 import autoTable from 'jspdf-autotable';
 import { AppData, LeaveRequest, BranchEvent } from '../types/turni';
 import { getWeekInfo, getWeekKey, localDateKey, formatCellShort } from './engine';
@@ -338,6 +342,40 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   return doc;
 }
 
+// Esporta il planning settimanale come immagini JPG ricavate dal PDF ufficiale.
+// Il rendering parte dallo stesso documento PDF: grafica, colori e impaginazione restano identici.
+export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date): Promise<number> {
+  const doc = buildWeeklyTurniPDF(appData, weekDate);
+  const weekInfo = getWeekInfo(weekDate);
+  const pdfData = new Uint8Array(doc.output('arraybuffer'));
+  const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+  const safeTitle = String(appData.title || 'Corvetto').replace(/[^a-z0-9_-]+/gi, '_');
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 3 });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d', { alpha: false });
+      if (!context) throw new Error('Impossibile creare il canvas per l’immagine JPG.');
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvas, canvasContext: context, viewport, background: '#ffffff' }).promise;
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((result) => result ? resolve(result) : reject(new Error('Conversione JPG non riuscita.')), 'image/jpeg', 0.96);
+      });
+      const pageSuffix = pdf.numPages > 1 ? '_Pagina_' + pageNumber + '_di_' + pdf.numPages : '';
+      downloadBlob(blob, 'Turni_' + safeTitle + '_Settimana_' + weekInfo.weekNo + pageSuffix + '.jpg');
+      page.cleanup();
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+    return pdf.numPages;
+  } finally {
+    await pdf.destroy();
+  }
+}
 export function formatDateItalian(dateStr?: string): string {
   if (!dateStr) return '___/___/______';
   if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
