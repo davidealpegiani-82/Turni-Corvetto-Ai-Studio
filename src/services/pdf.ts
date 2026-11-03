@@ -103,8 +103,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
               .filter(title => title && !existingLines.has(normalizeLine(title)))
           )];
           if (uniqueEventTitles.length > 0) {
-            const evText = uniqueEventTitles.map(title => `• ${title}`).join('\\n');
-            cellText = cellText === '—' ? evText : `${cellText}\\n${evText}`;
+            const evText = uniqueEventTitles.map(title => \`• \${title}\`).join('\n');
+            cellText = cellText === '—' ? evText : \`\${cellText}\n\${evText}\`;
           }
         }
 
@@ -114,15 +114,6 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       rows.push(row);
     });
   });
-
-  // Intestazione
-  doc.setFontSize(16);
-  doc.setTextColor(15, 23, 42);
-  doc.text(`${appData.title} — Programmazione Turni`, 14, 14);
-
-  doc.setFontSize(11);
-  doc.setTextColor(100);
-  doc.text(`Settimana n.${weekInfo.weekNo}: dal ${weekInfo.monStr} al ${weekInfo.satStr} (Sync Real-time)`, 14, 20);
 
   // Tabella principale
   autoTable(doc, {
@@ -295,7 +286,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   });
 
   if (weekEvents.length > 0) {
-    if (finalY > doc.internal.pageSize.getHeight() - 35) {
+    if (finalY > doc.internal.pageSize.getHeight() - 55) {
       doc.addPage();
       finalY = 12;
     }
