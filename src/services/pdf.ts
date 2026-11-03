@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { AppData, LeaveRequest, BranchEvent } from '../types/turni';
-import { getWeekInfo, formatCellShort } from './engine';
+import { getWeekInfo, getWeekKey, localDateKey, formatCellShort } from './engine';
 import { CENTROEDILE_LOGO_BASE64 } from '../constants/logo';
 
 // Helper per scaricare un Blob
@@ -20,7 +20,7 @@ export function downloadBlob(blob: Blob, filename: string) {
 export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   const doc = new jsPDF('landscape', 'mm', 'a4');
   const weekInfo = getWeekInfo(weekDate);
-  const weekKey = `${weekDate.getFullYear()}-W${weekInfo.weekNo}`;
+  const weekKey = getWeekKey(weekDate);
   const daysNames = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
 
   const monday = new Date(weekInfo.monday);
@@ -84,7 +84,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         // Aggiungi impegni del giorno se presenti
         const mon = new Date(monday);
         mon.setDate(monday.getDate() + day);
-        const dayStr = mon.toISOString().slice(0, 10);
+        const dayStr = localDateKey(mon);
         const dayEvents = (appData.events || []).filter(e => e.date === dayStr && e.participantIds?.includes(w.id));
         if (dayEvents.length > 0) {
           const evText = dayEvents.map(e => `• ${e.title}`).join('\n');
@@ -142,9 +142,9 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       // Per Sandrini l'orario standard resta nero; le note vengono ridisegnate separatamente.
       if (isSandriniRow && hasStandardHours) {
         const annotations = rawLines.slice(1).filter(line => line.trim());
-        const inlineNote = firstLine.match(/(\s*[·•]\s*.+)$/);
+        const inlineNote = firstLine.match(/\s*[·•]\s*(Riposo\s+pom\.?)\s*$/i);
         if (inlineNote) {
-          annotations.unshift(inlineNote[1].replace(/^\s*[·•]\s*/, '• ').trim());
+          annotations.unshift(inlineNote[1].trim());
           data.cell.text = [firstLine.slice(0, inlineNote.index).trim()];
         } else {
           data.cell.text = [firstLine];
