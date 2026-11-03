@@ -361,7 +361,7 @@ export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date): Pr
       canvas.height = Math.ceil(viewport.height);
       context.fillStyle = '#ffffff';
       context.fillRect(0, 0, canvas.width, canvas.height);
-      await page.render({ canvas, canvasContext: context, viewport, background: '#ffffff' }).promise;
+      await page.render({ canvasContext: context, viewport, background: '#ffffff' }).promise;
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((result) => result ? resolve(result) : reject(new Error('Conversione JPG non riuscita.')), 'image/jpeg', 0.96);
       });
