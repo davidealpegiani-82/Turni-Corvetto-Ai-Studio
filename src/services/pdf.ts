@@ -41,6 +41,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   }).map(e => e.title).filter(Boolean);
   // Tiene traccia delle note dei singoli turni per evidenziarle nel PDF.
   const shiftNoteTexts: string[] = [];
+  // Annotazioni separate dagli orari standard di Sandrini, da ridisegnare con il colore corretto.
+  const sandriniAnnotations = new Map<string, string[]>();
 
   groupOrder.forEach((groupKey) => {
     const workersInGroup = appData.workers
@@ -132,12 +134,29 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       if (data.section !== 'body' || data.column.index === 0) return;
       const value = String(data.cell.raw ?? '').toLocaleUpperCase('it-IT');
       const workerName = String(rows[data.row.index]?.[0] ?? '').toLocaleUpperCase('it-IT');
-      const isSandriniFixedSchedule =
-        workerName.includes('SANDRINI') &&
-        /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(value);
+      const isSandriniRow = workerName.includes('SANDRINI');
+      const rawLines = String(data.cell.raw ?? '').split('\\n');
+      const firstLine = rawLines[0] || '';
+      const hasStandardHours = /\\b\\d{1,2}:\\d{2}\\s*[-–]\\s*\\d{1,2}:\\d{2}\\b/.test(firstLine);
 
-      // Gli orari fissi di Sandrini restano sempre neri, senza colori misti.
-      if (isSandriniFixedSchedule) {
+      // Per Sandrini l'orario standard resta nero; le note vengono ridisegnate separatamente.
+      if (isSandriniRow && hasStandardHours) {
+        const annotations = rawLines.slice(1).filter(line => line.trim());
+        const inlineNote = firstLine.match(/(\\s*[·•]\\s*.+)$/);
+        if (inlineNote) {
+          annotations.unshift(inlineNote[1].replace(/^\\s*[·•]\\s*/, '• ').trim());
+          data.cell.text = [firstLine.slice(0, inlineNote.index).trim()];
+        } else {
+          data.cell.text = [firstLine];
+        }
+        if (annotations.length) {
+          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
+          const lineHeight = 3.2;
+          data.cell.styles.minCellHeight = Math.max(
+            Number(data.cell.styles.minCellHeight || 0),
+            4 + (annotations.length + 1) * lineHeight
+          );
+        }
         data.cell.styles.textColor = [15, 23, 42];
         data.cell.styles.fontStyle = 'normal';
       } else if (/MALATTIA|RICOVERO/.test(value)) {
@@ -156,6 +175,31 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         data.cell.styles.textColor = [37, 99, 190];
         data.cell.styles.fontStyle = 'bold';
       }
+    },
+    didDrawCell: (data) => {
+      if (data.section !== 'body' || data.column.index === 0) return;
+      const annotations = sandriniAnnotations.get(`${data.row.index}-${data.column.index}`);
+      if (!annotations?.length) return;
+
+      const centerX = data.cell.x + data.cell.width / 2;
+      const lineHeight = 3.2;
+      let y = data.cell.y + data.cell.height / 2 + 1.2;
+      const totalHeight = annotations.length * lineHeight;
+      y -= totalHeight / 2;
+
+      annotations.forEach((line) => {
+        const normalized = line.toLocaleUpperCase('it-IT');
+        let color: [number, number, number] = [37, 99, 190];
+        if (/MALATTIA|RICOVERO/.test(normalized)) color = [190, 45, 45];
+        else if (/FERIE|CONGEDO/.test(normalized)) color = [22, 128, 75];
+        else if (/PERMESSO|(^|[^A-Z])ROL([^A-Z]|$)|DONAZIONE SANGUE|VISITA MEDICA/.test(normalized)) color = [190, 115, 20];
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.8);
+        doc.setTextColor(...color);
+        doc.text(line, centerX, y, { align: 'center', maxWidth: data.cell.width - 3 });
+        y += lineHeight;
+      });
     },
     columnStyles: {
       0: {
