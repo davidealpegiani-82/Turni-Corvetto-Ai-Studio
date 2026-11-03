@@ -128,7 +128,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       valign: 'middle',
       textColor: [15, 23, 42],
       overflow: 'linebreak',
-      lineWidth: 0.15
+      lineWidth: 0.15,
+      // Altezza uniforme di base: evita che la riga di Sandrini risulti isolatamente più alta
+      // quando contiene una singola annotazione sotto l'orario standard.
+      minCellHeight: 13.6
     },
     didParseCell: (data) => {
       if (data.section !== 'body' || data.column.index === 0) return;
