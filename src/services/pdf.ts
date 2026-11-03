@@ -139,29 +139,24 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const firstLine = rawLines[0] || '';
       const hasStandardHours = /\b\d{1,2}:\d{2}\s*[-–]\s*\d{1,2}:\d{2}\b/.test(firstLine);
 
-      // Per Sandrini l'orario standard resta nero; le note vengono ridisegnate separatamente.
+      // Sandrini: l'orario (incluso l'eventuale "Riposo pom.") resta una riga unica.
+      // Le sole note su righe successive vengono disegnate insieme all'orario come blocco centrato.
       if (isSandriniRow && hasStandardHours) {
         const annotations = rawLines.slice(1).filter(line => line.trim());
-        const inlineNote = firstLine.match(/\s*[·•]\s*(Riposo\s+pom\.?)\s*$/i);
-        if (inlineNote) {
-          annotations.unshift(inlineNote[1].trim());
-          data.cell.text = [firstLine.slice(0, inlineNote.index).trim()];
+        if (annotations.length) {
+          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
+          data.cell.text = [];
+          const lineHeight = 3.2;
+          data.cell.styles.minCellHeight = Math.max(
+            Number(data.cell.styles.minCellHeight || 0),
+            2.6 + 3.6 + annotations.length * lineHeight
+          );
         } else {
           data.cell.text = [firstLine];
         }
-        if (annotations.length) {
-          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
-          const lineHeight = 3.2;
-          // Altezza minima solo per la cella di Giuliano con annotazioni:
-          // una riga orario + le note, con padding ridotto e senza spazio superfluo.
-          data.cell.styles.minCellHeight = Math.max(
-            Number(data.cell.styles.minCellHeight || 0),
-            2.6 + 3.5 + annotations.length * lineHeight
-          );
-        }
         data.cell.styles.textColor = [15, 23, 42];
         data.cell.styles.fontStyle = 'normal';
-      } else if (/MALATTIA|RICOVERO/.test(value)) {
+            } else if (/MALATTIA|RICOVERO/.test(value)) {
         data.cell.styles.textColor = [190, 45, 45];
         data.cell.styles.fontStyle = 'bold';
       } else if (/FERIE|CONGEDO/.test(value)) {
@@ -183,13 +178,37 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const annotations = sandriniAnnotations.get(`${data.row.index}-${data.column.index}`);
       if (!annotations?.length) return;
 
+      const firstLine = String(data.cell.raw ?? '').split('\\n')[0] || '';
       const centerX = data.cell.x + data.cell.width / 2;
+      const maxWidth = data.cell.width - 3;
       const lineHeight = 3.2;
-      // Note ancorate in basso: non serve lasciare una grande fascia vuota sotto l'orario.
-      let y = data.cell.y + data.cell.height - 1.1 - (annotations.length - 1) * lineHeight;
 
-      annotations.forEach((line) => {
-        const normalized = line.toLocaleUpperCase('it-IT');
+      // Calcola anche le eventuali righe di testo a capo, poi centra verticalmente
+      // l'intero blocco (orario + note), non ciascuna parte separatamente.
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      const mainLines = doc.splitTextToSize(firstLine, maxWidth) as string[];
+      const noteLines = annotations.map((line) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.8);
+        return {
+          text: doc.splitTextToSize(line, maxWidth) as string[],
+          normalized: line.toLocaleUpperCase('it-IT')
+        };
+      });
+      const totalLines = mainLines.length + noteLines.reduce((sum, item) => sum + item.text.length, 0);
+      const totalHeight = 3.6 + Math.max(0, totalLines - 1) * lineHeight;
+      let y = data.cell.y + (data.cell.height - totalHeight) / 2 + 2.7;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(15, 23, 42);
+      mainLines.forEach((line) => {
+        doc.text(line, centerX, y, { align: 'center' });
+        y += lineHeight;
+      });
+
+      noteLines.forEach(({ text, normalized }) => {
         let color: [number, number, number] = [37, 99, 190];
         if (/MALATTIA|RICOVERO/.test(normalized)) color = [190, 45, 45];
         else if (/FERIE|CONGEDO/.test(normalized)) color = [22, 128, 75];
@@ -198,8 +217,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(6.8);
         doc.setTextColor(...color);
-        doc.text(line, centerX, y, { align: 'center', maxWidth: data.cell.width - 3 });
-        y += lineHeight;
+        text.forEach((line) => {
+          doc.text(line, centerX, y, { align: 'center' });
+          y += lineHeight;
+        });
       });
     },
     columnStyles: {
