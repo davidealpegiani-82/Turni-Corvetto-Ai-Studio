@@ -69,9 +69,14 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         }
         if (shiftNote && !/^(MALATTIA|RICOVERO)$/i.test(shiftNote)) {
           shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
-          cellText = cellText === '—'
-            ? `• ${shiftNote}`
-            : `${cellText}\n• ${shiftNote}`;
+          if (/^riposo\s+pom\.?$/i.test(shiftNote) && cellText !== '—') {
+            // Il riposo pomeridiano di Giuliano resta sulla stessa riga dell'orario mattutino.
+            cellText = `${cellText} · Riposo pom.`;
+          } else {
+            cellText = cellText === '—'
+              ? `• ${shiftNote}`
+              : `${cellText}\n• ${shiftNote}`;
+          }
         }
 
         // Aggiungi impegni del giorno se presenti
