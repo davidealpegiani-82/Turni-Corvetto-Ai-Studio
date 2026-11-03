@@ -224,8 +224,17 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     doc.setFontSize(8);
     doc.setTextColor(51, 65, 85);
     const splitNotes = doc.splitTextToSize(weeklyNote, 277);
-    doc.text(splitNotes, 10, finalY + 12);
-    finalY += 12 + splitNotes.length * 3.5;
+    let noteY = finalY + 12;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    for (const line of splitNotes) {
+      if (noteY > pageHeight - 12) {
+        doc.addPage();
+        noteY = 14;
+      }
+      doc.text(line, 10, noteY);
+      noteY += 3.5;
+    }
+    finalY = noteY;
   }
 
   // Tabella impegni della settimana
