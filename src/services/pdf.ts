@@ -127,8 +127,9 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     theme: 'grid',
     margin: { left: 10, right: 10, top: 25, bottom: 14 },
     headStyles: {
-      fillColor: [30, 41, 59],
-      textColor: [255, 255, 255],
+      fillColor: [219, 234, 254],
+      textColor: [30, 64, 105],
+      lineColor: [147, 197, 253],
       fontStyle: 'bold',
       fontSize: 8,
       cellPadding: 2.5
@@ -303,7 +304,7 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       body: eventRows,
       theme: 'grid',
       margin: { left: 10, right: 10, top: 25, bottom: 14 },
-      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontSize: 7, fontStyle: 'bold' },
+      headStyles: { fillColor: [219, 234, 254], textColor: [30, 64, 105], lineColor: [147, 197, 253], fontSize: 7, fontStyle: 'bold' },
       styles: { fontSize: 7, cellPadding: 1.8, valign: 'middle', overflow: 'linebreak' },
       columnStyles: {
         0: { cellWidth: 20 },
