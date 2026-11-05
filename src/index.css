@@ -343,6 +343,42 @@ body.light-theme .fixed .bg-slate-900\/80 {
   color: #0f172a !important;
 }
 
+/* I testi dei pulsanti ad azione con sfondo pieno mantengono il bianco
+   nel tema chiaro: le regole generiche .text-white non devono ridurre
+   il contrasto su conferma, eliminazione e azioni semantiche. */
+body.light-theme .fixed button[class*="bg-blue-600"],
+body.light-theme .fixed button[class*="bg-blue-700"],
+body.light-theme .fixed button[class*="bg-red-600"],
+body.light-theme .fixed button[class*="bg-red-700"],
+body.light-theme .fixed button[class*="bg-emerald-600"],
+body.light-theme .fixed button[class*="bg-emerald-700"],
+body.light-theme .fixed button[class*="bg-green-600"],
+body.light-theme .fixed button[class*="bg-green-700"],
+body.light-theme .fixed button[class*="bg-amber-600"],
+body.light-theme .fixed button[class*="bg-amber-700"],
+body.light-theme .fixed button[class*="bg-purple-600"],
+body.light-theme .fixed button[class*="bg-purple-700"],
+body.light-theme .fixed button[class*="bg-indigo-600"],
+body.light-theme .fixed button[class*="bg-indigo-700"] {
+  color: #ffffff !important;
+}
+body.light-theme .fixed button[class*="bg-blue-600"] .text-white,
+body.light-theme .fixed button[class*="bg-blue-700"] .text-white,
+body.light-theme .fixed button[class*="bg-red-600"] .text-white,
+body.light-theme .fixed button[class*="bg-red-700"] .text-white,
+body.light-theme .fixed button[class*="bg-emerald-600"] .text-white,
+body.light-theme .fixed button[class*="bg-emerald-700"] .text-white,
+body.light-theme .fixed button[class*="bg-green-600"] .text-white,
+body.light-theme .fixed button[class*="bg-green-700"] .text-white,
+body.light-theme .fixed button[class*="bg-amber-600"] .text-white,
+body.light-theme .fixed button[class*="bg-amber-700"] .text-white,
+body.light-theme .fixed button[class*="bg-purple-600"] .text-white,
+body.light-theme .fixed button[class*="bg-purple-700"] .text-white,
+body.light-theme .fixed button[class*="bg-indigo-600"] .text-white,
+body.light-theme .fixed button[class*="bg-indigo-700"] .text-white {
+  color: #ffffff !important;
+}
+
 /* Tabelle Turni: Intestazioni e Colonne Sticky */
 table th.sticky {
   background: rgba(13, 20, 36, 0.92) !important;
