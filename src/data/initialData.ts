@@ -20,8 +20,8 @@ export const initialWorkers: Worker[] = [
       qualifications: {
         firstAid: { status: 'valid', expiry: '2027-11-30' },
         fireSafety: { status: 'valid', expiry: '2027-10-15' },
-        forklift: { status: 'none' },
-        loader: { status: 'none' }
+        forklift: { status: 'valid' },
+        loader: { status: 'valid' }
       }
     }
   },
@@ -42,7 +42,7 @@ export const initialWorkers: Worker[] = [
       qualifications: {
         firstAid: { status: 'valid', expiry: '2027-05-20' },
         fireSafety: { status: 'none' },
-        forklift: { status: 'none' },
+        forklift: { status: 'valid' },
         loader: { status: 'none' }
       }
     }
@@ -64,8 +64,8 @@ export const initialWorkers: Worker[] = [
       qualifications: {
         firstAid: { status: 'none' },
         fireSafety: { status: 'valid', expiry: '2027-04-10' },
-        forklift: { status: 'none' },
-        loader: { status: 'none' }
+        forklift: { status: 'valid' },
+        loader: { status: 'valid' }
       }
     }
   },
@@ -86,7 +86,7 @@ export const initialWorkers: Worker[] = [
       qualifications: {
         firstAid: { status: 'valid', expiry: '2027-08-30' },
         fireSafety: { status: 'valid', expiry: '2027-06-15' },
-        forklift: { status: 'none' },
+        forklift: { status: 'valid' },
         loader: { status: 'none' }
       }
     }
@@ -108,7 +108,7 @@ export const initialWorkers: Worker[] = [
       qualifications: {
         firstAid: { status: 'none' },
         fireSafety: { status: 'none' },
-        forklift: { status: 'none' },
+        forklift: { status: 'valid' },
         loader: { status: 'none' }
       }
     }
@@ -157,7 +157,7 @@ export const initialWorkers: Worker[] = [
       experience: 'Autonomia completa in magazzino e carico autocarri',
       qualifications: {
         forklift: { status: 'valid', expiry: '2027-09-20' },
-        loader: { status: 'none' },
+        loader: { status: 'valid' },
         firstAid: { status: 'none' },
         fireSafety: { status: 'valid', expiry: '2027-08-14' }
       }
@@ -182,7 +182,7 @@ export const initialWorkers: Worker[] = [
       experience: 'Massima esperienza nell\'uso dei mezzi pesanti di cantiere e magazzino',
       qualifications: {
         forklift: { status: 'valid', expiry: '2027-04-30' },
-        loader: { status: 'valid', expiry: '2027-04-30' },
+        loader: { status: 'none' },
         firstAid: { status: 'none' },
         fireSafety: { status: 'none' }
       }
@@ -335,5 +335,42 @@ export function createDefaultAppData(): AppData {
         by: "system"
       }
     ]
+  };
+}
+
+
+/** One-time, narrowly scoped alignment of the equipment qualifications confirmed for Corvetto. */
+export const CORVETTO_EQUIPMENT_QUALIFICATION_MIGRATION = 'corvetto-equipment-qualifications-v1';
+
+export function migrateCorvettoEquipmentQualifications(appData: AppData): { data: AppData; changed: boolean } {
+  const applied = appData.schemaMigrations || [];
+  if (applied.includes(CORVETTO_EQUIPMENT_QUALIFICATION_MIGRATION)) {
+    return { data: appData, changed: false };
+  }
+
+  const loaderQualifiedIds = new Set(['w_1', 'w_3', 'w_6', 'w_7', 'w_10']);
+  const workers = (appData.workers || []).map((worker): Worker => {
+    const qualifications = { ...(worker.profile?.qualifications || {}) };
+    const previousForklift = qualifications.forklift;
+    const previousLoader = qualifications.loader;
+    // Keep existing expiry dates when present; never invent a new expiry date.
+    qualifications.forklift = { ...(previousForklift || {}), status: 'valid' };
+    // Remove stale expiry metadata from people who are not licensed for the loader.
+    qualifications.loader = loaderQualifiedIds.has(worker.id)
+      ? { ...(previousLoader || {}), status: 'valid' }
+      : { status: 'none' };
+    return {
+      ...worker,
+      profile: { ...(worker.profile || {}), qualifications }
+    };
+  });
+
+  return {
+    data: {
+      ...appData,
+      workers,
+      schemaMigrations: [...applied, CORVETTO_EQUIPMENT_QUALIFICATION_MIGRATION]
+    },
+    changed: true
   };
 }
