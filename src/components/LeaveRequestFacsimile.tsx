@@ -175,7 +175,7 @@ export const LeaveRequestA4Sheet: React.FC<{
   return (
     <div
       id={id}
-      className="w-full max-w-[210mm] min-h-[285mm] mx-auto bg-white text-slate-900 p-8 sm:p-12 md:p-14 shadow-2xl rounded-sm border border-slate-200 font-sans select-text flex flex-col justify-between"
+      className="leave-request-paper w-full max-w-[210mm] min-h-[285mm] mx-auto bg-white text-slate-900 p-8 sm:p-12 md:p-14 shadow-2xl rounded-sm border border-slate-200 font-sans select-text flex flex-col justify-between"
       style={{ boxSizing: 'border-box' }}
     >
       <div>
