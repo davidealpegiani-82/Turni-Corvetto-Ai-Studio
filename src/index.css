@@ -1175,3 +1175,30 @@ body:not(.light-theme) .note-color-chip {
   border-color: color-mix(in srgb, var(--note-color, #64748b) 66%, #64748b) !important;
   color: #ffffff !important;
 }
+
+
+/* Scheda Atmosfera: contenuto sempre raggiungibile anche su schermi
+   bassi e telefoni con barre di sistema dinamiche. */
+.glass-atmosphere-dialog {
+  max-height: calc(100vh - 1.5rem);
+  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.5rem);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.55) transparent;
+}
+.glass-atmosphere-dialog:focus {
+  outline: none;
+}
+body.light-theme .glass-atmosphere-dialog {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+}
+body:not(.light-theme) .glass-atmosphere-dialog {
+  color: #f1f5f9;
+}
+@media (max-width: 639px) {
+  .glass-atmosphere-dialog {
+    border-radius: 1.25rem;
+    padding: 1rem;
+  }
+}
