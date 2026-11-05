@@ -85,16 +85,27 @@ export const GlassAtmosphereModal: React.FC<GlassAtmosphereModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-lg rounded-3xl glass-panel shadow-2xl overflow-hidden border border-white/20 p-5 sm:p-6 space-y-5 animate-scale-in">
+    <div
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto overscroll-contain p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in"
+      role="presentation"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="glass-atmosphere-dialog my-auto w-full max-w-2xl max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-3xl glass-panel shadow-2xl border border-white/20 p-4 sm:p-6 space-y-5 animate-scale-in"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="glass-atmosphere-title"
+      >
         {/* Header Modale */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-purple-500 to-cyan-400 flex items-center justify-center text-xl shadow-lg shadow-purple-500/20">
               ✨
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              <h3 id="glass-atmosphere-title" className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
                 <span>Atmosfera & Esperienza Spaziale</span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
                   VisionOS Tier
@@ -106,8 +117,10 @@ export const GlassAtmosphereModal: React.FC<GlassAtmosphereModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
+            aria-label="Chiudi impostazioni atmosfera"
             onClick={() => { playGlassTap(); onClose(); }}
-            className="p-1.5 rounded-xl glass-btn-ghost hover:text-white transition cursor-pointer"
+            className="shrink-0 p-2 rounded-xl glass-btn-ghost hover:text-white transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -215,10 +228,11 @@ export const GlassAtmosphereModal: React.FC<GlassAtmosphereModalProps> = ({
         </div>
 
         {/* Chiusura */}
-        <div className="flex items-center justify-end pt-2 border-t border-white/10">
+        <div className="flex items-center justify-end pt-3 border-t border-slate-200 dark:border-white/10">
           <button
+            type="button"
             onClick={() => { playGlassSuccess(); onClose(); }}
-            className="glass-btn-primary px-5 py-2 rounded-xl text-xs font-black text-white cursor-pointer shadow-lg shadow-blue-500/25"
+            className="glass-btn-primary min-h-11 px-5 py-2.5 rounded-xl text-xs font-black text-white cursor-pointer shadow-lg shadow-blue-500/25"
           >
             Applica Atmosfera
           </button>

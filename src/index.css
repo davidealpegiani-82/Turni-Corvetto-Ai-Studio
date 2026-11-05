@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4: collega le classi dark:* alla classe .dark gestita dal selettore tema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -340,6 +343,58 @@ body.light-theme .fixed .bg-slate-900\/80 {
   color: #0f172a !important;
 }
 
+/* I testi dei pulsanti ad azione con sfondo pieno mantengono il bianco
+   nel tema chiaro: le regole generiche .text-white non devono ridurre
+   il contrasto su conferma, eliminazione e azioni semantiche. */
+body.light-theme .fixed button[class*="bg-blue-600"],
+body.light-theme .fixed button[class*="bg-blue-700"],
+body.light-theme .fixed button[class*="bg-red-600"],
+body.light-theme .fixed button[class*="bg-red-700"],
+body.light-theme .fixed button[class*="bg-emerald-600"],
+body.light-theme .fixed button[class*="bg-emerald-700"],
+body.light-theme .fixed button[class*="bg-green-600"],
+body.light-theme .fixed button[class*="bg-green-700"],
+body.light-theme .fixed button[class*="bg-amber-600"],
+body.light-theme .fixed button[class*="bg-amber-700"],
+body.light-theme .fixed button[class*="bg-purple-600"],
+body.light-theme .fixed button[class*="bg-purple-700"],
+body.light-theme .fixed button[class*="bg-indigo-600"],
+body.light-theme .fixed button[class*="bg-indigo-700"] {
+  color: #ffffff !important;
+}
+body.light-theme .fixed button[class*="bg-blue-600"] .text-white,
+body.light-theme .fixed button[class*="bg-blue-700"] .text-white,
+body.light-theme .fixed button[class*="bg-red-600"] .text-white,
+body.light-theme .fixed button[class*="bg-red-700"] .text-white,
+body.light-theme .fixed button[class*="bg-emerald-600"] .text-white,
+body.light-theme .fixed button[class*="bg-emerald-700"] .text-white,
+body.light-theme .fixed button[class*="bg-green-600"] .text-white,
+body.light-theme .fixed button[class*="bg-green-700"] .text-white,
+body.light-theme .fixed button[class*="bg-amber-600"] .text-white,
+body.light-theme .fixed button[class*="bg-amber-700"] .text-white,
+body.light-theme .fixed button[class*="bg-purple-600"] .text-white,
+body.light-theme .fixed button[class*="bg-purple-700"] .text-white,
+body.light-theme .fixed button[class*="bg-indigo-600"] .text-white,
+body.light-theme .fixed button[class*="bg-indigo-700"] .text-white {
+  color: #ffffff !important;
+}
+
+/* CTA della schermata principale: il testo bianco è applicato
+   direttamente al button, non a un elemento figlio. Ripristina quindi
+   il contrasto sui pulsanti pieni anche fuori dalle finestre modali. */
+body.light-theme button[class~="bg-emerald-600/90"],
+body.light-theme button[class~="bg-red-600/90"],
+body.light-theme button[class~="bg-blue-600"],
+body.light-theme button[class~="bg-emerald-600"],
+body.light-theme button[class~="bg-green-600"],
+body.light-theme button[class~="bg-red-600"],
+body.light-theme button[class~="bg-rose-600"],
+body.light-theme button[class~="bg-amber-600"],
+body.light-theme button[class~="bg-purple-600"],
+body.light-theme button[class~="bg-indigo-600"] {
+  color: #ffffff !important;
+}
+
 /* Tabelle Turni: Intestazioni e Colonne Sticky */
 table th.sticky {
   background: rgba(13, 20, 36, 0.92) !important;
@@ -380,6 +435,16 @@ body.light-theme table td.sticky {
   background-color: rgba(248, 250, 252, 0.96) !important;
   backdrop-filter: blur(16px) !important;
   border-color: #cbd5e1 !important;
+}
+
+/* Mantieni il giorno selezionato ben riconoscibile nella testata del calendario
+   anche nel tema chiaro: la regola generica table th non deve appiattire
+   il gradiente né scurire il testo bianco di questa intestazione. */
+body.light-theme table th.bg-gradient-to-b {
+  background-color: #2563eb !important;
+  background-image: linear-gradient(180deg, #2563eb 0%, #4f46e5 100%) !important;
+  border-color: rgba(37, 99, 235, 0.65) !important;
+  color: #ffffff !important;
 }
 
 /* Testi e Colori Accento ad Alto Contrasto in Tema Chiaro */
@@ -847,6 +912,51 @@ body.light-theme .glass-card .text-slate-400 {
   color: #334155 !important;
 }
 
+/* L'anteprima HTML della richiesta deve restare un foglio A4 bianco
+   anche quando l'interfaccia circostante usa il tema scuro. */
+body:not(.light-theme) .leave-request-paper {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-white {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-slate-50 {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-slate-100 {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-950,
+body:not(.light-theme) .leave-request-paper .text-slate-900 {
+  color: #0f172a !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-800 {
+  color: #1e293b !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-700 {
+  color: #334155 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-600 {
+  color: #475569 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-500 {
+  color: #64748b !important;
+}
+body:not(.light-theme) .leave-request-paper .border-slate-200 {
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .border-slate-300 {
+  border-color: #cbd5e1 !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;
@@ -1064,4 +1174,31 @@ body:not(.light-theme) .note-color-chip {
   background-color: color-mix(in srgb, var(--note-color, #64748b) 30%, #0f172a) !important;
   border-color: color-mix(in srgb, var(--note-color, #64748b) 66%, #64748b) !important;
   color: #ffffff !important;
+}
+
+
+/* Scheda Atmosfera: contenuto sempre raggiungibile anche su schermi
+   bassi e telefoni con barre di sistema dinamiche. */
+.glass-atmosphere-dialog {
+  max-height: calc(100vh - 1.5rem);
+  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.5rem);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.55) transparent;
+}
+.glass-atmosphere-dialog:focus {
+  outline: none;
+}
+body.light-theme .glass-atmosphere-dialog {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+}
+body:not(.light-theme) .glass-atmosphere-dialog {
+  color: #f1f5f9;
+}
+@media (max-width: 639px) {
+  .glass-atmosphere-dialog {
+    border-radius: 1.25rem;
+    padding: 1rem;
+  }
 }
