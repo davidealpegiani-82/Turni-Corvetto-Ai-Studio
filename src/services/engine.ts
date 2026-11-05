@@ -1158,7 +1158,7 @@ export function analyzeCoverage(week: WeekShifts, rules: RulesConfig, workers: W
 
     const isWarehouseWorker = (w: Worker) => magIds.includes(w.id) || w.group === 'MAGAZZINO';
     const onDutyWarehouseWorkers = onDutyMorningWorkers.filter(isWarehouseWorker);
-    const onDutyOfficeWorkers = onDutyMorningWorkers.filter(w => !isWarehouseWorker(w));
+    const onDutyOfficeWorkers = onDutyMorningWorkers.filter(w => !isWarehouseWorker(w) && w.group !== 'FINITURE' && w.brain?.officeProfile !== 'finiture');
 
     // 1. Muletto Piazzale (Magazzinieri con patentino carrello elevatore valido)
     const warehouseForkliftDrivers = onDutyWarehouseWorkers.filter(w => {
