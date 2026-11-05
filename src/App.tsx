@@ -803,7 +803,7 @@ export default function App() {
 
   const handleExportWeeklyJPG = async () => {
     try {
-      const pages = await exportWeeklyTurniJPG(appData, currentDate);
+      const pages = await exportWeeklyTurniJPG(appData, currentDate) as number;
       showToast('JPG Scaricato', pages === 1 ? 'Immagine JPG della settimana generata in alta qualità.' : pages + ' immagini JPG generate, una per ogni pagina.', 'success');
     } catch (error) {
       console.error('Errore esportazione JPG:', error);
