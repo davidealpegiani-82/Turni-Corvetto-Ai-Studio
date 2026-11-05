@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import type { AppData, WeekShifts } from '../types/turni';
 import { mergeProposalSafely, policyFromAppData, validateWeekV2 } from './engineV2';
 import { getCellDisplayDetails } from './engine';
+import { createDefaultAppData, migrateCorvettoEquipmentQualifications } from '../data/initialData';
 import { corvettoW44App, corvettoW44Week } from './fixtures/corvettoW44';
 
 const app = {
@@ -162,4 +163,47 @@ test('tabella mostra la causale della richiesta collegata anche se lo status sto
 
   assert.equal(details.isFullDayLeave, true);
   assert.equal(details.leaveLabel, 'Permesso Non retribuito');
+});
+
+
+test('loader and forklift skill checks accept qualified on-duty office backup but exclude separate FINITURE', () => {
+  const skillApp = {
+    workers: [
+      { id: 'mag1', name: 'Mag 1', group: 'MAGAZZINO', selected: true, brain: { warehouse: true }, profile: { qualifications: { forklift: { status: 'valid' }, loader: { status: 'none' } } } },
+      { id: 'office1', name: 'Office 1', group: 'MANAGER', selected: true, brain: { office: true }, profile: { qualifications: { forklift: { status: 'valid' }, loader: { status: 'valid' } } } },
+      { id: 'showroom', name: 'Showroom', group: 'FINITURE', selected: true, brain: { office: true, officeProfile: 'finiture' }, profile: { qualifications: { forklift: { status: 'valid' }, loader: { status: 'valid' } } } }
+    ]
+  } as unknown as AppData;
+  const week: WeekShifts = {
+    mag1: { 0: { mIn: '06:30', mOut: '17:30' } },
+    office1: { 0: { mIn: '06:30', mOut: '17:30' } },
+    showroom: { 0: { mIn: '06:30', mOut: '17:30' } }
+  };
+  const result = validateWeekV2(skillApp, week);
+  assert.equal(result.findings.some(f => f.code === 'SKILL_COVERAGE_WARNING' && f.day === 0), false);
+});
+
+test('Corvetto equipment migration applies confirmed qualifications once and preserves unrelated profile data', () => {
+  const data = createDefaultAppData();
+  const pino = data.workers.find(w => w.id === 'w_6')!;
+  const pinoExpiry = pino.profile?.qualifications?.loader?.expiry;
+  const mass = data.workers.find(w => w.id === 'w_8')!;
+  const migrated = migrateCorvettoEquipmentQualifications(data);
+  assert.equal(migrated.changed, true);
+  const byId = Object.fromEntries(migrated.data.workers.map(w => [w.id, w]));
+  for (const id of ['w_1','w_2','w_3','w_4','w_5','w_6','w_7','w_8','w_9','w_10']) {
+    assert.equal(byId[id].profile?.qualifications?.forklift?.status, 'valid', id + ' muletto');
+  }
+  for (const id of ['w_1','w_3','w_6','w_7','w_10']) {
+    assert.equal(byId[id].profile?.qualifications?.loader?.status, 'valid', id + ' ruspa');
+  }
+  for (const id of ['w_2','w_4','w_5','w_8','w_9']) {
+    assert.equal(byId[id].profile?.qualifications?.loader?.status, 'none', id + ' no ruspa');
+    assert.equal(byId[id].profile?.qualifications?.loader?.expiry, undefined, id + ' no stale expiry');
+  }
+  assert.equal(byId.w_6.profile?.qualifications?.loader?.expiry, pinoExpiry);
+  assert.equal(byId.w_8.profile?.qualifications?.firstAid?.status, mass.profile?.qualifications?.firstAid?.status);
+  const repeated = migrateCorvettoEquipmentQualifications(migrated.data);
+  assert.equal(repeated.changed, false);
+  assert.equal(repeated.data, migrated.data);
 });
