@@ -204,6 +204,7 @@ export interface AppData {
   updatedAt?: number;
   updatedBy?: string;
   updatedRevision?: number;
+  schemaMigrations?: string[];
   workers: Worker[];
   weeks: { [weekKey: string]: WeekShifts };
   presets: PresetShift[];

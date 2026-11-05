@@ -26,7 +26,7 @@ import { TodayBranchDashboard } from './components/TodayBranchDashboard';
 import { QuickSwapModal } from './components/QuickSwapModal';
 import { GlassAtmosphereModal, GlassIntensity, GlassAura } from './components/GlassAtmosphereModal';
 
-import { createDefaultAppData } from './data/initialData';
+import { createDefaultAppData, migrateCorvettoEquipmentQualifications } from './data/initialData';
 import {
   AppData,
   DayShift,
@@ -261,9 +261,33 @@ export default function App() {
         if (incomingData.workers) {
           incomingData.workers = enrichWorkerProfiles(incomingData.workers);
         }
+
+        // Migratione una tantum: corregge soltanto muletto/ruspa sui profili noti.
+        // La scrittura cloud avviene solo su dati ricevuti dal cloud, mai sulla sola cache offline.
+        const equipmentMigration = migrateCorvettoEquipmentQualifications(incomingData);
+        incomingData = equipmentMigration.data;
         reconcileAllLeavesWithWeeks(incomingData.weeks, incomingData.leaveRequests, incomingData);
+        if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
+          incomingData.updatedAt = Date.now();
+          incomingData.updatedBy = 'system_equipment_qualification_migration';
+          incomingData.updatedRevision = (incomingData.updatedRevision || 0) + 1;
+        }
         appDataRef.current = incomingData;
         setAppData(incomingData);
+
+        if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
+          void socketManager.sendDataUpdate(
+            incomingData,
+            'worker_qualification_migration',
+            'Allineamento una tantum delle abilitazioni muletto e ruspa/pala di Corvetto.'
+          ).then(saved => {
+            if (saved) {
+              showToast('Abilitazioni aggiornate', 'Profili muletto e ruspa/pala allineati e sincronizzati con Firebase.', 'success');
+            } else {
+              showToast('Sincronizzazione da verificare', 'Le abilitazioni sono state corrette su questo dispositivo, ma Firebase non ha confermato la migrazione.', 'warn');
+            }
+          });
+        }
       }
     });
 
