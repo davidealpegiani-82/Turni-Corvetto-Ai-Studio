@@ -97,7 +97,7 @@ export const ExportMenuModal: React.FC<ExportMenuModalProps> = ({
               </div>
               <div>
                 <strong className="text-sm font-bold text-white block">Prepara Email</strong>
-                <span className="text-xs text-slate-400">Scarica il PDF e apre una bozza: allega il file manualmente</span>
+                <span className="text-xs text-slate-400">Prepara l’email con oggetto, testo e PDF allegato</span>
               </div>
             </div>
             <Mail className="w-4 h-4 text-slate-500 group-hover:text-purple-400" />
@@ -129,7 +129,7 @@ export const ExportMenuModal: React.FC<ExportMenuModalProps> = ({
               </div>
               <div>
                 <strong className="text-sm font-bold text-white block">Condividi su WhatsApp</strong>
-                <span className="text-xs text-slate-400">Invia riassunto della settimana e impegni in chat</span>
+                <span className="text-xs text-slate-400">Condividi esclusivamente il JPG della programmazione, senza testo</span>
               </div>
             </div>
             <MessageSquare className="w-4 h-4 text-slate-500 group-hover:text-emerald-400" />
