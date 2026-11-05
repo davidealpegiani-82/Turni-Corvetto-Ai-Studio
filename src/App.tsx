@@ -838,58 +838,21 @@ export default function App() {
 
   const handleShareWhatsAppWeek = async () => {
     const weekInfo = getWeekInfo(currentDate);
-    const weekKey = getWeekKey(currentDate);
-    const eventsThisWeek = (appData.events || []).filter(e => {
-      const d = new Date(e.date + 'T12:00:00');
-      return d >= weekInfo.monday && d <= weekInfo.saturday;
-    });
-
-    const lines = [
-      `📌 *Programmazione Filiale ${appData.title}*`,
-      `📅 Settimana ${weekInfo.weekNo} (${weekInfo.label})`,
-      ''
-    ];
-
-    if (eventsThisWeek.length > 0) {
-      lines.push('*Impegni e Corsi della Settimana:*');
-      eventsThisWeek.forEach(e => {
-        lines.push(`• *${e.title}* (${e.date} ${e.allDay ? 'tutto il giorno' : `${e.fromTime || ''}-${e.toTime || ''}`})`);
-      });
-      lines.push('');
-    }
-
-    if (appData.notes && appData.notes[weekKey]) {
-      lines.push(`*Note di Filiale:*\n${appData.notes[weekKey]}\n`);
-    }
-
-    lines.push('_Turni Corvetto Live_');
-    const text = lines.join('\n');
-
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-    let copied = false;
-    let opened = false;
+    const title = 'Turni Filiale CORVETTO - Settimana ' + weekInfo.weekNo;
     try {
-      const popup = window.open(url, '_blank');
-      opened = !!popup;
-    } catch (error) {
-      console.warn('[Condivisione] Apertura WhatsApp non riuscita:', error);
-    }
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-        copied = true;
+      const files = await exportWeeklyTurniJPG(appData, currentDate, true) as File[];
+      if (files.length && navigator.canShare?.({ files }) && navigator.share) {
+        await navigator.share({ files, title });
+        showToast('JPG pronto per WhatsApp', 'Condividi l’immagine JPG tramite WhatsApp. Non viene aggiunto alcun testo.', 'success');
+      } else {
+        await exportWeeklyTurniJPG(appData, currentDate);
+        showToast('JPG scaricato', 'Questo browser non consente la condivisione diretta del file. Allega il JPG scaricato su WhatsApp: nessun testo è stato preparato.', 'info');
       }
     } catch (error) {
-      console.warn('[Condivisione] Copia appunti non riuscita:', error);
+      if (error instanceof Error && error.name === 'AbortError') return;
+      console.error('Errore condivisione JPG WhatsApp:', error);
+      showToast('Condivisione JPG non riuscita', 'Non è stato possibile preparare l’immagine. Riprova oppure esporta il JPG.', 'warn');
     }
-    if (!opened) window.location.href = url;
-    showToast(
-      copied ? 'Riepilogo copiato' : 'WhatsApp preparato',
-      copied
-        ? 'Il testo è stato copiato negli appunti e WhatsApp è stato aperto.'
-        : 'Il riepilogo è stato inserito nel collegamento WhatsApp. La copia negli appunti non è disponibile su questo browser.',
-      copied ? 'success' : 'info'
-    );
   };
 
   // 7. Configurazione Team e Collaboratori
@@ -1424,9 +1387,28 @@ export default function App() {
         onExportPDF={handleExportWeeklyPDF}
         onExportJPG={handleExportWeeklyJPG}
         onPreviewPDF={handlePreviewWeeklyPDF}
-        onExportEmail={() => {
-          handleExportWeeklyPDF();
-          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`Ho scaricato la programmazione turni per la settimana ${weekInfo.label}. Allego il PDF scaricato separatamente prima di inviare questa email.\n\nSaluti,\nFiliale Corvetto`)}`;
+        onExportEmail={async () => {
+          const emailWeekInfo = getWeekInfo(currentDate);
+          const subject = 'Turni Filiale CORVETTO - Settimana ' + emailWeekInfo.weekNo + ' - dal ' + emailWeekInfo.monStr + ' al ' + emailWeekInfo.satStr;
+          const body = 'Buongiorno,\nIn allegato la programmazione dei turni della filiale di Corvetto per la settimana ' + emailWeekInfo.weekNo + ' dal ' + emailWeekInfo.monStr + ' al ' + emailWeekInfo.satStr + '.\nSaluti\nDavide';
+          const doc = buildWeeklyTurniPDF(appData, currentDate);
+          const filename = 'Turni_CORVETTO_Settimana_' + emailWeekInfo.weekNo + '.pdf';
+          const file = new File([doc.output('blob')], filename, { type: 'application/pdf' });
+          try {
+            if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+              await navigator.share({ files: [file], title: subject, text: body });
+              showToast('Email pronta', 'PDF allegato alla condivisione. Seleziona l’app email per inviare il messaggio.', 'success');
+            } else {
+              doc.save(filename);
+              window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+              showToast('PDF scaricato', 'La bozza email è pronta. Allega il PDF scaricato prima di inviarla.', 'info');
+            }
+          } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') return;
+            console.error('Errore preparazione email:', error);
+            showToast('Email non preparata', 'Non è stato possibile aprire la condivisione. Il PDF è stato scaricato.', 'warn');
+            doc.save(filename);
+          }
         }}
         onExportICS={handleExportWeekICS}
         onShareWhatsApp={handleShareWhatsAppWeek}
