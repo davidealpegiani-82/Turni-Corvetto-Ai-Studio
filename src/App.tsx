@@ -321,10 +321,25 @@ export default function App() {
     }
   }, [showToast]);
 
+
+  // Mostra un esito positivo solo dopo la conferma effettiva di Firebase.
+  const notifyCloudSave = (savePromise: Promise<boolean> | null, successTitle: string, successMessage: string) => {
+    if (!savePromise) return; // L'helper centrale mostra già l'eventuale errore locale.
+    void savePromise.then((saved) => {
+      if (saved) {
+        showToast(successTitle, successMessage, 'success');
+      } else {
+        showToast('Salvataggio cloud non confermato', 'La modifica resta su questo dispositivo, ma Firebase non ne ha confermato la sincronizzazione. Verifica la connessione e aggiorna i dati prima di procedere.', 'warn');
+      }
+    }).catch((error) => {
+      console.error('[Turni Corvetto] Esito salvataggio non disponibile:', error);
+      showToast('Salvataggio cloud non confermato', 'Non è stato possibile verificare la sincronizzazione con Firebase.', 'warn');
+    });
+  };
   // 1. Modifica Cella Turno Singola
   const handleSaveDay = (workerId: string, dayIdx: number, data: DayShift) => {
     const weekKey = getWeekKey(currentDate);
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         if (!prev.weeks[weekKey]) prev.weeks[weekKey] = {};
         if (!prev.weeks[weekKey][workerId]) prev.weeks[weekKey][workerId] = {};
@@ -334,7 +349,7 @@ export default function App() {
       'edit_shift',
       `Modificato turno per ${appData.workers.find(w => w.id === workerId)?.name || 'collaboratore'}`
     );
-    showToast('Turno Salvato', 'Sincronizzato in tempo reale su tutti i dispositivi.', 'success');
+    notifyCloudSave(savePromise, 'Turno Salvato', 'Firebase ha confermato il salvataggio e la sincronizzazione.');
   };
 
   const handleClearDay = (workerId: string, dayIdx: number) => {
@@ -539,7 +554,7 @@ export default function App() {
 
   // 4. Gestione Richieste Ferie & Permessi
   const handleSaveLeave = (partialReq: Partial<LeaveRequest>) => {
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         const id = partialReq.id || `lr_${Date.now()}`;
         const nastroHours = partialReq.day ? getWorkerNastroForDate(partialReq.workerId || '', partialReq.day, prev) : 8;
@@ -582,11 +597,11 @@ export default function App() {
         body: `Nuova richiesta registrata per ${appData.workers.find(w => w.id === partialReq.workerId)?.name}.`
       }
     );
-    showToast('Richiesta Registrata', 'Salvata e sincronizzata in tempo reale.', 'success');
+    notifyCloudSave(savePromise, 'Richiesta Registrata', 'Firebase ha confermato il salvataggio della richiesta.');
   };
 
   const handleSaveMalattia = (partialReq: Partial<LeaveRequest>) => {
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         const id = partialReq.id || `mal_${Date.now()}`;
         const newReq: LeaveRequest = {
@@ -621,14 +636,14 @@ export default function App() {
         body: `Assenza per malattia registrata per ${appData.workers.find(w => w.id === partialReq.workerId)?.name}.`
       }
     );
-    showToast('Malattia Registrata', 'Turni e causali aggiornati istantaneamente.', 'success');
+    notifyCloudSave(savePromise, 'Malattia Registrata', 'Firebase ha confermato il salvataggio di turni e causali.');
   };
 
   const handleUpdateLeaveStatus = (id: string, newStatus: 'richiesta' | 'approvata' | 'rifiutata') => {
     const req = appData.leaveRequests.find(r => r.id === id);
     const workerName = appData.workers.find(w => w.id === req?.workerId)?.name || 'collaboratore';
 
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         const target = prev.leaveRequests.find(r => r.id === id);
         if (target) {
@@ -644,7 +659,7 @@ export default function App() {
         body: `La richiesta di ${workerName} è stata impostata su: ${newStatus.toUpperCase()}.`
       }
     );
-    showToast('Stato Aggiornato', `Richiesta ${newStatus.toUpperCase()} e sincronizzata.`, 'success');
+    notifyCloudSave(savePromise, 'Stato Aggiornato', `Firebase ha confermato lo stato ${newStatus.toUpperCase()} della richiesta.`);
   };
 
   const handleDeleteLeave = (id: string) => {
@@ -662,7 +677,7 @@ export default function App() {
 
   // 5. Gestione Impegni & Corsi
   const handleSaveEvent = (partialEvent: Partial<BranchEvent>) => {
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         const id = partialEvent.id || `ev_${Date.now()}`;
         const newEv: BranchEvent = {
@@ -693,7 +708,7 @@ export default function App() {
         body: `Programmato per il ${partialEvent.date} (${partialEvent.allDay ? 'Intera giornata' : `${partialEvent.fromTime}-${partialEvent.toTime}`}).`
       }
     );
-    showToast('Impegno Salvato', 'Pianificato e sincronizzato con i turni.', 'success');
+    notifyCloudSave(savePromise, 'Impegno Salvato', 'Firebase ha confermato il salvataggio dell’impegno.');
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -788,7 +803,7 @@ export default function App() {
 
   const handleExportWeeklyJPG = async () => {
     try {
-      const pages = await exportWeeklyTurniJPG(appData, currentDate);
+      const pages = await exportWeeklyTurniJPG(appData, currentDate) as number;
       showToast('JPG Scaricato', pages === 1 ? 'Immagine JPG della settimana generata in alta qualità.' : pages + ' immagini JPG generate, una per ogni pagina.', 'success');
     } catch (error) {
       console.error('Errore esportazione JPG:', error);
@@ -823,63 +838,26 @@ export default function App() {
 
   const handleShareWhatsAppWeek = async () => {
     const weekInfo = getWeekInfo(currentDate);
-    const weekKey = getWeekKey(currentDate);
-    const eventsThisWeek = (appData.events || []).filter(e => {
-      const d = new Date(e.date + 'T12:00:00');
-      return d >= weekInfo.monday && d <= weekInfo.saturday;
-    });
-
-    const lines = [
-      `📌 *Programmazione Filiale ${appData.title}*`,
-      `📅 Settimana ${weekInfo.weekNo} (${weekInfo.label})`,
-      ''
-    ];
-
-    if (eventsThisWeek.length > 0) {
-      lines.push('*Impegni e Corsi della Settimana:*');
-      eventsThisWeek.forEach(e => {
-        lines.push(`• *${e.title}* (${e.date} ${e.allDay ? 'tutto il giorno' : `${e.fromTime || ''}-${e.toTime || ''}`})`);
-      });
-      lines.push('');
-    }
-
-    if (appData.notes && appData.notes[weekKey]) {
-      lines.push(`*Note di Filiale:*\n${appData.notes[weekKey]}\n`);
-    }
-
-    lines.push('_Turni Corvetto Live_');
-    const text = lines.join('\n');
-
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-    let copied = false;
-    let opened = false;
+    const title = 'Turni Filiale CORVETTO - Settimana ' + weekInfo.weekNo;
     try {
-      const popup = window.open(url, '_blank');
-      opened = !!popup;
-    } catch (error) {
-      console.warn('[Condivisione] Apertura WhatsApp non riuscita:', error);
-    }
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-        copied = true;
+      const files = await exportWeeklyTurniJPG(appData, currentDate, true) as File[];
+      if (files.length && navigator.canShare?.({ files }) && navigator.share) {
+        await navigator.share({ files, title });
+        showToast('JPG pronto per WhatsApp', 'Condividi l’immagine JPG tramite WhatsApp. Non viene aggiunto alcun testo.', 'success');
+      } else {
+        await exportWeeklyTurniJPG(appData, currentDate);
+        showToast('JPG scaricato', 'Questo browser non consente la condivisione diretta del file. Allega il JPG scaricato su WhatsApp: nessun testo è stato preparato.', 'info');
       }
     } catch (error) {
-      console.warn('[Condivisione] Copia appunti non riuscita:', error);
+      if (error instanceof Error && error.name === 'AbortError') return;
+      console.error('Errore condivisione JPG WhatsApp:', error);
+      showToast('Condivisione JPG non riuscita', 'Non è stato possibile preparare l’immagine. Riprova oppure esporta il JPG.', 'warn');
     }
-    if (!opened) window.location.href = url;
-    showToast(
-      copied ? 'Riepilogo copiato' : 'WhatsApp preparato',
-      copied
-        ? 'Il testo è stato copiato negli appunti e WhatsApp è stato aperto.'
-        : 'Il riepilogo è stato inserito nel collegamento WhatsApp. La copia negli appunti non è disponibile su questo browser.',
-      copied ? 'success' : 'info'
-    );
   };
 
   // 7. Configurazione Team e Collaboratori
   const handleSaveWorker = (partialWorker: Partial<Worker>) => {
-    updateAppDataAuthoritative(
+    const savePromise = updateAppDataAuthoritative(
       (prev) => {
         const id = partialWorker.id || `w_${Date.now()}`;
         const existingIdx = prev.workers.findIndex(w => w.id === id);
@@ -966,7 +944,7 @@ export default function App() {
       'save_worker',
       `Modificato collaboratore ${partialWorker.name}`
     );
-    showToast('Collaboratore Salvato', 'Competenze, abilitazioni ed esperienze salvate con successo.', 'success');
+    notifyCloudSave(savePromise, 'Collaboratore Salvato', 'Firebase ha confermato il salvataggio di competenze, abilitazioni ed esperienze.');
   };
 
   const handleMoveWorkerOrder = (workerId: string, delta: number) => {
@@ -1045,12 +1023,12 @@ export default function App() {
         const text = await file.text();
         const parsed = JSON.parse(text);
         if (parsed.workers && Array.isArray(parsed.workers)) {
-          updateAppDataAuthoritative(
+          const savePromise = updateAppDataAuthoritative(
             () => parsed,
             'restore_backup',
             'Ripristinato backup JSON'
           );
-          showToast('Backup Ripristinato', 'Tutti i dati sono stati riallineati con successo!', 'success');
+          notifyCloudSave(savePromise, 'Backup Ripristinato', 'Firebase ha confermato il ripristino del backup.');
         } else {
           showToast('File Non Valido', 'Il file selezionato non è un backup valido di Turni Corvetto.', 'warn');
         }
@@ -1409,9 +1387,28 @@ export default function App() {
         onExportPDF={handleExportWeeklyPDF}
         onExportJPG={handleExportWeeklyJPG}
         onPreviewPDF={handlePreviewWeeklyPDF}
-        onExportEmail={() => {
-          handleExportWeeklyPDF();
-          window.location.href = `mailto:?subject=${encodeURIComponent(`Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`)}&body=${encodeURIComponent(`Ho scaricato la programmazione turni per la settimana ${weekInfo.label}. Allego il PDF scaricato separatamente prima di inviare questa email.\n\nSaluti,\nFiliale Corvetto`)}`;
+        onExportEmail={async () => {
+          const emailWeekInfo = getWeekInfo(currentDate);
+          const subject = 'Turni Filiale CORVETTO - Settimana ' + emailWeekInfo.weekNo + ' - dal ' + emailWeekInfo.monStr + ' al ' + emailWeekInfo.satStr;
+          const body = 'Buongiorno,\nIn allegato la programmazione dei turni della filiale di Corvetto per la settimana ' + emailWeekInfo.weekNo + ' dal ' + emailWeekInfo.monStr + ' al ' + emailWeekInfo.satStr + '.\nSaluti\nDavide';
+          const doc = buildWeeklyTurniPDF(appData, currentDate);
+          const filename = 'Turni_CORVETTO_Settimana_' + emailWeekInfo.weekNo + '.pdf';
+          const file = new File([doc.output('blob')], filename, { type: 'application/pdf' });
+          try {
+            if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+              await navigator.share({ files: [file], title: subject, text: body });
+              showToast('Email pronta', 'PDF allegato alla condivisione. Seleziona l’app email per inviare il messaggio.', 'success');
+            } else {
+              doc.save(filename);
+              window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+              showToast('PDF scaricato', 'La bozza email è pronta. Allega il PDF scaricato prima di inviarla.', 'info');
+            }
+          } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') return;
+            console.error('Errore preparazione email:', error);
+            showToast('Email non preparata', 'Non è stato possibile aprire la condivisione. Il PDF è stato scaricato.', 'warn');
+            doc.save(filename);
+          }
         }}
         onExportICS={handleExportWeekICS}
         onShareWhatsApp={handleShareWhatsAppWeek}
@@ -1473,12 +1470,12 @@ export default function App() {
         onClose={() => setRulesModalOpen(false)}
         appData={appData}
         onSaveRules={(newRules) => {
-          updateAppDataAuthoritative(
+          const savePromise = updateAppDataAuthoritative(
             prev => { prev.rules = newRules; return prev; },
             'update_rules',
             'Salvate nuove regole di generazione turni'
           );
-          showToast('Regole Salvate', 'Configurazione aggiornata.', 'success');
+          notifyCloudSave(savePromise, 'Regole Salvate', 'Firebase ha confermato la nuova configurazione.');
         }}
       />
 
@@ -1653,12 +1650,12 @@ export default function App() {
                 onClick={() => {
                   const t = editTitleModal.title.trim().toUpperCase();
                   if (t) {
-                    updateAppDataAuthoritative(
+                    const savePromise = updateAppDataAuthoritative(
                       prev => { prev.title = t; return prev; },
                       'edit_title',
                       `Rinominata filiale in ${t}`
                     );
-                    showToast('Titolo Aggiornato', `Filiale rinominata in "${t}"`, 'success');
+                    notifyCloudSave(savePromise, 'Titolo Aggiornato', `Firebase ha confermato il nuovo nome "${t}".`);
                   }
                   setEditTitleModal({ open: false, title: '' });
                 }}
@@ -1716,7 +1713,7 @@ export default function App() {
                   const days = editSpettantiModal.days;
                   const wId = editSpettantiModal.workerId;
                   const yr = editSpettantiModal.year;
-                  updateAppDataAuthoritative(
+                  const savePromise = updateAppDataAuthoritative(
                     prev => {
                       if (!prev.leaveBalances) prev.leaveBalances = {};
                       if (!prev.leaveBalances[wId]) prev.leaveBalances[wId] = {};
@@ -1726,7 +1723,7 @@ export default function App() {
                     'edit_balance',
                     `Modificati giorni spettanti per ${editSpettantiModal.workerName}`
                   );
-                  showToast('Ferie Spettanti Aggiornate', `${editSpettantiModal.workerName}: ${days} giorni spettanti impostati per il ${yr}.`, 'success');
+                  notifyCloudSave(savePromise, 'Ferie Spettanti Aggiornate', `Firebase ha confermato ${days} giorni spettanti per ${editSpettantiModal.workerName} (${yr}).`);
                   setEditSpettantiModal(prev => ({ ...prev, open: false }));
                 }}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition cursor-pointer"

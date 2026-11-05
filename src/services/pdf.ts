@@ -345,13 +345,14 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
 
 // Esporta il planning settimanale come immagini JPG ricavate dal PDF ufficiale.
 // Il rendering parte dallo stesso documento PDF: grafica, colori e impaginazione restano identici.
-export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date): Promise<number> {
+export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date, returnFiles = false): Promise<number | File[]> {
   const doc = buildWeeklyTurniPDF(appData, weekDate);
   const weekInfo = getWeekInfo(weekDate);
   const pdfData = new Uint8Array(doc.output('arraybuffer'));
   const loadingTask = pdfjsLib.getDocument({ data: pdfData });
   const pdf = await loadingTask.promise;
   const safeTitle = String(appData.title || 'Corvetto').replace(/[^a-z0-9_-]+/gi, '_');
+  const files: File[] = [];
   try {
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
       const page = await pdf.getPage(pageNumber);
@@ -410,12 +411,14 @@ export async function exportWeeklyTurniJPG(appData: AppData, weekDate: Date): Pr
       jpgCanvas.width = 0;
       jpgCanvas.height = 0;
       const pageSuffix = pdf.numPages > 1 ? '_Pagina_' + pageNumber + '_di_' + pdf.numPages : '';
-      downloadBlob(blob, 'Turni_' + safeTitle + '_Settimana_' + weekInfo.weekNo + pageSuffix + '.jpg');
+      const filename = 'Turni_' + safeTitle + '_Settimana_' + weekInfo.weekNo + pageSuffix + '.jpg';
+      if (returnFiles) files.push(new File([blob], filename, { type: 'image/jpeg' }));
+      else downloadBlob(blob, filename);
       page.cleanup();
       canvas.width = 0;
       canvas.height = 0;
     }
-    return pdf.numPages;
+    return returnFiles ? files : pdf.numPages;
   } finally {
     await loadingTask.destroy();
   }
