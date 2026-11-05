@@ -912,6 +912,51 @@ body.light-theme .glass-card .text-slate-400 {
   color: #334155 !important;
 }
 
+/* L'anteprima HTML della richiesta deve restare un foglio A4 bianco
+   anche quando l'interfaccia circostante usa il tema scuro. */
+body:not(.light-theme) .leave-request-paper {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-white {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-slate-50 {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .bg-slate-100 {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-950,
+body:not(.light-theme) .leave-request-paper .text-slate-900 {
+  color: #0f172a !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-800 {
+  color: #1e293b !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-700 {
+  color: #334155 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-600 {
+  color: #475569 !important;
+}
+body:not(.light-theme) .leave-request-paper .text-slate-500 {
+  color: #64748b !important;
+}
+body:not(.light-theme) .leave-request-paper .border-slate-200 {
+  border-color: #e2e8f0 !important;
+}
+body:not(.light-theme) .leave-request-paper .border-slate-300 {
+  border-color: #cbd5e1 !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;
