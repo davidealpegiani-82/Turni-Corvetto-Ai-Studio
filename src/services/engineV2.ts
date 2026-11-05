@@ -191,7 +191,7 @@ export function validateWeekV2(
         covers(week[w.id]?.[day], open, openingEnd)
       );
       const checkSkill = (key: 'forklift' | 'loader', label: string) => {
-        const qualified = warehouseAtOpen.filter(w => hasValidQualification(w, key, policy.weekStartDate ? isoDatePlusDays(policy.weekStartDate, day) : undefined));
+        const qualified = branchAtOpen.filter(w => hasValidQualification(w, key, policy.weekStartDate ? isoDatePlusDays(policy.weekStartDate, day) : undefined));
         if (qualified.length === 0) {
           findings.push({
             id: `skill-${day}-${key}`,
@@ -202,7 +202,7 @@ export function validateWeekV2(
             time: isSaturday ? (policy.saturdayOpen || '07:00') : policy.open,
             expected: 1,
             actual: 0,
-            message: `${DAY_NAMES[day]}: nessun addetto magazzino presente in apertura con abilitazione ${label} valida.`
+            message: `${DAY_NAMES[day]}: nessun addetto abilitato a ${label} presente in apertura in magazzino o come supporto ufficio.`
           });
         }
       };
