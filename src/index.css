@@ -385,6 +385,16 @@ body.light-theme table td.sticky {
   border-color: #cbd5e1 !important;
 }
 
+/* Mantieni il giorno selezionato ben riconoscibile nella testata del calendario
+   anche nel tema chiaro: la regola generica table th non deve appiattire
+   il gradiente né scurire il testo bianco di questa intestazione. */
+body.light-theme table th.bg-gradient-to-b {
+  background-color: #2563eb !important;
+  background-image: linear-gradient(180deg, #2563eb 0%, #4f46e5 100%) !important;
+  border-color: rgba(37, 99, 235, 0.65) !important;
+  color: #ffffff !important;
+}
+
 /* Testi e Colori Accento ad Alto Contrasto in Tema Chiaro */
 body.light-theme .text-white,
 body.light-theme .text-slate-100,
