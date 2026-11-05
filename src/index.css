@@ -379,6 +379,22 @@ body.light-theme .fixed button[class*="bg-indigo-700"] .text-white {
   color: #ffffff !important;
 }
 
+/* CTA della schermata principale: il testo bianco è applicato
+   direttamente al button, non a un elemento figlio. Ripristina quindi
+   il contrasto sui pulsanti pieni anche fuori dalle finestre modali. */
+body.light-theme button[class~="bg-emerald-600/90"],
+body.light-theme button[class~="bg-red-600/90"],
+body.light-theme button[class~="bg-blue-600"],
+body.light-theme button[class~="bg-emerald-600"],
+body.light-theme button[class~="bg-green-600"],
+body.light-theme button[class~="bg-red-600"],
+body.light-theme button[class~="bg-rose-600"],
+body.light-theme button[class~="bg-amber-600"],
+body.light-theme button[class~="bg-purple-600"],
+body.light-theme button[class~="bg-indigo-600"] {
+  color: #ffffff !important;
+}
+
 /* Tabelle Turni: Intestazioni e Colonne Sticky */
 table th.sticky {
   background: rgba(13, 20, 36, 0.92) !important;
