@@ -496,15 +496,13 @@ export function buildLeaveRequestPDF(req: LeaveRequest, workerName: string, titl
   doc.text('chiede di potersi assentare dal servizio per la seguente causale:', margin, y);
   y += 9;
 
-  // Griglia causali su due colonne ordinate e bilanciate
-  const causaliCol1 = [
+  // Un'unica tabella contiene tutte le causali, ciascuna con la propria casella di selezione.
+  const causali = [
     'Ferie',
     'Permesso retribuito',
     'Permesso Non retribuito',
     'Congedo Matrimoniale',
-    'Visita Medica (segue certificato)'
-  ];
-  const causaliCol2 = [
+    'Visita Medica (segue certificato)',
     'Visita c/o cantiere',
     'Partecipazione corso',
     'Visita Fiera',
@@ -512,52 +510,56 @@ export function buildLeaveRequestPDF(req: LeaveRequest, workerName: string, titl
     'Malattia / Ricovero'
   ];
 
-  const col2X = margin + 86;
-  const rowSpacing = 8;
+  autoTable(doc, {
+    startY: y - 2,
+    head: [['', 'MOTIVO DELLA RICHIESTA']],
+    body: causali.map(causale => ['', causale]),
+    theme: 'grid',
+    margin: { left: margin, right: margin },
+    headStyles: {
+      fillColor: [241, 245, 249],
+      textColor: [51, 65, 85],
+      lineColor: [203, 213, 225],
+      fontStyle: 'bold',
+      fontSize: 8.5,
+      cellPadding: 1.8
+    },
+    styles: {
+      font: 'helvetica',
+      fontSize: 9,
+      textColor: [15, 23, 42],
+      lineColor: [203, 213, 225],
+      lineWidth: 0.2,
+      cellPadding: 1.35,
+      minCellHeight: 5.8,
+      valign: 'middle',
+      overflow: 'linebreak'
+    },
+    columnStyles: {
+      0: { cellWidth: 12, halign: 'center' },
+      1: { cellWidth: 158, halign: 'left' }
+    },
+    didDrawCell: (data) => {
+      if (data.section !== 'body' || data.column.index !== 0) return;
+      const boxSize = 3.5;
+      const boxX = data.cell.x + (data.cell.width - boxSize) / 2;
+      const boxY = data.cell.y + (data.cell.height - boxSize) / 2;
+      doc.setDrawColor(40, 50, 65);
+      doc.setLineWidth(0.35);
+      doc.rect(boxX, boxY, boxSize, boxSize);
 
-  for (let i = 0; i < 5; i++) {
-    const rowY = y + i * rowSpacing;
-
-    // Colonna 1
-    const label1 = causaliCol1[i];
-    const isChecked1 = req.tipo === label1 || (Boolean(req.tipo) && label1.startsWith(req.tipo));
-    doc.setDrawColor(40, 50, 65);
-    doc.setLineWidth(0.4);
-    doc.rect(margin, rowY - 3.5, 4.2, 4.2);
-
-    if (isChecked1) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
-      doc.text('X', margin + 0.9, rowY - 0.2);
+      const causale = causali[data.row.index];
+      const isChecked = req.tipo === causale || (Boolean(req.tipo) && causale.startsWith(req.tipo));
+      if (isChecked) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(15, 23, 42);
+        doc.text('X', boxX + 0.8, boxY + 2.8);
+      }
     }
+  });
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(15, 23, 42);
-    doc.text(label1, margin + 7.5, rowY);
-
-    // Colonna 2
-    const label2 = causaliCol2[i];
-    const isChecked2 = req.tipo === label2 || (Boolean(req.tipo) && label2.startsWith(req.tipo));
-    doc.setDrawColor(40, 50, 65);
-    doc.setLineWidth(0.4);
-    doc.rect(col2X, rowY - 3.5, 4.2, 4.2);
-
-    if (isChecked2) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
-      doc.text('X', col2X + 0.9, rowY - 0.2);
-    }
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(15, 23, 42);
-    doc.text(label2, col2X + 7.5, rowY);
-  }
-
-  y += 5 * rowSpacing + 5;
+  y = ((doc as any).lastAutoTable?.finalY || y) + 7;
 
   // Dettagli date - linea neutra grigio chiara (nessuna linea blu)
   doc.setDrawColor(220, 225, 230);
