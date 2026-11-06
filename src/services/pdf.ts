@@ -496,36 +496,30 @@ export function buildLeaveRequestPDF(req: LeaveRequest, workerName: string, titl
   doc.text('chiede di potersi assentare dal servizio per la seguente causale:', margin, y);
   y += 9;
 
-  // Griglia causali su due colonne ordinate e bilanciate
-  const causaliCol1 = [
+  // Elenco causali in un'unica colonna, per una lettura lineare anche su A4.
+  const causali = [
     'Ferie',
     'Permesso retribuito',
     'Permesso Non retribuito',
     'Congedo Matrimoniale',
-    'Visita Medica (segue certificato)'
-  ];
-  const causaliCol2 = [
+    'Visita Medica (segue certificato)',
     'Visita c/o cantiere',
     'Partecipazione corso',
     'Visita Fiera',
     'Donazione Sangue (segue certificato)',
     'Malattia / Ricovero'
   ];
+  const rowSpacing = 7;
 
-  const col2X = margin + 86;
-  const rowSpacing = 8;
+  causali.forEach((label, index) => {
+    const rowY = y + index * rowSpacing;
+    const isChecked = req.tipo === label || (Boolean(req.tipo) && label.startsWith(req.tipo));
 
-  for (let i = 0; i < 5; i++) {
-    const rowY = y + i * rowSpacing;
-
-    // Colonna 1
-    const label1 = causaliCol1[i];
-    const isChecked1 = req.tipo === label1 || (Boolean(req.tipo) && label1.startsWith(req.tipo));
     doc.setDrawColor(40, 50, 65);
     doc.setLineWidth(0.4);
     doc.rect(margin, rowY - 3.5, 4.2, 4.2);
 
-    if (isChecked1) {
+    if (isChecked) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
       doc.setTextColor(15, 23, 42);
@@ -535,29 +529,10 @@ export function buildLeaveRequestPDF(req: LeaveRequest, workerName: string, titl
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(15, 23, 42);
-    doc.text(label1, margin + 7.5, rowY);
+    doc.text(label, margin + 7.5, rowY);
+  });
 
-    // Colonna 2
-    const label2 = causaliCol2[i];
-    const isChecked2 = req.tipo === label2 || (Boolean(req.tipo) && label2.startsWith(req.tipo));
-    doc.setDrawColor(40, 50, 65);
-    doc.setLineWidth(0.4);
-    doc.rect(col2X, rowY - 3.5, 4.2, 4.2);
-
-    if (isChecked2) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
-      doc.text('X', col2X + 0.9, rowY - 0.2);
-    }
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(15, 23, 42);
-    doc.text(label2, col2X + 7.5, rowY);
-  }
-
-  y += 5 * rowSpacing + 5;
+  y += causali.length * rowSpacing + 5;
 
   // Dettagli date - linea neutra grigio chiara (nessuna linea blu)
   doc.setDrawColor(220, 225, 230);
