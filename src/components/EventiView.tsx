@@ -10,6 +10,7 @@ import {
   Edit
 } from 'lucide-react';
 import { AppData, BranchEvent } from '../types/turni';
+import { formatDateEuropean } from '../lib/dateUtils';
 import { eventToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
 
 interface EventiViewProps {
@@ -174,7 +175,7 @@ export const EventiView: React.FC<EventiViewProps> = ({
             </span>
             <span className="text-xs font-black text-blue-600 dark:text-blue-400 flex items-center gap-1">
               <span>📅</span>
-              <span>{e.date}</span>
+              <span>{formatDateEuropean(e.date)}</span>
             </span>
           </div>
 

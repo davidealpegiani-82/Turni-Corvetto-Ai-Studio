@@ -23,6 +23,7 @@ import { RolModalData } from './SpecificheImpegnoModal';
 import { TurniTimelineView } from './TurniTimelineView';
 import { playGlassTap } from '../services/soundFx';
 import { getItalianHoliday } from '../services/holidays';
+import { formatDateEuropean } from '../lib/dateUtils';
 
 interface TurniViewProps {
   appData: AppData;
@@ -124,7 +125,7 @@ export const TurniView: React.FC<TurniViewProps> = ({
         if (q.status === 'expired' || (q.status === 'valid' && q.expiry && q.expiry < todayDateStr)) {
           weekProblems.push({
             type: 'danger',
-            text: `🚨 ${w.name}: ${label} scaduto (${q.expiry || 'data non indicata'}). Rischio conformità D.Lgs 81/08.`
+            text: `🚨 ${w.name}: ${label} scaduto (${formatDateEuropean(q.expiry) || 'data non indicata'}). Rischio conformità D.Lgs 81/08.`
           });
         }
       });

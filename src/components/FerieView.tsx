@@ -13,6 +13,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { AppData, LeaveRequest } from '../types/turni';
+import { formatDateEuropean } from '../lib/dateUtils';
 import { localDateKey, calculateAbsenceWorkingHours, getWorkerNastroForDate } from '../services/engine';
 import { getItalianHoliday } from '../services/holidays';
 import { leaveRequestToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
@@ -458,9 +459,9 @@ export const FerieView: React.FC<FerieViewProps> = ({
 
     const dateLabel = req.mode === 'single'
       ? (req.day
-        ? `${req.day} ${req.fullDay ? `(Tutto il giorno · ${finalHours}h)` : `(${req.fromTime || ''}–${req.toTime || ''} · ${finalHours}h)`}`
+        ? `${formatDateEuropean(req.day)} ${req.fullDay ? `(Tutto il giorno · ${finalHours}h)` : `(${req.fromTime || ''}–${req.toTime || ''} · ${finalHours}h)`}`
         : 'Data non disponibile')
-      : `${req.fromDay || 'Data iniziale non disponibile'} → ${req.toDay || (req.openEnded ? 'in corso' : '...')}`;
+      : `${formatDateEuropean(req.fromDay) || 'Data iniziale non disponibile'} → ${formatDateEuropean(req.toDay) || (req.openEnded ? 'in corso' : '...')}`;
 
     return (
       <div

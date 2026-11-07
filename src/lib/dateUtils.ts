@@ -81,6 +81,15 @@ export function getNextWeekKey(weekKey: string): string {
   return formatWeekKey(nextDate);
 }
 
+/** Formatta una data ISO (YYYY-MM-DD) per la visualizzazione italiana (DD/MM/YYYY).
+ * Lascia invariati i valori non ISO e non modifica mai i dati memorizzati.
+ */
+export function formatDateEuropean(value?: string | null): string {
+  if (!value) return '';
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(value);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
+}
+
 export function formatDateShort(d: Date): string {
   return `${d.getDate()}/${d.getMonth() + 1}`;
 }

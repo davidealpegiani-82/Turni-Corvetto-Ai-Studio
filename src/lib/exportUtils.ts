@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Worker, ShiftRecord, LeaveEntry, AppSettings } from '../types';
 import { getShift, isMorning, isAfternoon } from '../constants/shifts';
-import { getWeekDetails, formatDateFull, formatDateShort, GIORNI_SETTIMANA } from './dateUtils';
+import { getWeekDetails, formatDateFull, formatDateShort, formatDateEuropean, GIORNI_SETTIMANA } from './dateUtils';
 
 export function exportWeekPDF(
   weekKey: string,
@@ -169,11 +169,11 @@ export function exportFacsimileLeavePDF(leave: LeaveEntry, worker?: Worker) {
   doc.line(20, 29, 190, 29);
 
   doc.setFontSize(11);
-  doc.text(`Data richiesta: ${leave.request_date || new Date().toISOString().split('T')[0]}`, 20, 42);
+  doc.text(`Data richiesta: ${formatDateEuropean(leave.request_date || new Date().toISOString().split('T')[0])}`, 20, 42);
   doc.text(`Dipendente: ${workerName}`, 20, 50);
   doc.text(`Ruolo: ${worker?.role || 'Addetto'}`, 20, 58);
   doc.text(`Tipologia assenza: ${leave.type.toUpperCase()}`, 20, 66);
-  doc.text(`Periodo: dal ${leave.start_date} al ${leave.end_date}`, 20, 74);
+  doc.text(`Periodo: dal ${formatDateEuropean(leave.start_date)} al ${formatDateEuropean(leave.end_date)}`, 20, 74);
   if (leave.notes) {
     doc.text(`Note / Motivazione: ${leave.notes}`, 20, 82);
   }
