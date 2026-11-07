@@ -8,11 +8,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Thermometer,
-  ChevronDown
+  ChevronDown,
+  CalendarPlus,
+  MessageCircle
 } from 'lucide-react';
 import { AppData, LeaveRequest } from '../types/turni';
 import { localDateKey, calculateAbsenceWorkingHours, getWorkerNastroForDate } from '../services/engine';
-import { getItalianHoliday } from '../services/holidays';\nimport { leaveRequestToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
+import { getItalianHoliday } from '../services/holidays';
+import { leaveRequestToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
 
 interface FerieViewProps {
   appData: AppData;
@@ -432,6 +435,15 @@ export const FerieView: React.FC<FerieViewProps> = ({
     const finalHours = req.hours !== undefined && req.hours !== null
       ? req.hours
       : (req.fullDay ? nastroHours : (req.fromTime && req.toTime ? calculateAbsenceWorkingHours(req.fromTime, req.toTime, false, req.workerId, req.day, appData) : nastroHours));
+
+    const calendarItem = leaveRequestToCalendarItem(req, workerName);
+    const handleAddToCalendar = () => {
+      downloadCalendarItemICS(calendarItem, `assenza_${calendarItem.startDate}_${req.id}.ics`);
+      window.open(getGoogleCalendarLink(calendarItem), '_blank', 'noopener,noreferrer');
+    };
+    const handleShareLeave = () => {
+      shareOnWhatsApp(formatCalendarWhatsAppText(calendarItem, getGoogleCalendarLink(calendarItem)));
+    };
 
     const dateLabel = req.mode === 'single'
       ? `${req.day} ${req.fullDay ? `(Tutto il giorno · ${finalHours}h)` : `(${req.fromTime}–${req.toTime} · ${finalHours}h)`}`
