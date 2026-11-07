@@ -214,6 +214,7 @@ export interface CalendarExportItem {
   endTime?: string;
   location?: string;
   description?: string;
+  eventType?: string;
 }
 
 function validDateKey(value: string): boolean {
@@ -336,7 +337,7 @@ export function eventToCalendarItem(
   workerNamesMap: Record<string, string> = {}
 ): CalendarExportItem {
   const participants = (event.participantIds || [])
-    .map((id) => workerNamesMap[id] || id)
+    .map((id) => (workerNamesMap[id] || id).toLocaleUpperCase('it-IT'))
     .filter(Boolean);
   return {
     id: event.id,
@@ -347,11 +348,10 @@ export function eventToCalendarItem(
     startTime: event.fromTime,
     endTime: event.toTime,
     location: event.location,
-    description: [
-      event.type ? `Tipo: ${event.type}` : '',
-      participants.length ? `Partecipanti: ${participants.join(', ')}` : '',
-      event.notes ? `Note: ${event.notes}` : ''
-    ].filter(Boolean).join('\\n')
+    eventType: event.type || 'Evento',
+    description: participants.length
+      ? `Partecipanti: ${participants.join(', ')}`
+      : ''
   };
 }
 
@@ -387,16 +387,16 @@ export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink:
   const timeText = item.allDay
     ? 'Tutto il giorno'
     : `${item.startTime || '09:00'} – ${item.endTime || '10:00'}`;
+  const participantNames = (item.description || '').replace(/^Partecipanti:\\s*/i, '');
   return [
-    `📅 *${item.title}*`,
-    `Data: ${dateText}`,
-    `Orario: ${timeText}`,
+    `📌 *${item.title}*`,
+    `Tipo: ${item.eventType || 'Evento'}`,
+    `📅 ${dateText}`,
+    `⏰ ${timeText}`,
     item.location ? `📍 ${item.location}` : '',
-    item.description || '',
+    participantNames ? `👥 ${participantNames}` : '',
     '',
-    'Aggiungi questo impegno al tuo calendario 👇',
-    googleLink,
-    '',
-    'Turni Corvetto'
-  ].filter(Boolean).join('\n');
+    'Per aggiungere al calendario: *Clicca QUI*',
+    googleLink
+  ].filter(Boolean).join('\\n');
 }
