@@ -331,7 +331,13 @@ export function shareOnWhatsApp(message: string): void {
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-export function eventToCalendarItem(event: BranchEvent): CalendarExportItem {
+export function eventToCalendarItem(
+  event: BranchEvent,
+  workerNamesMap: Record<string, string> = {}
+): CalendarExportItem {
+  const participants = (event.participantIds || [])
+    .map((id) => workerNamesMap[id] || id)
+    .filter(Boolean);
   return {
     id: event.id,
     title: event.title || event.type || 'Impegno Turni Corvetto',
@@ -341,7 +347,11 @@ export function eventToCalendarItem(event: BranchEvent): CalendarExportItem {
     startTime: event.fromTime,
     endTime: event.toTime,
     location: event.location,
-    description: [event.type, event.notes].filter(Boolean).join(' — ')
+    description: [
+      event.type ? `Tipo: ${event.type}` : '',
+      participants.length ? `Partecipanti: ${participants.join(', ')}` : '',
+      event.notes ? `Note: ${event.notes}` : ''
+    ].filter(Boolean).join('\\n')
   };
 }
 
@@ -382,6 +392,7 @@ export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink:
     `Data: ${dateText}`,
     `Orario: ${timeText}`,
     item.location ? `📍 ${item.location}` : '',
+    item.description || '',
     '',
     'Aggiungi questo impegno al tuo calendario 👇',
     googleLink,

@@ -49,12 +49,12 @@ export const EventiView: React.FC<EventiViewProps> = ({
   }).sort((a, b) => b.date.localeCompare(a.date));
 
   const handleShareWhatsApp = (e: BranchEvent) => {
-    const item = eventToCalendarItem(e);
+    const item = eventToCalendarItem(e, workerNamesMap);
     shareOnWhatsApp(formatCalendarWhatsAppText(item, getGoogleCalendarLink(item)));
   };
 
   const handleDownloadICS = (e: BranchEvent) => {
-    const item = eventToCalendarItem(e);
+    const item = eventToCalendarItem(e, workerNamesMap);
     downloadCalendarItemICS(item, `impegno_${e.date}_${e.title.replace(/\s+/g, '_')}.ics`);
     window.open(getGoogleCalendarLink(item), '_blank', 'noopener,noreferrer');
   };
