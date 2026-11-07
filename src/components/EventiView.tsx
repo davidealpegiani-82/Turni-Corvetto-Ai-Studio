@@ -4,8 +4,8 @@ import {
   Clock,
   MapPin,
   Users,
-  Share2,
-  Download,\n  CalendarPlus,\n  MessageCircle,
+  CalendarPlus,
+  MessageCircle,
   Trash2,
   Edit
 } from 'lucide-react';
@@ -49,14 +49,14 @@ export const EventiView: React.FC<EventiViewProps> = ({
   }).sort((a, b) => b.date.localeCompare(a.date));
 
   const handleShareWhatsApp = (e: BranchEvent) => {
-    const text = formatEventWhatsAppText(e, workerNamesMap);
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const item = eventToCalendarItem(e);
+    shareOnWhatsApp(formatCalendarWhatsAppText(item, getGoogleCalendarLink(item)));
   };
 
   const handleDownloadICS = (e: BranchEvent) => {
-    const ics = buildCalendarICS([e], e.title);
-    downloadICS(`impegno_${e.date}_${e.title.replace(/\s+/g, '_')}.ics`, ics);
+    const item = eventToCalendarItem(e);
+    downloadCalendarItemICS(item, `impegno_${e.date}_${e.title.replace(/\s+/g, '_')}.ics`);
+    window.open(getGoogleCalendarLink(item), '_blank', 'noopener,noreferrer');
   };
 
   return (
