@@ -381,9 +381,13 @@ export function leaveRequestToCalendarItem(
 }
 
 export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink: string): string {
+  const formatEuropeanDate = (date: string) => {
+    const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(date);
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : date;
+  };
   const dateText = item.endDate && item.endDate !== item.startDate
-    ? `${item.startDate} – ${item.endDate}`
-    : item.startDate;
+    ? `${formatEuropeanDate(item.startDate)} – ${formatEuropeanDate(item.endDate)}`
+    : formatEuropeanDate(item.startDate);
   const timeText = item.allDay
     ? 'Tutto il giorno'
     : `${item.startTime || '09:00'} – ${item.endTime || '10:00'}`;
