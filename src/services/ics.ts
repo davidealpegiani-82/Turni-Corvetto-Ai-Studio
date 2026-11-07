@@ -387,7 +387,7 @@ export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink:
   const timeText = item.allDay
     ? 'Tutto il giorno'
     : `${item.startTime || '09:00'} – ${item.endTime || '10:00'}`;
-  const participantNames = (item.description || '').replace(/^Partecipanti:\\s*/i, '');
+  const participantNames = (item.description || '').replace(/^Partecipanti:\s*/i, '');
   return [
     `📌 *${item.title}*`,
     `Tipo: ${item.eventType || 'Evento'}`,
@@ -398,5 +398,5 @@ export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink:
     '',
     'Per aggiungere al calendario: *Clicca QUI*',
     googleLink
-  ].filter(Boolean).join('\\n');
+  ].filter(Boolean).join('\n');
 }
