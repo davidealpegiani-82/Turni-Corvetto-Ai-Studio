@@ -29,7 +29,7 @@ export const EventiView: React.FC<EventiViewProps> = ({
   const [typeFilter, setTypeFilter] = useState('');
   const [showArchive, setShowArchive] = useState(false);
 
-  const now = new Date();
+  const workerNamesMap: Record<string, string> = {};\n  appData.workers.forEach(w => { workerNamesMap[w.id] = w.name; });\n\n  const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
 
   const filteredEvents = (appData.events || []).filter(e => {
