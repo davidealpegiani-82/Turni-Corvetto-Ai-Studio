@@ -436,18 +436,31 @@ export const FerieView: React.FC<FerieViewProps> = ({
       ? req.hours
       : (req.fullDay ? nastroHours : (req.fromTime && req.toTime ? calculateAbsenceWorkingHours(req.fromTime, req.toTime, false, req.workerId, req.day, appData) : nastroHours));
 
-    const calendarItem = leaveRequestToCalendarItem(req, workerName);
+    // Una vecchia richiesta incompleta non deve bloccare il rendering dell'intera scheda.
+    // Manteniamo il record visibile e disabilitiamo solo le azioni calendario.
+    const calendarItem = (() => {
+      try {
+        return leaveRequestToCalendarItem(req, workerName);
+      } catch (error) {
+        console.warn('Richiesta senza data valida: esportazione calendario disabilitata.', req?.id, error);
+        return null;
+      }
+    })();
     const handleAddToCalendar = () => {
+      if (!calendarItem) return;
       downloadCalendarItemICS(calendarItem, `assenza_${calendarItem.startDate}_${req.id}.ics`);
       window.open(getGoogleCalendarLink(calendarItem), '_blank', 'noopener,noreferrer');
     };
     const handleShareLeave = () => {
+      if (!calendarItem) return;
       shareOnWhatsApp(formatCalendarWhatsAppText(calendarItem, getGoogleCalendarLink(calendarItem)));
     };
 
     const dateLabel = req.mode === 'single'
-      ? `${req.day} ${req.fullDay ? `(Tutto il giorno · ${finalHours}h)` : `(${req.fromTime}–${req.toTime} · ${finalHours}h)`}`
-      : `${req.fromDay} → ${req.toDay || (req.openEnded ? 'in corso' : '...')}`;
+      ? (req.day
+        ? `${req.day} ${req.fullDay ? `(Tutto il giorno · ${finalHours}h)` : `(${req.fromTime || ''}–${req.toTime || ''} · ${finalHours}h)`}`
+        : 'Data non disponibile')
+      : `${req.fromDay || 'Data iniziale non disponibile'} → ${req.toDay || (req.openEnded ? 'in corso' : '...')}`;
 
     return (
       <div
@@ -501,7 +514,7 @@ export const FerieView: React.FC<FerieViewProps> = ({
         {/* Azioni Scheda */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            {!req.openEnded && req.status !== 'rifiutata' && (
+            {calendarItem && !req.openEnded && req.status !== 'rifiutata' && (
               <>
                 <button
                   type="button"
