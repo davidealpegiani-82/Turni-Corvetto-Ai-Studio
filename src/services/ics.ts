@@ -1,10 +1,10 @@
-import { BranchEvent, AppData } from '../types/turni';
+import { BranchEvent, AppData, LeaveRequest } from '../types/turni';
 import { getWeekInfo } from './engine';
 
 function icsEscape(value: string | number | null | undefined): string {
   return String(value ?? '')
     .replace(/\\/g, '\\\\')
-    .replace(/\r\n|\n|\r/g, '\\n')
+    .replace(/\r\n|\n|\r/g, '\n')
     .replace(/;/g, '\\;')
     .replace(/,/g, '\\,');
 }
@@ -200,4 +200,192 @@ export function buildWeeklyFullICS(appData: AppData, currentDate: Date): string 
   }
 
   return buildCalendarICS(calendarEvents, `Turni Filiale ${appData.title} - Settimana ${weekInfo.weekNo}`);
+}
+
+
+/** Dati normalizzati condivisi da impegni e richieste di assenza. Le date sono locali Europe/Rome. */
+export interface CalendarExportItem {
+  id: string;
+  title: string;
+  startDate: string; // YYYY-MM-DD
+  endDate?: string;  // inclusiva per gli eventi all-day
+  allDay: boolean;
+  startTime?: string;
+  endTime?: string;
+  location?: string;
+  description?: string;
+}
+
+function validDateKey(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function dateKeyToCompact(value: string): string {
+  return value.replace(/-/g, '');
+}
+
+function addDaysToDateKey(value: string, days: number): string {
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + days));
+  return date.toISOString().slice(0, 10);
+}
+
+function calendarItemToVevent(item: CalendarExportItem): string {
+  if (!item.id || !validDateKey(item.startDate)) {
+    throw new Error('ID o data iniziale non validi per l’esportazione calendario.');
+  }
+  const endDate = item.endDate || item.startDate;
+  if (!validDateKey(endDate) || endDate < item.startDate) {
+    throw new Error('Data finale non valida per l’esportazione calendario.');
+  }
+  const stableUid = String(item.id).replace(/[^a-zA-Z0-9._-]/g, '_');
+  const lines = [
+    'BEGIN:VEVENT',
+    `UID:${stableUid}@turni-corvetto`,
+    `DTSTAMP:${icsUtcStamp()}`
+  ];
+
+  if (item.allDay) {
+    lines.push(
+      `DTSTART;VALUE=DATE:${dateKeyToCompact(item.startDate)}`,
+      `DTEND;VALUE=DATE:${dateKeyToCompact(addDaysToDateKey(endDate, 1))}`
+    );
+  } else {
+    const start = (item.startTime || '09:00').replace(':', '');
+    const end = (item.endTime || '10:00').replace(':', '');
+    lines.push(
+      `DTSTART;TZID=Europe/Rome:${dateKeyToCompact(item.startDate)}T${start}00`,
+      `DTEND;TZID=Europe/Rome:${dateKeyToCompact(endDate)}T${end}00`
+    );
+  }
+
+  lines.push(
+    `SUMMARY:${icsEscape(item.title)}`,
+    `DESCRIPTION:${icsEscape(item.description || '')}`
+  );
+  if (item.location) lines.push(`LOCATION:${icsEscape(item.location)}`);
+  lines.push('END:VEVENT');
+  return lines.map(icsFoldLine).join('\r\n');
+}
+
+function calendarContainer(vevents: string[], name: string): string {
+  const header = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Turni Corvetto//Calendar Export//IT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    `X-WR-CALNAME:${icsEscape(name)}`,
+    'BEGIN:VTIMEZONE',
+    'TZID:Europe/Rome',
+    'X-LIC-LOCATION:Europe/Rome',
+    'BEGIN:DAYLIGHT',
+    'DTSTART:19700329T020000',
+    'TZOFFSETFROM:+0100',
+    'TZOFFSETTO:+0200',
+    'TZNAME:CEST',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU',
+    'END:DAYLIGHT',
+    'BEGIN:STANDARD',
+    'DTSTART:19701025T030000',
+    'TZOFFSETFROM:+0200',
+    'TZOFFSETTO:+0100',
+    'TZNAME:CET',
+    'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU',
+    'END:STANDARD',
+    'END:VTIMEZONE'
+  ];
+  return [...header, ...vevents, 'END:VCALENDAR'].join('\r\n') + '\r\n';
+}
+
+export function buildCalendarItemICS(item: CalendarExportItem): string {
+  return calendarContainer([calendarItemToVevent(item)], 'Turni Corvetto');
+}
+
+export function downloadCalendarItemICS(item: CalendarExportItem, filename: string): void {
+  downloadICS(filename, buildCalendarItemICS(item));
+}
+
+export function getGoogleCalendarLink(item: CalendarExportItem): string {
+  const endDate = item.endDate || item.startDate;
+  const exclusiveEnd = item.allDay ? addDaysToDateKey(endDate, 1) : endDate;
+  const start = item.allDay
+    ? dateKeyToCompact(item.startDate)
+    : `${dateKeyToCompact(item.startDate)}T${(item.startTime || '09:00').replace(':', '')}00`;
+  const end = item.allDay
+    ? dateKeyToCompact(exclusiveEnd)
+    : `${dateKeyToCompact(endDate)}T${(item.endTime || '10:00').replace(':', '')}00`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: item.title,
+    dates: `${start}/${end}`,
+    ctz: 'Europe/Rome'
+  });
+  if (item.location) params.set('location', item.location);
+  if (item.description) params.set('details', item.description);
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+export function shareOnWhatsApp(message: string): void {
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+export function eventToCalendarItem(event: BranchEvent): CalendarExportItem {
+  return {
+    id: event.id,
+    title: event.title || event.type || 'Impegno Turni Corvetto',
+    startDate: event.date,
+    endDate: event.date,
+    allDay: event.allDay,
+    startTime: event.fromTime,
+    endTime: event.toTime,
+    location: event.location,
+    description: [event.type, event.notes].filter(Boolean).join(' — ')
+  };
+}
+
+export function leaveRequestToCalendarItem(
+  request: LeaveRequest,
+  workerName: string
+): CalendarExportItem {
+  const startDate = request.mode === 'range' ? request.fromDay : request.day;
+  if (!startDate) throw new Error('La richiesta non contiene una data iniziale.');
+  const endDate = request.mode === 'range' ? (request.toDay || startDate) : startDate;
+  const allDay = request.mode === 'range' || request.fullDay === true;
+  return {
+    id: request.id,
+    title: `${request.tipo} — ${workerName}`,
+    startDate,
+    endDate,
+    allDay,
+    startTime: allDay ? undefined : request.fromTime,
+    endTime: allDay ? undefined : request.toTime,
+    location: request.place,
+    description: [
+      `Collaboratore: ${workerName}`,
+      `Stato richiesta: ${request.status}`,
+      request.note
+    ].filter(Boolean).join('\n')
+  };
+}
+
+export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink: string): string {
+  const dateText = item.endDate && item.endDate !== item.startDate
+    ? `${item.startDate} – ${item.endDate}`
+    : item.startDate;
+  const timeText = item.allDay
+    ? 'Tutto il giorno'
+    : `${item.startTime || '09:00'} – ${item.endTime || '10:00'}`;
+  return [
+    `📅 *${item.title}*`,
+    `Data: ${dateText}`,
+    `Orario: ${timeText}`,
+    item.location ? `📍 ${item.location}` : '',
+    '',
+    'Aggiungi questo impegno al tuo calendario 👇',
+    googleLink,
+    '',
+    'Turni Corvetto'
+  ].filter(Boolean).join('\n');
 }
