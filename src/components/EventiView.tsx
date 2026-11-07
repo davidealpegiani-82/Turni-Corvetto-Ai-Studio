@@ -217,7 +217,8 @@ export const EventiView: React.FC<EventiViewProps> = ({
               className="px-2.5 py-1 rounded-lg glass-tile hover:text-blue-500 text-blue-600 dark:text-blue-400 transition flex items-center gap-1 font-bold"
               title="Scarica file calendario (.ics)"
             >
-              <CalendarPlus className="w-3.5 h-3.5" />\n              <span>Aggiungi al calendario</span>
+              <CalendarPlus className="w-3.5 h-3.5" />
+              <span>Aggiungi al calendario</span>
             </button>
             <button
               onClick={(ev) => { ev.stopPropagation(); handleShareWhatsApp(e); }}
