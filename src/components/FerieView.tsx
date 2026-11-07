@@ -501,7 +501,7 @@ export const FerieView: React.FC<FerieViewProps> = ({
         {/* Azioni Scheda */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            {req.status !== 'rifiutata' && (
+            {!req.openEnded && req.status !== 'rifiutata' && (
               <>
                 <button
                   type="button"
