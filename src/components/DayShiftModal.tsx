@@ -3,6 +3,7 @@ import { X, Copy, Trash2, Check, Clock, Briefcase, CalendarOff, Palmtree, AlertC
 import { AppData, DayShift } from '../types/turni';
 import { getWeekKey, getWorkerNastroForDate, shiftMinutes, localDateKey } from '../services/engine';
 import { defaultPresets } from '../data/initialData';
+import { formatDateEuropean } from '../lib/dateUtils';
 
 interface DayShiftModalProps {
   isOpen: boolean;
@@ -250,7 +251,7 @@ const DayShiftModalContent: React.FC<ActiveDayShiftModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
             <h3 className="text-base font-bold text-white">
-              {worker?.name} — {daysNames[dayIdx]} {dateObj.getDate()}
+              {worker?.name} — {daysNames[dayIdx]} {formatDateEuropean(localDateKey(dateObj))}
             </h3>
             <span className="text-xs text-slate-400">Modifica turno e causale presenza</span>
           </div>
