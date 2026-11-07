@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { AppData, LeaveRequest } from '../types/turni';
 import { localDateKey, calculateAbsenceWorkingHours, getWorkerNastroForDate } from '../services/engine';
-import { getItalianHoliday } from '../services/holidays';
+import { getItalianHoliday } from '../services/holidays';\nimport { leaveRequestToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
 
 interface FerieViewProps {
   appData: AppData;
@@ -488,7 +488,29 @@ export const FerieView: React.FC<FerieViewProps> = ({
 
         {/* Azioni Scheda */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {req.status !== 'rifiutata' && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleAddToCalendar}
+                  className="px-2.5 py-1.5 rounded-lg glass-tile text-blue-700 dark:text-blue-300 hover:bg-blue-500/15 border border-blue-500/20 flex items-center gap-1.5 font-bold transition"
+                  title="Scarica il file .ics e apri Google Calendar"
+                >
+                  <CalendarPlus className="w-3.5 h-3.5" />
+                  <span>Aggiungi al calendario</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShareLeave}
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1.5 font-bold transition"
+                  title="Condividi su WhatsApp"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </button>
+              </>
+            )}
             <button
               onClick={() => onExportFacsimilePDF(req.id)}
               className="text-blue-700 dark:text-blue-400 hover:underline flex items-center gap-1 font-bold"
