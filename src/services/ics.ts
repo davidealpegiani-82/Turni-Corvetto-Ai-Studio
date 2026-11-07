@@ -4,7 +4,7 @@ import { getWeekInfo } from './engine';
 function icsEscape(value: string | number | null | undefined): string {
   return String(value ?? '')
     .replace(/\\/g, '\\\\')
-    .replace(/\r\n|\n|\r/g, '\\n')
+    .replace(/\r\n|\n|\r/g, '\n')
     .replace(/;/g, '\\;')
     .replace(/,/g, '\\,');
 }
@@ -217,7 +217,7 @@ export interface CalendarExportItem {
 }
 
 function validDateKey(value: string): boolean {
-  return /^\\d{4}-\\d{2}-\\d{2}$/.test(value);
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
 function dateKeyToCompact(value: string): string {
@@ -265,7 +265,7 @@ function calendarItemToVevent(item: CalendarExportItem): string {
   );
   if (item.location) lines.push(`LOCATION:${icsEscape(item.location)}`);
   lines.push('END:VEVENT');
-  return lines.map(icsFoldLine).join('\\r\\n');
+  return lines.map(icsFoldLine).join('\r\n');
 }
 
 function calendarContainer(vevents: string[], name: string): string {
@@ -295,7 +295,7 @@ function calendarContainer(vevents: string[], name: string): string {
     'END:STANDARD',
     'END:VTIMEZONE'
   ];
-  return [...header, ...vevents, 'END:VCALENDAR'].join('\\r\\n') + '\\r\\n';
+  return [...header, ...vevents, 'END:VCALENDAR'].join('\r\n') + '\r\n';
 }
 
 export function buildCalendarItemICS(item: CalendarExportItem): string {
@@ -366,7 +366,7 @@ export function leaveRequestToCalendarItem(
       `Collaboratore: ${workerName}`,
       `Stato richiesta: ${request.status}`,
       request.note
-    ].filter(Boolean).join('\\n')
+    ].filter(Boolean).join('\n')
   };
 }
 
@@ -387,5 +387,5 @@ export function formatCalendarWhatsAppText(item: CalendarExportItem, googleLink:
     googleLink,
     '',
     'Turni Corvetto'
-  ].filter(Boolean).join('\\n');
+  ].filter(Boolean).join('\n');
 }
