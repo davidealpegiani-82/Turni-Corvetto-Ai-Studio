@@ -5,12 +5,12 @@ import {
   MapPin,
   Users,
   Share2,
-  Download,
+  Download,\n  CalendarPlus,\n  MessageCircle,
   Trash2,
   Edit
 } from 'lucide-react';
 import { AppData, BranchEvent } from '../types/turni';
-import { formatEventWhatsAppText, downloadICS, buildCalendarICS } from '../services/ics';
+import { eventToCalendarItem, downloadCalendarItemICS, getGoogleCalendarLink, formatCalendarWhatsAppText, shareOnWhatsApp } from '../services/ics';
 
 interface EventiViewProps {
   appData: AppData;
@@ -217,17 +217,17 @@ export const EventiView: React.FC<EventiViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={(ev) => { ev.stopPropagation(); handleDownloadICS(e); }}
-              className="p-1.5 rounded-lg glass-tile hover:text-blue-500 text-blue-600 dark:text-blue-400 transition"
+              className="px-2.5 py-1 rounded-lg glass-tile hover:text-blue-500 text-blue-600 dark:text-blue-400 transition flex items-center gap-1 font-bold"
               title="Scarica file calendario (.ics)"
             >
-              <Download className="w-3.5 h-3.5" />
+              <CalendarPlus className="w-3.5 h-3.5" />\n              <span>Aggiungi al calendario</span>
             </button>
             <button
               onClick={(ev) => { ev.stopPropagation(); handleShareWhatsApp(e); }}
               className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1 font-bold transition"
               title="Condividi su WhatsApp"
             >
-              <Share2 className="w-3 h-3" />
+              <MessageCircle className="w-3 h-3" />
               <span>WhatsApp</span>
             </button>
           </div>
