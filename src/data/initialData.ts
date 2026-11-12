@@ -312,7 +312,7 @@ export const defaultRules: RulesConfig = {
 export function createDefaultAppData(): AppData {
   return {
     title: "CORVETTO",
-    appVersion: "9.4.1",
+    appVersion: "9.4.2",
     updatedAt: Date.now(),
     updatedBy: "system_init",
     updatedRevision: 1,

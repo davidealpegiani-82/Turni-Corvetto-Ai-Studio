@@ -66,18 +66,31 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         // Nel PDF sostituisce l'emoji del tipo assenza con un punto compatibile con Helvetica.
         cellText = cellText.replace(/🏖️\s*/g, '• ');
 
-        // Evita di ripetere nella nota la causale di assenza già mostrata nella cella.
-        // Se la nota contiene anche un dettaglio aggiuntivo, conserva solo quel dettaglio.
+        // Evita di ripetere nella nota la causale di assenza già mostrata nella cella
+        // (es. "FERIE" + nota "+ Ferie"). Se resta un dettaglio utile, lo mostra.
         let shiftNote = cell?.note?.trim() || '';
         const absenceLabel = String(cell?.leaveType || cell?.status || '').trim();
-        if (/^(MALATTIA|RICOVERO)$/i.test(absenceLabel) && shiftNote) {
-          shiftNote = shiftNote.replace(/^(MALATTIA|RICOVERO)(?:\s*[–—-]\s*|\s*:\s*)?/i, '').trim();
+        if (shiftNote) {
+          shiftNote = shiftNote
+            .replace(/^(FERIE|MALATTIA|RICOVERO|ROL|PERMESSO|CONGEDO(?:\s+MATRIMONIALE)?)(?:\s*[–—-]\s*|\s*:\s*|\s+\+\s*)?/i, '')
+            .replace(/^\+\s*/g, '')
+            .trim();
         }
-        if (shiftNote && !/^(MALATTIA|RICOVERO)$/i.test(shiftNote)) {
+        // Nota ridondante se è solo la causale o già contenuta nel testo cella
+        if (shiftNote && /^(FERIE|MALATTIA|RICOVERO|ROL|PERMESSO|CONGEDO)$/i.test(shiftNote)) {
+          shiftNote = '';
+        }
+        if (shiftNote && cellText && cellText.toLocaleUpperCase('it-IT').includes(shiftNote.toLocaleUpperCase('it-IT'))) {
+          shiftNote = '';
+        }
+        if (shiftNote) {
           shiftNoteTexts.push(shiftNote.toLocaleUpperCase('it-IT'));
           if (/^riposo\s+pom\.?$/i.test(shiftNote) && cellText !== '—') {
             // Il riposo pomeridiano di Giuliano resta sulla stessa riga dell'orario mattutino.
             cellText = `${cellText} · Riposo pom.`;
+          } else if (/^filiale\s+agrate$/i.test(shiftNote) && cellText !== '—') {
+            // Sabato Sandrini: "Filiale Agrate" sulla stessa riga dell'orario.
+            cellText = `${cellText} · Filiale Agrate`;
           } else {
             cellText = cellText === '—'
               ? `• ${shiftNote}`
@@ -159,12 +172,30 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       // Le sole note su righe successive vengono disegnate insieme all'orario come blocco centrato.
       if (isSandriniRow && hasStandardHours) {
         const annotations = rawLines.slice(1).filter(line => line.trim());
-        if (annotations.length) {
-          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, annotations);
+        // Note compatte da tenere sulla stessa riga dell'orario (es. Filiale Agrate, Riposo pom.)
+        const inlineNotes: string[] = [];
+        const restNotes: string[] = [];
+        annotations.forEach((line) => {
+          const clean = line.replace(/^[•·\s]+/, '').trim();
+          if (/^filiale\s+agrate$/i.test(clean) || /^riposo\s+pom\.?$/i.test(clean)) {
+            inlineNotes.push(/^filiale/i.test(clean) ? 'Filiale Agrate' : 'Riposo pom.');
+          } else {
+            restNotes.push(line);
+          }
+        });
+        let displayFirst = firstLine;
+        if (inlineNotes.length) {
+          displayFirst = `${firstLine} · ${inlineNotes.join(' · ')}`;
+        }
+        if (restNotes.length) {
+          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, restNotes);
           data.cell.text = [];
+          // keep raw first line for didDraw via patching cell.raw is hard; store full display
+          (data.cell as any).raw = [displayFirst, ...restNotes].join('\n');
           data.cell.styles.minCellHeight = 8;
         } else {
-          data.cell.text = [firstLine];
+          data.cell.text = [displayFirst];
+          (data.cell as any).raw = displayFirst;
         }
         data.cell.styles.textColor = [15, 23, 42];
         data.cell.styles.fontStyle = 'normal';
