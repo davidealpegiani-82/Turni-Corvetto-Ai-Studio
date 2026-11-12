@@ -811,38 +811,40 @@ export function getCellDisplayDetails(
     (hasDirectWorkedHours && isLeaveStatus);
 
   // CASO A: Permesso Parziale (con orari lavorati e/o intervallo permesso esplicito)
+  // Visualizzazione: SEMPRE il nastro completo + sotto la nota del permesso che compensa le ore.
+  // Non si mostra l'orario "tagliato" residuo.
   if (hasPartialSignals && (hasDirectWorkedHours || isExplicitPartial || hasCellLeaveTimes)) {
     const leaveLabel = leaveReq?.tipo || lt || (['ROL', 'PERMESSO'].includes(st) ? st : '') || 'Permesso';
 
     let leaveFrom = cell.leaveFromTime || (isExplicitPartial ? leaveReq?.fromTime : '') || '';
     let leaveTo = cell.leaveToTime || (isExplicitPartial ? leaveReq?.toTime : '') || '';
 
-    let workedShift = {
-      mIn: cell.mIn || '',
-      mOut: cell.mOut || '',
-      pIn: cell.pIn || '',
-      pOut: cell.pOut || ''
+    // Nastro del giorno (orario indicato in tabella/PDF)
+    const base = getDefaultBaseShiftForWorker(workerId, dayIdx, weekKey, appData);
+    const displayShift = {
+      mIn: base.mIn || '',
+      mOut: base.mOut || '',
+      pIn: base.pIn || '',
+      pOut: base.pOut || ''
     };
 
-    const isBuggedMatch = hasCellLeaveTimes && (
-      (cell.mIn === leaveFrom && cell.mOut === leaveTo && !cell.pIn && !cell.pOut)
-    );
-
-    if (isBuggedMatch || (!cell.mIn && !cell.pIn && (leaveFrom && leaveTo))) {
-      const base = getDefaultBaseShiftForWorker(workerId, dayIdx, weekKey, appData);
-      workedShift = computeWorkedShiftWithPartialLeave(base, leaveFrom, leaveTo);
-    }
-
-    const m = workedShift.mIn && workedShift.mOut ? `${workedShift.mIn}-${workedShift.mOut}` : '';
-    const p = workedShift.pIn && workedShift.pOut ? `${workedShift.pIn}-${workedShift.pOut}` : '';
+    const m = displayShift.mIn && displayShift.mOut ? `${displayShift.mIn}-${displayShift.mOut}` : '';
+    const p = displayShift.pIn && displayShift.pOut ? `${displayShift.pIn}-${displayShift.pOut}` : '';
     const workedTimes = [m, p].filter(Boolean).join(' · ');
 
-    const workedMins = shiftMinutes(workedShift);
-    const workedHours = workedMins / 60;
-    const leaveHours = cell.leaveHours || (leaveFrom && leaveTo ? calculateAbsenceWorkingHours(leaveFrom, leaveTo, false, workerId, dayIso, appData) : Math.max(0, nastroHours - workedHours));
-    const totalCountableHours = countableDayHours(workerId, dayIdx, cell, weekKey, appData);
+    const nastroMins = shiftMinutes(displayShift);
+    const workedHours = nastroMins / 60 || nastroHours;
+    const leaveHours = cell.leaveHours || (leaveFrom && leaveTo
+      ? calculateAbsenceWorkingHours(leaveFrom, leaveTo, false, workerId, dayIso, appData)
+      : Math.max(0, nastroHours - (shiftMinutes({
+          mIn: cell.mIn || '', mOut: cell.mOut || '', pIn: cell.pIn || '', pOut: cell.pOut || ''
+        }) / 60)));
+    // Ore conteggiate = nastro (lavoro residuo + permesso che compensa)
+    const totalCountableHours = nastroHours || workedHours;
 
-    const leaveTimeRange = leaveFrom && leaveTo ? `${leaveFrom}-${leaveTo}` : (leaveHours > 0 ? `${leaveHours.toFixed(1).replace(/\.0$/, '')}h` : '');
+    const leaveTimeRange = leaveFrom && leaveTo
+      ? `${leaveFrom}-${leaveTo}`
+      : (leaveHours > 0 ? `${leaveHours.toFixed(1).replace(/\.0$/, '')}h` : '');
 
     return {
       isRest: false,
@@ -906,7 +908,7 @@ export function formatCellShort(
     if (details.isRest) return '—';
     if (details.isPartialLeave) {
       const w = details.workedTimes || 'Lavoro';
-      const l = `🏖️ ${details.leaveLabel}${details.leaveTimeRange ? ` (${details.leaveTimeRange})` : ''}`;
+      const l = `📌 ${details.leaveLabel}${details.leaveTimeRange ? ` ${details.leaveTimeRange}` : ''}`;
       return `${w}\n${l}`;
     }
     if (details.isFullDayLeave) {
