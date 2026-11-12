@@ -89,8 +89,8 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
             // Il riposo pomeridiano di Giuliano resta sulla stessa riga dell'orario mattutino.
             cellText = `${cellText} · Riposo pom.`;
           } else if (/^filiale\s+agrate$/i.test(shiftNote) && cellText !== '—') {
-            // Sabato Sandrini: "Filiale Agrate" sulla stessa riga dell'orario.
-            cellText = `${cellText} · Filiale Agrate`;
+            // Sabato Sandrini: orario sopra, "• Filiale Agrate" sotto su un'unica riga.
+            cellText = `${cellText}\n• Filiale Agrate`;
           } else {
             cellText = cellText === '—'
               ? `• ${shiftNote}`
@@ -172,27 +172,26 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       // Le sole note su righe successive vengono disegnate insieme all'orario come blocco centrato.
       if (isSandriniRow && hasStandardHours) {
         const annotations = rawLines.slice(1).filter(line => line.trim());
-        // Note compatte da tenere sulla stessa riga dell'orario (es. Filiale Agrate, Riposo pom.)
-        const inlineNotes: string[] = [];
-        const restNotes: string[] = [];
+        // Riposo pom. resta in linea con l'orario; Filiale Agrate va sotto su un'unica riga.
+        let displayFirst = firstLine;
+        const belowNotes: string[] = [];
         annotations.forEach((line) => {
           const clean = line.replace(/^[•·\s]+/, '').trim();
-          if (/^filiale\s+agrate$/i.test(clean) || /^riposo\s+pom\.?$/i.test(clean)) {
-            inlineNotes.push(/^filiale/i.test(clean) ? 'Filiale Agrate' : 'Riposo pom.');
-          } else {
-            restNotes.push(line);
+          if (/^riposo\s+pom\.?$/i.test(clean)) {
+            if (!/riposo\s+pom/i.test(displayFirst)) {
+              displayFirst = `${displayFirst} · Riposo pom.`;
+            }
+          } else if (/^filiale\s+agrate$/i.test(clean)) {
+            belowNotes.push('• Filiale Agrate');
+          } else if (clean) {
+            belowNotes.push(line.startsWith('•') ? line : `• ${clean}`);
           }
         });
-        let displayFirst = firstLine;
-        if (inlineNotes.length) {
-          displayFirst = `${firstLine} · ${inlineNotes.join(' · ')}`;
-        }
-        if (restNotes.length) {
-          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, restNotes);
+        if (belowNotes.length) {
+          sandriniAnnotations.set(`${data.row.index}-${data.column.index}`, belowNotes);
           data.cell.text = [];
-          // keep raw first line for didDraw via patching cell.raw is hard; store full display
-          (data.cell as any).raw = [displayFirst, ...restNotes].join('\n');
-          data.cell.styles.minCellHeight = 8;
+          (data.cell as any).raw = [displayFirst, ...belowNotes].join('\n');
+          data.cell.styles.minCellHeight = 10;
         } else {
           data.cell.text = [displayFirst];
           (data.cell as any).raw = displayFirst;
@@ -234,9 +233,14 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       const noteLines = annotations.map((line) => {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(6.8);
+        const normalized = line.toLocaleUpperCase('it-IT');
+        // Filiale Agrate: sempre una sola riga sotto l'orario
+        if (/FILIALE\s+AGRATE/.test(normalized)) {
+          return { text: ['• Filiale Agrate'], normalized };
+        }
         return {
           text: doc.splitTextToSize(line, maxWidth) as string[],
-          normalized: line.toLocaleUpperCase('it-IT')
+          normalized
         };
       });
       const totalLines = mainLines.length + noteLines.reduce((sum, item) => sum + item.text.length, 0);
