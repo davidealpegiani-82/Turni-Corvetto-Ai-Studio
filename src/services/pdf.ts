@@ -63,8 +63,12 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
         const cell = appData.weeks[weekKey]?.[w.id]?.[day];
         let cellText = formatCellShort(cell, w.id, day, weekKey, appData);
 
-        // Nel PDF sostituisce l'emoji del tipo assenza con un punto compatibile con Helvetica.
-        cellText = cellText.replace(/🏖️\s*/g, '• ');
+        // Nel PDF sostituisce emoji non supportate da Helvetica con un punto.
+        cellText = cellText
+          .replace(/🏖️\s*/g, '• ')
+          .replace(/📌\s*/g, '• ')
+          .replace(/📍\s*/g, '• ')
+          .replace(/💼\s*/g, '• ');
 
         // Evita di ripetere nella nota la causale di assenza già mostrata nella cella
         // (es. "FERIE" + nota "+ Ferie"). Se resta un dettaglio utile, lo mostra.

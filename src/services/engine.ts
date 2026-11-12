@@ -908,7 +908,7 @@ export function formatCellShort(
     if (details.isRest) return '—';
     if (details.isPartialLeave) {
       const w = details.workedTimes || 'Lavoro';
-      const l = `📌 ${details.leaveLabel}${details.leaveTimeRange ? ` ${details.leaveTimeRange}` : ''}`;
+      const l = `• ${details.leaveLabel}${details.leaveTimeRange ? ` ${details.leaveTimeRange}` : ''}`;
       return `${w}\n${l}`;
     }
     if (details.isFullDayLeave) {
@@ -926,7 +926,7 @@ export function formatCellShort(
     if (workedTimes) {
       const leaveRef = d.leaveType || st;
       const range = d.leaveFromTime && d.leaveToTime ? ` (${d.leaveFromTime}-${d.leaveToTime})` : '';
-      return `${workedTimes}\n🏖️ ${leaveRef}${range}`;
+      return `${workedTimes}\n• ${leaveRef}${range}`;
     }
     return d.leaveType || st;
   }

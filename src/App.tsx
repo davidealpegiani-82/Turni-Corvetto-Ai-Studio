@@ -275,7 +275,7 @@ export default function App() {
         appDataRef.current = incomingData;
         setAppData({
           ...incomingData,
-          appVersion: incomingData.appVersion && incomingData.appVersion >= '9.4.4' ? incomingData.appVersion : '9.4.4'
+          appVersion: incomingData.appVersion && incomingData.appVersion >= '9.4.5' ? incomingData.appVersion : '9.4.5'
         });
 
         if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
