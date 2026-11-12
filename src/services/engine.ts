@@ -932,16 +932,60 @@ export function formatCellShort(
   return workedTimes || '—';
 }
 
+/** True se il collaboratore è di turno al sabato di quella settimana (rotazione reale). */
+export function workerScheduledOnSaturday(wId: string, weekKey: string, appData: AppData): boolean {
+  const rules = appData.rules;
+  const week = appData.weeks?.[weekKey] || {};
+  const cell = week[wId]?.[5];
+  // Turno già presente e lavorativo
+  if (cell && (cell.mIn || cell.pIn) && !isRestStatus(cell.status) && !isHardUnavailableCell(cell)) {
+    return true;
+  }
+  // Ufficio: solo il sabatista di rotazione (non tutti i sabatoUfficioIds)
+  try {
+    const prevDate = weekKeyToMonday(weekKey);
+    prevDate.setDate(prevDate.getDate() - 7);
+    const prevKey = getWeekKey(prevDate);
+    const prevWeek = appData.weeks?.[prevKey] || {};
+    const lastOffice = (rules.sabatoUfficioIds || []).find((id) => {
+      const c = prevWeek[id]?.[5];
+      return c && (c.mIn || c.pIn) && !isRestStatus(c.status);
+    }) || rules.lastSaturdayUfficioId || (rules.sabatoUfficioIds || [])[(rules.sabatoUfficioIds || []).length - 1];
+    const idx = (rules.sabatoUfficioIds || []).indexOf(lastOffice as string);
+    const nextOffice = (rules.sabatoUfficioIds || [])[idx >= 0 ? (idx + 1) % rules.sabatoUfficioIds.length : 0];
+    if (wId === nextOffice) return true;
+  } catch (_) { /* ignore */ }
+  // Magazzino: solo la coppia di turno questa settimana
+  try {
+    const prevDate = weekKeyToMonday(weekKey);
+    prevDate.setDate(prevDate.getDate() - 7);
+    const prevKey = getWeekKey(prevDate);
+    const prevWeek = appData.weeks?.[prevKey] || {};
+    const pairAWorkedPrev = (rules.magPairA || []).some((id) => {
+      const c = prevWeek[id]?.[5];
+      return c && (c.mIn || c.pIn) && !isRestStatus(c.status);
+    });
+    const thisPair = pairAWorkedPrev ? (rules.magPairB || []) : (rules.magPairA || []);
+    if (thisPair.includes(wId)) return true;
+  } catch (_) { /* ignore */ }
+  // Giuliano ha orario sabato dedicato
+  if (wId === rules.giulianoId) return true;
+  return false;
+}
+
 export function getNastroHoursForDay(wId: string, day: number, weekKey: string, appData: AppData): number {
   const rules = appData.rules;
 
   if (day === 5) {
-    const satDate = weekKeyToMonday(weekKey);
-    satDate.setDate(satDate.getDate() + 5);
     const cell = appData.weeks?.[weekKey]?.[wId]?.[5];
-    if (cell && (cell.mIn || cell.pIn)) return shiftMinutes(cell) / 60;
-    if (rules.sabatoUfficioIds.includes(wId)) return 5;
-    if (rules.magPairA.includes(wId) || rules.magPairB.includes(wId)) return 5;
+    if (cell && (cell.mIn || cell.pIn) && !isRestStatus(cell.status) && !isHardUnavailableCell(cell)) {
+      return shiftMinutes(cell) / 60;
+    }
+    // Solo se è realmente di turno al sabato (non tutta la lista ufficio/magazzino)
+    if (workerScheduledOnSaturday(wId, weekKey, appData)) {
+      if (wId === rules.giulianoId) return 4;
+      return 5;
+    }
     return 0;
   }
 
@@ -1704,6 +1748,16 @@ export function generateAutoProposal(
         assignBaseShift(id, day, shift);
       }
     }
+    // Magazzinieri nuovi / senza coppia (es. Dennis): turno feriale 8h se cella vuota
+    const pairedMag = new Set([...rules.magPairA, ...rules.magPairB, rules.marioId].filter(Boolean));
+    for (const w of workers) {
+      if (w.selected === false) continue;
+      if ((w.group || '').toUpperCase() !== 'MAGAZZINO' && !w.brain?.warehouse) continue;
+      if (pairedMag.has(w.id)) continue;
+      if (canGenerateBaseShift(w.id, day)) {
+        assignBaseShift(w.id, day, rules.mag8h || { mIn: '08:30', mOut: '13:00', pIn: '14:00', pOut: '17:30' });
+      }
+    }
   }
 
   // 5b. COPERTURA PAUSA PRANZO UFFICIO (12:30-13:00)
@@ -2221,6 +2275,16 @@ export function syncLeaveRequestToWeeks(weeks: { [weekKey: string]: WeekShifts }
       if (!weeks[weekKey][req.workerId]) weeks[weekKey][req.workerId] = {};
 
       const nastroHours = appData ? getWorkerNastroForDate(req.workerId, cur, appData) : 8;
+      // Sabato: se il collaboratore NON è di turno, non segnare ferie/assenza
+      if (dayIdx === 5 && nastroHours <= 0 && !(req as any).includeSaturday) {
+        // Rimuovi eventuale FERIE fantasma già presente
+        const existing = weeks[weekKey][req.workerId][dayIdx];
+        if (existing && existing.leaveRequestId === req.id && !(existing as any).manualEdit) {
+          delete weeks[weekKey][req.workerId][dayIdx];
+        }
+        cur.setDate(cur.getDate() + 1);
+        continue;
+      }
       const finalHours = req.fullDay
         ? (req.hours !== undefined && req.hours !== null ? req.hours : nastroHours)
         : (req.hours !== undefined && req.hours !== null ? req.hours : calculateAbsenceWorkingHours(req.fromTime, req.toTime, false, req.workerId, cur, appData));

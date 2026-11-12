@@ -339,15 +339,28 @@ function stable(value: unknown): string {
   return `{${Object.keys(record).sort().map(k => `${JSON.stringify(k)}:${stable(record[k])}`).join(',')}}`;
 }
 
+function cellHasProtectedManualContent(cell: EditableDayShift | undefined): boolean {
+  if (!cell?.manualEdit) return false;
+  // Celle svuotate o solo generate non sono "modifiche manuali" da proteggere a oltranza
+  if ((cell as any).clearedByUser) return false;
+  if (cell.generated && !(cell.mIn || cell.pIn)) return false;
+  const hasContent = !!(cell.mIn || cell.mOut || cell.pIn || cell.pOut ||
+    (cell.status && String(cell.status).toUpperCase() !== 'LAVORO' && String(cell.status).toUpperCase() !== ''));
+  return hasContent;
+}
+
 /**
  * Three-way cell merge. User edits made after proposal generation win over the proposal.
- * Cells explicitly marked manualEdit are always preserved.
+ * Only real manual content is preserved (not empty/cleared/generated placeholders).
+ * Pass forceOverwriteManual to apply the proposal even on manual cells.
  */
 export function mergeProposalSafely(
   baseSnapshot: WeekShifts,
   currentWeek: WeekShifts,
-  proposedWeek: WeekShifts
+  proposedWeek: WeekShifts,
+  options?: { forceOverwriteManual?: boolean }
 ): ProposalMergeResult {
+  const forceOverwriteManual = !!options?.forceOverwriteManual;
   const merged: WeekShifts = JSON.parse(JSON.stringify(currentWeek || {}));
   const workerIds = new Set([...Object.keys(baseSnapshot || {}), ...Object.keys(currentWeek || {}), ...Object.keys(proposedWeek || {})]);
   const preservedCells: ProposalMergeResult['preservedCells'] = [];
@@ -363,17 +376,34 @@ export function mergeProposalSafely(
       const currentChanged = stable(current) !== stable(base);
       const proposalChanged = stable(proposed) !== stable(base);
       if (!proposalChanged) continue;
-      if ((current as EditableDayShift | undefined)?.manualEdit) {
+      if (!forceOverwriteManual && cellHasProtectedManualContent(current as EditableDayShift | undefined)) {
         preservedCells.push({ workerId, day, reason: 'manual' });
         continue;
       }
-      if (currentChanged) {
+      if (!forceOverwriteManual && currentChanged && cellHasProtectedManualContent(current as EditableDayShift | undefined)) {
+        preservedCells.push({ workerId, day, reason: 'concurrent-edit' });
+        conflicts.push({ workerId, day, reason: 'concurrent-edit' });
+        continue;
+      }
+      // concurrent edit without manual flag: still prefer current if changed after snapshot
+      if (!forceOverwriteManual && currentChanged && !proposalChanged) {
+        continue;
+      }
+      if (!forceOverwriteManual && currentChanged) {
         preservedCells.push({ workerId, day, reason: 'concurrent-edit' });
         conflicts.push({ workerId, day, reason: 'concurrent-edit' });
         continue;
       }
       if (proposed === undefined) delete merged[workerId][day];
-      else merged[workerId][day] = JSON.parse(JSON.stringify(proposed));
+      else {
+        const written = JSON.parse(JSON.stringify(proposed));
+        // Dopo applicazione proposta, non resta bloccata come manuale se era generated
+        if (written.generated || forceOverwriteManual) {
+          written.manualEdit = false;
+          delete written.clearedByUser;
+        }
+        merged[workerId][day] = written;
+      }
       appliedCells++;
     }
     if (Object.keys(merged[workerId]).length === 0) delete merged[workerId];

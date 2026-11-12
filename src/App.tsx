@@ -273,7 +273,10 @@ export default function App() {
           incomingData.updatedRevision = (incomingData.updatedRevision || 0) + 1;
         }
         appDataRef.current = incomingData;
-        setAppData(incomingData);
+        setAppData({
+          ...incomingData,
+          appVersion: incomingData.appVersion && incomingData.appVersion >= '9.4.1' ? incomingData.appVersion : '9.4.1'
+        });
 
         if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
           void socketManager.sendDataUpdate(
@@ -407,7 +410,7 @@ export default function App() {
     setProposal(prop);
   };
 
-  const handleApplyProposal = async (emergencyWarehouseOverride = false) => {
+  const handleApplyProposal = async (emergencyWarehouseOverride = false, forceOverwriteManual = false) => {
     let phase = 'inizializzazione';
     try {
     if (!proposal) {
@@ -421,13 +424,29 @@ export default function App() {
     const weekInfo = getWeekInfo(currentDate);
     const latestAppData = appDataRef.current;
     const currentWeek = latestAppData.weeks[weekKey] || {};
-    const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week);
+    const merge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, currentWeek, proposal.week, {
+      forceOverwriteManual
+    });
 
-    // Applica le celle ancora compatibili anche se nel frattempo alcune sono cambiate:
-    // mergeProposalSafely conserva automaticamente sia le modifiche manuali sia quelle concorrenti.
-    // Evitiamo di scartare l'intera proposta per un conflitto limitato a poche celle.
+    // Applica le celle ancora compatibili anche se nel frattempo alcune sono cambiate.
+    // Se tutto è "manuale", proponi la sovrascrittura invece di fallire in silenzio.
     if (merge.appliedCells === 0) {
       const preserved = merge.preservedCells.length;
+      if (preserved > 0 && !forceOverwriteManual) {
+        setConfirmModal({
+          open: true,
+          title: 'Sovrascrivere le modifiche manuali?',
+          message: `La proposta non ha celle libere da aggiornare: ${preserved} celle risultano modificate a mano o da un altro dispositivo.\n\nVuoi applicare comunque la proposta generata e sovrascrivere quelle celle?`,
+          confirmText: 'Sovrascrivi e applica',
+          isDanger: true,
+          onConfirm: () => { void handleApplyProposal(emergencyWarehouseOverride, true); }
+        });
+        setProposalApplyFeedback({
+          status: 'blocked',
+          message: `Ho preservato ${preserved} celle manuali. Conferma la sovrascrittura per applicare la proposta, oppure rigenera dopo aver sbloccato le celle.`
+        });
+        return;
+      }
       const noChangesMessage = preserved
         ? `La proposta non contiene nuove celle applicabili. Ho preservato ${preserved} celle modificate manualmente o da un altro dispositivo. Rigenera la proposta per riallinearla.`
         : 'La proposta coincide già con i turni presenti. Non ci sono modifiche da salvare.';
@@ -461,7 +480,7 @@ export default function App() {
           message: detail,
           confirmText: 'Applica in emergenza',
           isDanger: true,
-          onConfirm: () => handleApplyProposal(true)
+          onConfirm: () => handleApplyProposal(true, forceOverwriteManual)
         });
       } else {
         const detail = errors.slice(0, 5).map(f => f.message).join('\n') || `Rilevate ${errors.length} violazioni bloccanti.`;
@@ -476,7 +495,7 @@ export default function App() {
       (prev) => {
         // Re-check the merge against the latest in-memory week immediately before applying.
         const latestWeek = prev.weeks[weekKey] || {};
-        const latestMerge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, latestWeek, proposal.week);
+        const latestMerge = mergeProposalSafely(proposal.baseWeekSnapshot || {}, latestWeek, proposal.week, { forceOverwriteManual });
         // Anche se una cella è stata modificata dopo la prima verifica, il merge
         // restituisce già la settimana aggiornata con quelle celle preservate.
         // Le altre celle della proposta vengono comunque applicate.
