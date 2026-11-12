@@ -39,9 +39,20 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
   // Raggruppa collaboratori per gruppo
   const groupOrder = appData.rules.groupOrder || ["MANAGER", "EDILE", "FINITURE", "MAGAZZINO"];
   const rows: any[] = [];
+  // Solo collaboratori selezionati in tabella (checkbox)
+  const selectedWorkerIds = new Set(
+    (appData.workers || []).filter(w => w.selected !== false).map(w => w.id)
+  );
+  const eventInvolvesSelected = (e: { participantIds?: string[] }) => {
+    const parts = e.participantIds || [];
+    // Nessun partecipante esplicito = coinvolge tutta la filiale → solo se c'è almeno un selezionato
+    if (!parts.length) return selectedWorkerIds.size > 0;
+    return parts.some(id => selectedWorkerIds.has(id));
+  };
+
   const eventTitles = (appData.events || []).filter(e => {
     const d = new Date(e.date + 'T12:00:00');
-    return d >= weekInfo.monday && d <= weekInfo.saturday;
+    return d >= weekInfo.monday && d <= weekInfo.saturday && eventInvolvesSelected(e);
   }).map(e => e.title).filter(Boolean);
   // Tiene traccia delle note dei singoli turni per evidenziarle nel PDF.
   const shiftNoteTexts: string[] = [];
@@ -314,10 +325,10 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
     finalY = noteY;
   }
 
-  // Tabella impegni della settimana
+  // Tabella impegni della settimana: solo se almeno un selezionato è partecipante
   const weekEvents = (appData.events || []).filter((e) => {
     const d = new Date(e.date + 'T12:00:00');
-    return d >= weekInfo.monday && d <= weekInfo.saturday;
+    return d >= weekInfo.monday && d <= weekInfo.saturday && eventInvolvesSelected(e);
   });
 
   if (weekEvents.length > 0) {
@@ -334,7 +345,11 @@ export function buildWeeklyTurniPDF(appData: AppData, weekDate: Date): jsPDF {
       e.title,
       e.allDay ? 'Giornata intera' : `${e.fromTime || ''} - ${e.toTime || ''}`,
       e.location || 'Corvetto',
-      (e.participantIds || []).map(id => appData.workers.find(w => w.id === id)?.name).filter(Boolean).join(', ')
+      (e.participantIds || [])
+        .filter(id => selectedWorkerIds.has(id))
+        .map(id => appData.workers.find(w => w.id === id)?.name)
+        .filter(Boolean)
+        .join(', ') || (e.participantIds || []).map(id => appData.workers.find(w => w.id === id)?.name).filter(Boolean).join(', ')
     ]);
 
     autoTable(doc, {
