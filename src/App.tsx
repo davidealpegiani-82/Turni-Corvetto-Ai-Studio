@@ -466,27 +466,23 @@ export default function App() {
     const policy = policyFromAppData(latestAppData, localDateKey(monday));
     const validation = validateWeekV2(latestAppData, merge.week, policy);
     const errors = validation.findings.filter(f => f.severity === 'error');
-    const emergencyOnlyWarehouse = errors.length > 0 && errors.every(f =>
-      f.code === 'COVERAGE_GAP' && f.area === 'warehouse' && f.expected === 2
-    );
-
-    if (errors.length && !(emergencyWarehouseOverride && emergencyOnlyWarehouse)) {
-      if (emergencyOnlyWarehouse) {
-        const detail = `La proposta presenta ${errors.length} fascia/e con meno di 2 magazzinieri. Puoi applicarla solo come deroga di emergenza; la carenza resterà evidenziata e dovrà essere gestita operativamente. Vuoi procedere?`;
-        setProposalApplyFeedback({ status: 'blocked', message: detail });
-        setConfirmModal({
-          open: true,
-          title: 'Copertura magazzino sotto il minimo',
-          message: detail,
-          confirmText: 'Applica in emergenza',
-          isDanger: true,
-          onConfirm: () => handleApplyProposal(true, forceOverwriteManual)
-        });
-      } else {
-        const detail = errors.slice(0, 5).map(f => f.message).join('\n') || `Rilevate ${errors.length} violazioni bloccanti.`;
-        setProposalApplyFeedback({ status: 'blocked', message: `La proposta è stata bloccata dai controlli: ${detail}` });
-        showToast('Proposta non applicabile', detail, 'warn');
-      }
+    // Le carenze di copertura sono anomalie da segnalare, non un motivo per
+    // impedire l'applicazione della proposta. Chiediamo una conferma esplicita
+    // e manteniamo tutti i rilievi nel report e nell'audit.
+    if (errors.length && !emergencyWarehouseOverride) {
+      const detail = errors.slice(0, 8).map(f => f.message).join('\n')
+        || `Rilevate ${errors.length} anomalie di copertura.`;
+      const more = errors.length > 8 ? `\n…e altre ${errors.length - 8} anomalie.` : '';
+      const confirmation = `La proposta è pronta, ma presenta ${errors.length} anomalie di copertura:\n\n${detail}${more}\n\nPuoi applicarla comunque: le carenze resteranno segnalate e dovranno essere gestite operativamente. Vuoi procedere?`;
+      setProposalApplyFeedback({ status: 'blocked', message: confirmation });
+      setConfirmModal({
+        open: true,
+        title: 'Anomalie di copertura rilevate',
+        message: confirmation,
+        confirmText: 'Applica comunque la proposta',
+        isDanger: true,
+        onConfirm: () => handleApplyProposal(true, forceOverwriteManual)
+      });
       return;
     }
 
@@ -506,8 +502,8 @@ export default function App() {
           prev.auditLog = prev.auditLog || [];
           prev.auditLog.push({
             ts: new Date().toISOString(),
-            action: 'emergency_warehouse_coverage_override',
-            detail: `Deroga emergenza copertura magazzino settimana ${weekInfo.weekNo}: ${errors.map(f => f.message).join('; ')}`,
+            action: 'coverage_anomaly_override',
+            detail: `Proposta applicata con anomalie di copertura nella settimana ${weekInfo.weekNo}: ${errors.map(f => f.message).join('; ')}`,
             by: socketManager.getClientId()
           });
         }
@@ -538,7 +534,7 @@ export default function App() {
     setProposal(null);
     const warningCount = validation.findings.filter(f => f.severity === 'warning').length;
     showToast(
-      emergencyWarehouseOverride ? '⚠️ Proposta applicata in emergenza' : 'Proposta applicata e sincronizzata',
+      emergencyWarehouseOverride ? '⚠️ Proposta applicata con anomalie' : 'Proposta applicata e sincronizzata',
       `Settimana ${weekInfo.weekNo}: ${merge.appliedCells} celle aggiornate, ${merge.preservedCells.length} celle protette, ${validation.checkedSlots} fasce controllate, ${validation.coverageGaps} carenze, ${warningCount} avvisi. Turni salvati e sincronizzati su Firebase.`,
       emergencyWarehouseOverride ? 'warn' : 'info'
     );
