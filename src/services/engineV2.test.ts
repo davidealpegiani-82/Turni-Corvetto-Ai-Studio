@@ -27,6 +27,32 @@ test('validator checks all half-hour slots and detects a midday gap', () => {
   assert.ok(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.area === 'warehouse' && f.day === 0 && f.time === '10:00'));
 });
 
+test('Italian and Milan holidays are excluded from coverage and opening checks', () => {
+  const holidayPolicy = policyFromAppData(app, '2026-12-07');
+  const week: WeekShifts = {
+    mag1: { 0: { status: 'CHIUSO' }, 1: { status: 'CHIUSO' } },
+    mag2: { 0: { status: 'CHIUSO' }, 1: { status: 'CHIUSO' } },
+    office1: { 0: { status: 'CHIUSO' }, 1: { status: 'CHIUSO' } },
+    office2: { 0: { status: 'CHIUSO' }, 1: { status: 'CHIUSO' } }
+  };
+
+  const result = validateWeekV2(app, week, holidayPolicy);
+
+  // W50/2026: lunedì 7 dicembre (Sant'Ambrogio) e martedì 8 (Immacolata)
+  // sono chiusi. Restano da verificare mer-ven e sabato: 152 fasce area/orario.
+  assert.equal(result.checkedSlots, 152);
+  assert.equal(result.findings.some(f => f.day === 0 || f.day === 1), false);
+  assert.ok(result.findings.some(f => f.code === 'COVERAGE_GAP' && f.day === 2),
+    'i normali giorni di apertura devono continuare a essere validati');
+});
+
+test('calendar holiday dates are skipped even when closed-day cells are not populated', () => {
+  const holidayPolicy = policyFromAppData(app, '2026-12-07');
+  const result = validateWeekV2(app, {}, holidayPolicy);
+  assert.equal(result.findings.some(f => f.day === 0 || f.day === 1), false);
+  assert.equal(result.checkedSlots, 152);
+});
+
 test('validator rejects malformed time intervals', () => {
   const week: WeekShifts = {
     mag1: { 0: { mIn: '09:00', mOut: '06:30' } },
