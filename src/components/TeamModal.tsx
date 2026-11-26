@@ -176,10 +176,10 @@ export const TeamModal: React.FC<TeamModalProps> = ({
         {activeTab === 'roster' && (
           <div className="space-y-2 overflow-y-auto max-h-[58vh] pr-1">
             {sortedWorkers.map((w, idx) => {
-              const isInactive = w.selected === false || (w.employmentStatus && w.employmentStatus !== 'active');
+              const isInactive = !!(w.employmentStatus && w.employmentStatus !== 'active');
               const employmentLabel = w.employmentStatus === 'resigned' ? 'Dimesso'
                 : w.employmentStatus === 'dismissed' ? 'Licenziato'
-                : w.employmentStatus === 'unavailable' || w.selected === false ? 'Non disponibile' : 'Attivo';
+                : w.employmentStatus === 'unavailable' ? 'Non disponibile' : 'Attivo';
               const brain = w.brain || {};
               const p = w.profile || {};
 
