@@ -40,6 +40,11 @@ export const WorkerEditModal: React.FC<WorkerEditModalProps> = ({
   const [phone, setPhone] = useState(existing?.phone || '');
   const [dob, setDob] = useState(existing?.dob || '');
   const [order, setOrder] = useState(existing?.order ?? (workers.length + 1));
+  const [employmentStatus, setEmploymentStatus] = useState<NonNullable<Worker['employmentStatus']>>(
+    existing?.employmentStatus || (existing?.selected === false ? 'unavailable' : 'active')
+  );
+  const [employmentStatusDate, setEmploymentStatusDate] = useState(existing?.employmentStatusDate || '');
+  const [employmentStatusNote, setEmploymentStatusNote] = useState(existing?.employmentStatusNote || '');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Brain Profile
@@ -140,7 +145,10 @@ export const WorkerEditModal: React.FC<WorkerEditModalProps> = ({
       phone: phone.trim(),
       dob,
       order: Number(order) || workers.length + 1,
-      selected: existing?.selected ?? true,
+      selected: employmentStatus === 'active',
+      employmentStatus,
+      employmentStatusDate: employmentStatus === 'active' ? '' : (employmentStatusDate || new Date().toISOString().slice(0, 10)),
+      employmentStatusNote: employmentStatus === 'active' ? '' : employmentStatusNote.trim(),
       brain: {
         office: ['MANAGER', 'EDILE', 'FINITURE'].includes(group),
         warehouse: group === 'MAGAZZINO',
@@ -292,6 +300,49 @@ export const WorkerEditModal: React.FC<WorkerEditModalProps> = ({
                     className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-white mt-1"
                   />
                 </div>
+              </div>
+
+              {/* Stato lavorativo: disattivazione senza cancellare lo storico */}
+              <div className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-2.5">
+                <div className="text-xs font-bold uppercase tracking-wider text-amber-300">Stato collaboratore</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Disponibilità</label>
+                    <select
+                      value={employmentStatus}
+                      onChange={e => setEmploymentStatus(e.target.value as NonNullable<Worker['employmentStatus']>)}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-white mt-1"
+                    >
+                      <option value="active">Attivo / disponibile</option>
+                      <option value="unavailable">Non disponibile</option>
+                      <option value="resigned">Dimesso</option>
+                      <option value="dismissed">Licenziato</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Data decorrenza</label>
+                    <input
+                      type="date"
+                      value={employmentStatusDate}
+                      disabled={employmentStatus === 'active'}
+                      onChange={e => setEmploymentStatusDate(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white mt-1 disabled:opacity-40"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Nota (facoltativa)</label>
+                  <input
+                    type="text"
+                    value={employmentStatusNote}
+                    onChange={e => setEmploymentStatusNote(e.target.value)}
+                    placeholder="Es. cessazione rapporto, indisponibilità..."
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white mt-1"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  I collaboratori non attivi vengono esclusi dalle nuove proposte turni. Anagrafica, turni passati, ferie e storico restano conservati. Per riattivare seleziona “Attivo / disponibile”.
+                </p>
               </div>
 
               {/* Profilo Operativo Motore Regole */}
