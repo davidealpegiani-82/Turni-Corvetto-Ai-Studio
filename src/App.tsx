@@ -963,7 +963,7 @@ export default function App() {
           phone: partialWorker.phone !== undefined ? partialWorker.phone : existingWorker?.phone,
           dob: partialWorker.dob !== undefined ? partialWorker.dob : existingWorker?.dob,
           selected: partialWorker.selected !== undefined ? partialWorker.selected : (existingWorker?.selected ?? true),
-          employmentStatus: partialWorker.employmentStatus ?? existingWorker?.employmentStatus ?? ((partialWorker.selected ?? existingWorker?.selected) === false ? 'unavailable' : 'active'),
+          employmentStatus: partialWorker.employmentStatus ?? existingWorker?.employmentStatus ?? 'active',
           employmentStatusDate: partialWorker.employmentStatusDate !== undefined ? partialWorker.employmentStatusDate : existingWorker?.employmentStatusDate,
           employmentStatusNote: partialWorker.employmentStatusNote !== undefined ? partialWorker.employmentStatusNote : existingWorker?.employmentStatusNote,
           brain: {
@@ -1019,7 +1019,7 @@ export default function App() {
       (prev) => {
         const w = prev.workers.find(item => item.id === workerId);
         if (w) {
-          const nextActive = w.selected === false;
+          const nextActive = w.employmentStatus !== 'active';
           w.selected = nextActive;
           w.employmentStatus = nextActive ? 'active' : 'unavailable';
           w.employmentStatusDate = nextActive ? '' : localDateKey(new Date());
