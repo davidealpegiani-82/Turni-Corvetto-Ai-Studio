@@ -26,7 +26,7 @@ import { TodayBranchDashboard } from './components/TodayBranchDashboard';
 import { QuickSwapModal } from './components/QuickSwapModal';
 import { GlassAtmosphereModal, GlassIntensity, GlassAura } from './components/GlassAtmosphereModal';
 
-import { createDefaultAppData, migrateCorvettoEquipmentQualifications } from './data/initialData';
+import { createDefaultAppData, migrateCorvettoEquipmentQualifications, migrateSantomauroToDrigoRotation } from './data/initialData';
 import {
   AppData,
   DayShift,
@@ -266,10 +266,15 @@ export default function App() {
         // La scrittura cloud avviene solo su dati ricevuti dal cloud, mai sulla sola cache offline.
         const equipmentMigration = migrateCorvettoEquipmentQualifications(incomingData);
         incomingData = equipmentMigration.data;
+        const santomauroMigration = migrateSantomauroToDrigoRotation(incomingData);
+        incomingData = santomauroMigration.data;
         reconcileAllLeavesWithWeeks(incomingData.weeks, incomingData.leaveRequests, incomingData);
-        if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
+        const operationalMigrationChanged = equipmentMigration.changed || santomauroMigration.changed;
+        if (operationalMigrationChanged && meta.changeType !== 'offline_cache') {
           incomingData.updatedAt = Date.now();
-          incomingData.updatedBy = 'system_equipment_qualification_migration';
+          incomingData.updatedBy = santomauroMigration.changed
+            ? 'system_santomauro_rotation_migration'
+            : 'system_equipment_qualification_migration';
           incomingData.updatedRevision = (incomingData.updatedRevision || 0) + 1;
         }
         appDataRef.current = incomingData;
@@ -278,14 +283,20 @@ export default function App() {
           appVersion: incomingData.appVersion && incomingData.appVersion >= '9.4.6' ? incomingData.appVersion : '9.4.6'
         });
 
-        if (equipmentMigration.changed && meta.changeType !== 'offline_cache') {
+        if (operationalMigrationChanged && meta.changeType !== 'offline_cache') {
           void socketManager.sendDataUpdate(
             incomingData,
-            'worker_qualification_migration',
-            'Allineamento una tantum delle abilitazioni muletto e ruspa/pala di Corvetto.'
+            santomauroMigration.changed ? 'santomauro_rotation_migration' : 'worker_qualification_migration',
+            santomauroMigration.changed
+              ? 'Santomauro subentra a Drigo nella coppia B del magazzino, con la stessa rotazione e gestione dei sabati.'
+              : 'Allineamento una tantum delle abilitazioni muletto e ruspa/pala di Corvetto.'
           ).then(saved => {
             if (saved) {
-              showToast('Abilitazioni aggiornate', 'Profili muletto e ruspa/pala allineati e sincronizzati con Firebase.', 'success');
+              if (santomauroMigration.changed) {
+                showToast('Rotazione magazzino aggiornata', 'Santomauro ha preso il posto di Drigo nella coppia B e nella gestione dei sabati. Lo storico di Drigo è stato conservato.', 'success');
+              } else {
+                showToast('Abilitazioni aggiornate', 'Profili muletto e ruspa/pala allineati e sincronizzati con Firebase.', 'success');
+              }
             } else {
               showToast('Sincronizzazione da verificare', 'Le abilitazioni sono state corrette su questo dispositivo, ma Firebase non ha confermato la migrazione.', 'warn');
             }
