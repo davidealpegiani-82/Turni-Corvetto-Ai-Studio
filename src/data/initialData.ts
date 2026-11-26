@@ -388,7 +388,7 @@ export function migrateSantomauroToDrigoRotation(appData: AppData): { data: AppD
     return { data: appData, changed: false };
   }
 
-  const normalize = (value: string) => value.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toUpperCase();
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
   const santomauro = (appData.workers || []).find(worker =>
     normalize(worker.name || '').includes('SANTOMAURO') &&
     String(worker.group || '').toUpperCase() === 'MAGAZZINO'
