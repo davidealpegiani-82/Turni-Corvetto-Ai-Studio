@@ -374,3 +374,72 @@ export function migrateCorvettoEquipmentQualifications(appData: AppData): { data
     changed: true
   };
 }
+
+/**
+ * Sostituzione operativa di Mattia Drigo con Santomauro nella coppia B del magazzino.
+ * La migrazione aggiorna solo le regole future: turni, ferie, permessi ed eventi storici
+ * restano associati agli ID originali e non vengono riscritti.
+ */
+export const CORVETTO_SANTOMAURO_ROTATION_MIGRATION = 'corvetto-santomauro-replaces-drigo-rotation-v1';
+
+export function migrateSantomauroToDrigoRotation(appData: AppData): { data: AppData; changed: boolean } {
+  const applied = appData.schemaMigrations || [];
+  if (applied.includes(CORVETTO_SANTOMAURO_ROTATION_MIGRATION)) {
+    return { data: appData, changed: false };
+  }
+
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toUpperCase();
+  const santomauro = (appData.workers || []).find(worker =>
+    normalize(worker.name || '').includes('SANTOMAURO') &&
+    String(worker.group || '').toUpperCase() === 'MAGAZZINO'
+  );
+  const drigo = (appData.workers || []).find(worker =>
+    normalize(worker.name || '').includes('DRIGO')
+  );
+
+  // Non registrare la migrazione se il collaboratore non è ancora presente nei dati cloud.
+  if (!santomauro || !drigo || santomauro.id === drigo.id) {
+    return { data: appData, changed: false };
+  }
+
+  const rules = { ...appData.rules };
+  const pairB = [...(rules.magPairB || [])];
+  const drigoIndex = pairB.indexOf(drigo.id);
+  if (drigoIndex < 0) return { data: appData, changed: false };
+  pairB[drigoIndex] = santomauro.id;
+  rules.magPairB = pairB;
+
+  const workers = (appData.workers || []).map(worker => {
+    if (worker.id === santomauro.id) {
+      return {
+        ...worker,
+        selected: true,
+        brain: {
+          ...(worker.brain || {}),
+          warehouse: true,
+          saturdayEligible: true,
+          sabatista: true,
+          canOpen: drigo.brain?.canOpen ?? true,
+          canClose: drigo.brain?.canClose ?? true,
+          jolly: false,
+          pair: 'B'
+        }
+      };
+    }
+    if (worker.id === drigo.id) {
+      return { ...worker, selected: false };
+    }
+    return worker;
+  });
+
+  return {
+    data: {
+      ...appData,
+      workers,
+      rules,
+      schemaMigrations: [...applied, CORVETTO_SANTOMAURO_ROTATION_MIGRATION]
+    },
+    changed: true
+  };
+}
+
