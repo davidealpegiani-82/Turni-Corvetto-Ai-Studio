@@ -768,7 +768,7 @@ export const WorkerEditModal: React.FC<WorkerEditModalProps> = ({
                 onClick={() => { onDeactivateWorker(existing.id); onClose(); }}
                 className="px-3 py-1.5 rounded-xl bg-slate-800 text-amber-300 hover:bg-slate-700 text-xs font-semibold transition"
               >
-                {existing.selected === false ? 'Riattiva' : 'Disattiva'}
+                {existing.employmentStatus && existing.employmentStatus !== 'active' ? 'Riattiva' : 'Disattiva'}
               </button>
             </div>
           ) : <div />}
