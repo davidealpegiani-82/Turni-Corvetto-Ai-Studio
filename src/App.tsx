@@ -470,10 +470,10 @@ export default function App() {
     // impedire l'applicazione della proposta. Chiediamo una conferma esplicita
     // e manteniamo tutti i rilievi nel report e nell'audit.
     if (errors.length && !emergencyWarehouseOverride) {
-      const detail = errors.slice(0, 8).map(f => f.message).join('\\n')
+      const detail = errors.slice(0, 8).map(f => f.message).join('\n')
         || `Rilevate ${errors.length} anomalie di copertura.`;
-      const more = errors.length > 8 ? `\\n…e altre ${errors.length - 8} anomalie.` : '';
-      const confirmation = `La proposta è pronta, ma presenta ${errors.length} anomalie di copertura:\\n\\n${detail}${more}\\n\\nPuoi applicarla comunque: le carenze resteranno segnalate e dovranno essere gestite operativamente. Vuoi procedere?`;
+      const more = errors.length > 8 ? `\n…e altre ${errors.length - 8} anomalie.` : '';
+      const confirmation = `La proposta è pronta, ma presenta ${errors.length} anomalie di copertura:\n\n${detail}${more}\n\nPuoi applicarla comunque: le carenze resteranno segnalate e dovranno essere gestite operativamente. Vuoi procedere?`;
       setProposalApplyFeedback({ status: 'blocked', message: confirmation });
       setConfirmModal({
         open: true,
