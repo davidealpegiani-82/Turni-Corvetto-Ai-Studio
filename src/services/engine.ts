@@ -1324,9 +1324,34 @@ export function generateAutoProposal(
 ): GeneratedProposal {
   const weekKey = getWeekKey(targetDate);
   const rules = appData.rules;
-  const workers = appData.workers;
+  const weekStartForStatus = weekKeyToMonday(weekKey);
+  const weekEndForStatus = new Date(weekStartForStatus);
+  weekEndForStatus.setDate(weekEndForStatus.getDate() + 5);
+  const weekStartIso = localDateKey(weekStartForStatus);
+  const weekEndIso = localDateKey(weekEndForStatus);
+  // In una settimana che attraversa la data di cessazione, conserva l'operatore
+  // fino al giorno precedente e lo esclude dalla decorrenza in avanti.
+  const workers = appData.workers.filter(w => {
+    const status = w.employmentStatus || 'active';
+    if (status === 'active') return true;
+    const inactiveFrom = w.employmentStatusDate || '0000-01-01';
+    return weekStartIso < inactiveFrom;
+  });
   const originalWeek = deepClone(appData.weeks[weekKey] || {});
   const proposalWeek: WeekShifts = deepClone(originalWeek);
+  // Elimina dalla proposta soltanto le celle dal giorno di cessazione in poi.
+  appData.workers.forEach(w => {
+    const status = w.employmentStatus || 'active';
+    if (status === 'active') return;
+    const inactiveFrom = w.employmentStatusDate || '0000-01-01';
+    if (!proposalWeek[w.id]) return;
+    for (let day = 0; day <= 5; day++) {
+      const date = new Date(weekStartForStatus);
+      date.setDate(date.getDate() + day);
+      if (localDateKey(date) >= inactiveFrom) delete proposalWeek[w.id][day];
+    }
+    if (Object.keys(proposalWeek[w.id]).length === 0) delete proposalWeek[w.id];
+  });
 
   const notes: string[] = [];
   const choices: ProposalChoice[] = [];
@@ -1657,6 +1682,15 @@ export function generateAutoProposal(
   // Una cella vuota/placeholder non deve bloccare la generazione del turno base.
   // Restano invece intatti riposi, assenze, turni manuali e celle con orari già inseriti.
   const canGenerateBaseShift = (id: string, day: number): boolean => {
+    // Un operatore non attivo dalla data di decorrenza non riceve nuovi turni.
+    if (!workers.some(w => w.id === id)) return false;
+    const worker = appData.workers.find(w => w.id === id);
+    if (worker && worker.employmentStatus && worker.employmentStatus !== 'active') {
+      const targetDay = new Date(weekStartForStatus);
+      targetDay.setDate(targetDay.getDate() + day);
+      const inactiveFrom = worker.employmentStatusDate || '0000-01-01';
+      if (localDateKey(targetDay) >= inactiveFrom) return false;
+    }
     const cell = proposalWeek[id]?.[day] as (DayShift & { manualEdit?: boolean }) | undefined;
     if (!cell || cell.generated) return true;
     if (cell.manualEdit || isHardUnavailableCell(cell)) return false;

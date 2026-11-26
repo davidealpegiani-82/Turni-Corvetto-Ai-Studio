@@ -370,7 +370,7 @@ export default function App() {
       (prev) => {
         if (!prev.weeks[weekKey]) prev.weeks[weekKey] = {};
         if (!prev.weeks[weekKey][workerId]) prev.weeks[weekKey][workerId] = {};
-        prev.weeks[weekKey][workerId][dayIdx] = { ...data, manualEdit: true, generated: false };
+        prev.weeks[weekKey][workerId][dayIdx] = { ...data, manualEdit: true, manualException: true, generated: false };
         return prev;
       },
       'edit_shift',
@@ -963,6 +963,9 @@ export default function App() {
           phone: partialWorker.phone !== undefined ? partialWorker.phone : existingWorker?.phone,
           dob: partialWorker.dob !== undefined ? partialWorker.dob : existingWorker?.dob,
           selected: partialWorker.selected !== undefined ? partialWorker.selected : (existingWorker?.selected ?? true),
+          employmentStatus: partialWorker.employmentStatus ?? existingWorker?.employmentStatus ?? 'active',
+          employmentStatusDate: partialWorker.employmentStatusDate !== undefined ? partialWorker.employmentStatusDate : existingWorker?.employmentStatusDate,
+          employmentStatusNote: partialWorker.employmentStatusNote !== undefined ? partialWorker.employmentStatusNote : existingWorker?.employmentStatusNote,
           brain: {
             ...(existingWorker?.brain || {}),
             ...(partialWorker.brain || {})
@@ -1015,7 +1018,13 @@ export default function App() {
     updateAppDataAuthoritative(
       (prev) => {
         const w = prev.workers.find(item => item.id === workerId);
-        if (w) w.selected = !w.selected;
+        if (w) {
+          const nextActive = w.employmentStatus !== 'active';
+          w.selected = nextActive;
+          w.employmentStatus = nextActive ? 'active' : 'unavailable';
+          w.employmentStatusDate = nextActive ? '' : localDateKey(new Date());
+          w.employmentStatusNote = nextActive ? '' : 'Non disponibile (disattivazione manuale)';
+        }
         return prev;
       },
       'toggle_worker_active',

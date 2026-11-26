@@ -176,7 +176,10 @@ export const TeamModal: React.FC<TeamModalProps> = ({
         {activeTab === 'roster' && (
           <div className="space-y-2 overflow-y-auto max-h-[58vh] pr-1">
             {sortedWorkers.map((w, idx) => {
-              const isInactive = w.selected === false;
+              const isInactive = !!(w.employmentStatus && w.employmentStatus !== 'active');
+              const employmentLabel = w.employmentStatus === 'resigned' ? 'Dimesso'
+                : w.employmentStatus === 'dismissed' ? 'Licenziato'
+                : w.employmentStatus === 'unavailable' ? 'Non disponibile' : 'Attivo';
               const brain = w.brain || {};
               const p = w.profile || {};
 
@@ -208,7 +211,7 @@ export const TeamModal: React.FC<TeamModalProps> = ({
                         <strong className="text-sm font-extrabold text-white truncate">{w.name}</strong>
                         {isInactive && (
                           <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">
-                            Disattivo
+                            {employmentLabel}
                           </span>
                         )}
                         {hasForklift && (
