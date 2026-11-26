@@ -422,7 +422,7 @@ export function migrateSantomauroToDrigoRotation(appData: AppData): { data: AppD
           canOpen: drigo.brain?.canOpen ?? true,
           canClose: drigo.brain?.canClose ?? true,
           jolly: false,
-          pair: 'B'
+          pair: 'B' as const
         }
       };
     }
