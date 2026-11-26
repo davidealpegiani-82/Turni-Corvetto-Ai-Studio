@@ -1324,7 +1324,17 @@ export function generateAutoProposal(
 ): GeneratedProposal {
   const weekKey = getWeekKey(targetDate);
   const rules = appData.rules;
-  const workers = appData.workers;
+  const weekStartForStatus = weekKeyToMonday(weekKey);
+  const weekEndForStatus = new Date(weekStartForStatus);
+  weekEndForStatus.setDate(weekEndForStatus.getDate() + 5);
+  const weekEndIso = localDateKey(weekEndForStatus);
+  // Mantieni nel calcolo le settimane storiche precedenti alla decorrenza di cessazione.
+  const workers = appData.workers.filter(w => {
+    const status = w.employmentStatus || (w.selected === false ? 'unavailable' : 'active');
+    if (status === 'active' && w.selected !== false) return true;
+    const inactiveFrom = w.employmentStatusDate || '0000-01-01';
+    return weekEndIso < inactiveFrom;
+  });
   const originalWeek = deepClone(appData.weeks[weekKey] || {});
   const proposalWeek: WeekShifts = deepClone(originalWeek);
 
@@ -1657,6 +1667,8 @@ export function generateAutoProposal(
   // Una cella vuota/placeholder non deve bloccare la generazione del turno base.
   // Restano invece intatti riposi, assenze, turni manuali e celle con orari già inseriti.
   const canGenerateBaseShift = (id: string, day: number): boolean => {
+    // Un operatore non attivo nella settimana selezionata non riceve nuovi turni.
+    if (!workers.some(w => w.id === id)) return false;
     const cell = proposalWeek[id]?.[day] as (DayShift & { manualEdit?: boolean }) | undefined;
     if (!cell || cell.generated) return true;
     if (cell.manualEdit || isHardUnavailableCell(cell)) return false;
