@@ -52,6 +52,10 @@ export interface Worker {
   phone?: string;
   dob?: string;
   selected?: boolean;
+  /** Stato lavorativo: i collaboratori cessati restano archiviati per conservare lo storico. */
+  employmentStatus?: 'active' | 'resigned' | 'dismissed' | 'unavailable';
+  employmentStatusDate?: string;
+  employmentStatusNote?: string;
   brain?: WorkerBrainProfile;
   profile?: WorkerSkillsProfile;
 }
