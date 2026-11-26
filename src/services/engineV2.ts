@@ -1,4 +1,5 @@
 import type { AppData, DayShift, WeekShifts, Worker } from '../types/turni';
+import { getItalianHoliday } from './holidays';
 
 export type CoverageArea = 'warehouse' | 'office';
 export type ValidationSeverity = 'error' | 'warning';
@@ -174,6 +175,22 @@ export function validateWeekV2(
   let coverageGaps = 0;
 
   for (let day = 0; day <= 5; day++) {
+    // Le festività nazionali e il patrono di Milano sono giorni di filiale chiusa:
+    // non devono generare scoperture né avvisi di abilitazione in apertura.
+    // Il controllo sullo stato CHIUSO copre anche chiusure già registrate manualmente
+    // e mantiene il comportamento corretto quando la policy non contiene la data.
+    const selectedWorkers = appData.workers.filter(w => w.selected !== false);
+    const allSelectedWorkersClosed = selectedWorkers.length > 0 &&
+      selectedWorkers.every(w => String(week[w.id]?.[day]?.status || '').toUpperCase() === 'CHIUSO');
+    const dayDate = policy.weekStartDate
+      ? new Date(`${policy.weekStartDate}T12:00:00`)
+      : null;
+    if (dayDate && !Number.isNaN(dayDate.getTime())) {
+      dayDate.setDate(dayDate.getDate() + day);
+    }
+    const isCalendarHoliday = !!(dayDate && getItalianHoliday(dayDate));
+    if (isCalendarHoliday || allSelectedWorkersClosed) continue;
+
     const isSaturday = day === 5;
     const open = toMinutes(isSaturday ? policy.saturdayOpen || '07:00' : policy.open) ?? 390;
     const close = toMinutes(isSaturday ? policy.saturdayClose || '12:00' : policy.close) ?? 1050;
