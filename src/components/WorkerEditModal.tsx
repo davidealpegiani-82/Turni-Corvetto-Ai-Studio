@@ -41,7 +41,7 @@ export const WorkerEditModal: React.FC<WorkerEditModalProps> = ({
   const [dob, setDob] = useState(existing?.dob || '');
   const [order, setOrder] = useState(existing?.order ?? (workers.length + 1));
   const [employmentStatus, setEmploymentStatus] = useState<NonNullable<Worker['employmentStatus']>>(
-    existing?.employmentStatus || (existing?.selected === false ? 'unavailable' : 'active')
+    existing?.employmentStatus || 'active'
   );
   const [employmentStatusDate, setEmploymentStatusDate] = useState(existing?.employmentStatusDate || '');
   const [employmentStatusNote, setEmploymentStatusNote] = useState(existing?.employmentStatusNote || '');
