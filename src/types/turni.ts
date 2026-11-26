@@ -71,6 +71,8 @@ export interface DayShift {
   generated?: boolean;
   /** True when a human explicitly locked/edited this cell; auto-generation must not overwrite it. */
   manualEdit?: boolean;
+  /** Turno inserito manualmente come deroga valida per la sola settimana/giornata. */
+  manualException?: boolean;
   movedByEngine?: boolean;
   leaveType?: string;
   leaveFullDay?: boolean;
