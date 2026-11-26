@@ -1331,7 +1331,7 @@ export function generateAutoProposal(
   // Mantieni nel calcolo le settimane storiche precedenti alla decorrenza di cessazione.
   const workers = appData.workers.filter(w => {
     const status = w.employmentStatus || (w.selected === false ? 'unavailable' : 'active');
-    if (status === 'active' && w.selected !== false) return true;
+    if (status === 'active') return true;
     const inactiveFrom = w.employmentStatusDate || '0000-01-01';
     return weekEndIso < inactiveFrom;
   });
